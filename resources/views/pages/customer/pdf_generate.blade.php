@@ -7,21 +7,17 @@
     <title>Invoice</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <style>
-        /* Reset some default browser styling */
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        /* Body styling */
         body {
             font-family: 'Source Sans Pro', sans-serif;
-            /* background-color: #f4f4f4; */
+ 
             padding: 20px;
         }
-
-        /* Main container for layout */
         .container {
             max-width: 1000px;
             height: 50vh;

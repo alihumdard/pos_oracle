@@ -10,16 +10,8 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     public function showLoginForm()
-    {
-        $user=session()->has('login');
-        if($user)
-        {
-            return redirect()->route('dashboard');
-        }
-        else
-        {
-            return view('login'); 
-        }
+    {    
+            return view('login');     
     }
 
     public function login(Request $request)
@@ -28,18 +20,23 @@ class LoginController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        $existingRecord = User::where('email', $request->email)->where('password', $request->password)->first();
-        if ($existingRecord) {
-            $request->session()->put('login', $existingRecord->id);
+        $credentials = [
+            'email' => $request->email,
+            'password' => $request->password,
+            
+        ];
+
+     if(Auth::attempt( $credentials))
+     {
             return redirect()->route('dashboard'); 
         }
         else{
-            return redirect()->back()->with('message','Invalid Email or Password ');
+            return redirect()->back()->withErrors([
+                'email' => 'Invalid credentials.',
+            ])->withInput();
         }
 
-        return back()->withErrors([
-            'email' => 'Invalid credentials.',
-        ])->withInput();
+        
     }
             public function logout()
         {

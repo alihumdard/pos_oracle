@@ -7,13 +7,10 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\DashboardController;
 
-Route::get('/dashboard', function () {
-    if (!session()->has('login')) {
-        return redirect()->route('login')->with('message', 'Please log in first.');
-    }
-    return view('pages.dashboard');
-})->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/invoice',function(){
 return view('pages.customer.invoice');
 });
