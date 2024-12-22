@@ -9,7 +9,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DashboardController;
 
-
+Route::get('/run-commands', [DashboardController::class, 'runMigrations']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/invoice',function(){
 return view('pages.customer.invoice');
