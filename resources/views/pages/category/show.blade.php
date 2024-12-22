@@ -49,7 +49,7 @@
       <!-- /.card-header -->
       <div class="card-body">
         <table class="table table-hover text-nowrap" id="example1">
-          <thead>
+          <thead class="bg-primary">
             <tr>
               <th>#Sr.No</th>
               <th>Name</th>

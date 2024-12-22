@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('category_id');
             $table->string('supplier_id');
             $table->string('item_code', 200)->nullable();
-            $table->string('gen_name', 200)->nullable();
             $table->string('item_name', 200)->nullable();
             $table->string('profit', 100)->nullable();
             $table->string('selling_price', 100)->nullable();
@@ -31,6 +30,7 @@ return new class extends Migration
             $table->string('date_arrival')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
