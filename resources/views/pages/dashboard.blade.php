@@ -72,6 +72,18 @@
                            <a href="{{route('show.transaction')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                      </div>
+                     <div class="col-lg-3 col-6">
+                        
+                        <div class="small-box bg-success">
+                           <div class="inner">
+                              <p>Customer</p>
+                           </div>
+                           <div class="icon">
+                              <i class="ion ion-pie-graph"></i>
+                           </div>
+                           <a href="{{route('show.customers')}}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                     </div>
                     
                     
     </div>

@@ -9,7 +9,7 @@
                         with font-awesome or any other icon font library -->
          <li class="nav-item menu-open">
             <a href="{{route('dashboard')}}" class="nav-link active">
-               <i class="nav-icon fas fa-tachometer-alt"></i>
+               
                <p>
                   Dashboard
                   <i class="right fas fa-angle-left"></i>
@@ -45,7 +45,7 @@
             </a>
 
          </li>
-         <!-- <li class="nav-item">
+         <li class="nav-item">
             <a href="{{route('show.customers')}}" class="nav-link">
                <i class="nav-icon fas fa-book"></i>
                <p>
@@ -53,7 +53,7 @@
                </p>
             </a>
 
-         </li> -->
+         </li>
          <li class="nav-item">
             <a href="{{route('show.transaction')}}" class="nav-link">
                <i class="nav-icon fas fa-book"></i>

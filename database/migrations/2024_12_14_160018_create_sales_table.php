@@ -16,8 +16,11 @@ return new class extends Migration
             $table->json('transaction_id');
             $table->json('customer_id');
             $table->decimal('total_discount',10,2);
-            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_amount', 10, 2);            
+            $table->text('note')->nullable();
+            $table->decimal('cash',10,2)->default();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

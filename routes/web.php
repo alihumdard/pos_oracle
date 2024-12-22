@@ -31,8 +31,11 @@ Route::delete('/categories/{id}', [CategoryController::class, 'category_delete']
 Route::get('/product/show', [ProductController::class, 'product_show'])->name('show.products');
 Route::post('/product/add', [ProductController::class, 'product_add'])->name('add.products');
 Route::delete('/products/{id}',[ProductController::class,'product_delete'])->name('product.delete');
+Route::get('/all/products',[ProductController::class,'product_all'])->name('product_all');
 Route::get('products/{id}', [ProductController::class, 'product_edit']);
 Route::put('/products/{id}', [ProductController::class, 'products_update'])->name('products.update');
+Route::get('/generate/product', [ProductController::class, 'products_pdf'])->name('generate.product');
+
 
 Route::post('/supplier/add', [SupplierController::class, 'supplier_add'])->name('add.suppliers');
 Route::get('/supplier/show', [SupplierController::class,'supplier_show'])->name('show.suppliers');
@@ -41,18 +44,20 @@ Route::put('/suppliers/{id}', [SupplierController::class, 'supplier_update'])->n
 Route::delete('/supplier/{id}', [SupplierController::class, 'supplier_delete'])->name('supplier.delete');
 
 Route::get('/customer/show', [CustomerController::class,'customer_show'])->name('show.customers');
+Route::post('/customer/add', [CustomerController::class,'customer_add'])->name('add.customers');
 // Route::post('/supplier/add', [SupplierController::class, 'supplier_add'])->name('add.suppliers');
 // Route::get('suppliers/{id}', [SupplierController::class, 'supplier_edit']);
 // Route::put('/suppliers/{id}', [SupplierController::class, 'supplier_update'])->name('suppliers.update');
 // Route::delete('/supplier/{id}', [SupplierController::class, 'supplier_delete'])->name('supplier.delete');
-
+Route::get('/customer/view/{id}', [CustomerController::class, 'view'])->name('customer.view');
+Route::get('/sales/{id}/detail', [CustomerController::class, 'detail'])->name('sales.detail');
 Route::get('/transaction/show', [TransactionController::class,'transaction_show'])->name('show.transaction');
 Route::post('/store-transaction',[TransactionController::class, 'store_transaction'])->name('transaction.sales');
 Route::delete('/transaction/{id}',[TransactionController::class, 'transaction_delete'])->name('sales.delete');
 Route::post('/sale/store',[TransactionController::class, 'sale_store'])->name('sale.store');
 Route::get('/search-customer', [TransactionController::class, 'search'])->name('search.customer');
 
-Route::get('/customer/invoice/{id}', [TransactionController::class, 'invoice'])->name('pages.customer.invoice');
+Route::get('/customer/invoice/{id?}/{cash?}/{credit?}/{debit?}', [TransactionController::class, 'invoice'])->name('pages.customer.invoice');
 Route::get('generate-pdf/{id}', [TransactionController::class, 'generatePDF'])->name('generate-pdf');
 // Route::get('test',function()
 // {

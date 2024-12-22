@@ -5,7 +5,6 @@
 <!-- Button to Open Modal -->
 
 <!-- Modal -->
-
 <form id="productForm" action="{{route('transaction.sales')}}" method="POST">
   @csrf <!-- Include CSRF token for Laravel -->
   <div class="card-body">
@@ -16,7 +15,7 @@
           <label for="productSelect">Products</label>
           <select id="productSelect" name="product_id" class="form-control select2" style="width: 100%;">
             @foreach($products as $product)
-            <option value="{{ $product->id }}">{{ $product->item_name }} -- Product Price {{ $product->selling_price }}</option>
+            <option value="{{ $product->id }}">Item Code({{ $product->item_code }}) --Product Price ({{ $product->item_name }}) -- Product Price ({{ $product->selling_price }})</option>
             @endforeach
           </select>
         </div>
@@ -30,7 +29,6 @@
           <input type="number" id="quantity" name="quantity" value="1" class="form-control" placeholder="Enter Quantity" min="1">
         </div>
       </div>
-
       <!-- Discount Input -->
       <div class="col-md-4">
         <div class="form-group">
@@ -57,113 +55,126 @@
     </div>
   </div>
 </form>
-
-
 <div class="row">
   <div class="col-12">
     <div class="card">
-
-
-      <!-- /.card-header -->
       <div class="card-body">
         <form action="{{route('sale.store')}}" method="post">
           @csrf
           <table class="table table-bordered w-100">
             <thead class="bg-primary text-white">
-                  <tr>
-                        <th>#Sr.No</th>
-                        <th>Product Name</th>
-                        <th>Product Price</th>
-                        <th>Quantity</th>
-                        <th>Discount</th>
-                        <th>Service Charges</th>
-                        <th>Amount</th>
-                        <th>Actions</th>
-                  </tr>
+              <tr>
+                <th>#Sr.No</th>
+                <th>Product Name</th>
+                <th>Product Price</th>
+                <th>Quantity</th>
+                <th>Discount</th>
+                <th>Service Charges</th>
+                <th>Amount</th>
+                <th>Actions</th>
+              </tr>
             </thead>
             <tbody id="tableHolder">
               @foreach($transactions as $transaction)
               <tr>
-                     <td>{{ $loop->iteration }}
-                      <input type="hidden" value="{{ $transaction->id }}" name="transaction_id[]" id="transaction_id">
-                     </td>
-                      <td>{{ $transaction->products->item_name }}</td>
-                      <td>{{ $transaction->products->selling_price }}</td>
-                      <td>{{ $transaction->quantity }}</td>
-                      <td>{{ $transaction->discount }}</td>
-                      <td>{{ $transaction->service_charges }}</td>
-                      <td>{{ $transaction->total_amount }}</td>
-                       <td>
-                        <a href="javascript:void(0)" class="btn btn-mini btn-warning delete-sale" data-id="{{ $transaction->id }}">
-                          <i class="fas fa-trash"></i> Cancel
-                        </a>
-                    </td>
+                <td>{{ $loop->iteration }}
+                  <input type="hidden" value="{{ $transaction->id }}" name="transaction_id[]" id="transaction_id">
+                </td>
+                  <td>{{ $transaction->products->item_name }}</td>
+                  <td>{{ $transaction->products->selling_price }}</td>
+                  <td>{{ $transaction->quantity }}</td>
+                  <td>{{ $transaction->discount }}</td>
+                  <td>{{ $transaction->service_charges }}</td>
+                  <td>{{ $transaction->total_amount }}</td>
+                <td>
+                  <a href="javascript:void(0)" class="btn btn-mini btn-warning delete-sale" data-id="{{ $transaction->id }}">
+                    <i class="fas fa-trash"></i> Cancel
+                  </a>
+                </td>
+
               </tr>
               @endforeach
+              <td><input type="hidden" name="qty" value="{{$transactions->sum('quantity')}}"></td>
 
-            <tr>
-            <th colspan="7" style="text-align: right; font-weight: bold;">Total Discount:</th>
-            <td colspan="5" style="text-align: right; font-weight: bold;">{{ $transactions->sum('discount') }}
-              <input type="hidden" value="{{ $transactions->sum('discount') }}" name="total_discount" id="total_discount">
-            </td>
-            </tr>
-            <tr>
-              <th colspan="7" style="text-align: right; font-weight: bold;">Total Amount:</th>
-              <td colspan="6" style="text-align: right; font-weight: bold;">{{ $transactions->sum('total_amount') }}
-                <input type="hidden" value="{{ $transactions->sum('total_amount') }}" name="total_amount" id="total_amount">
-              </td>
-            </tr>
-            <tr>
-              <th colspan="8" style=" text-align: center; font-weight: bold;" class="bg-primary"> Customer Detail</th>
-            </tr>
+              <tr>
+                <th colspan="7" style="text-align: right; font-weight: bold;">Total Discount:</th>
+                <td colspan="5" style="text-align: right; font-weight: bold;">{{ $transactions->sum('discount') }}
+                  <input type="hidden" value="{{ $transactions->sum('discount') }}" name="total_discount" id="total_discount">
+                </td>
+              </tr>
+              <tr>
+                <th colspan="7" style="text-align: right; font-weight: bold;">Total Amount:</th>
+                <td colspan="6" style="text-align: right; font-weight: bold;">{{ $transactions->sum('total_amount') }}
+                  <input type="hidden" value="{{ $transactions->sum('total_amount') }}" name="total_amount" id="total_amount">
+                </td>
+              </tr>
+              <tr>
+                <th colspan="8" style="text-align: center; font-weight: bold;" class="bg-primary">Customer Detail</th>
+              </tr>
 
-            <input type="hidden" class="form-control" id="customerId" name="customer_id">
+              <input type="hidden" class="form-control" id="customerId" name="customer_id" value="{{ old('customer_id') }}">
 
-            <tr>
-              <td colspan="8">
-                <div class="form-group ">
-                  <label for="customerName">Name</label>
-                  <input type="text" class="form-control" id="customerName" name="name" placeholder="Enter customer name">
-                  <ul id="customerList" class="list-group"></ul>
-                </div>
+              <tr>
+                <td colspan="8">
+                  <div class="form-group">
+                    <label for="customerName">Name</label>
+                    <input type="text" class="form-control" id="customerName" name="name" placeholder="Enter customer name" value="{{ old('name') }}">
+                    <ul id="customerList"></ul>
+                    @error('name')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
 
+                  <div class="form-group">
+                    <label for="customerCNIC">CNIC</label>
+                    <input type="text" class="form-control" id="customerCNIC" name="cnic" placeholder="Enter CNIC (e.g., 12345-6789012-3)" value="{{ old('cnic') }}">
+                    @error('cnic')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="8">
+                  <div class="form-group">
+                    <label for="customerMobile">Mobile Number</label>
+                    <input type="text" class="form-control" id="customerMobile" name="mobile_number" placeholder="Enter mobile number" value="{{ old('mobile_number') }}">
+                    @error('mobile_number')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
 
-                <div class="form-group">
-                  <label for="customerCNIC">CNIC</label>
-                  <input type="text" class="form-control" id="customerCNIC" name="cnic" placeholder="Enter CNIC (e.g., 12345-6789012-3)">
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="8">
-                <div class="form-group">
-                  <label for="customerMobile">Mobile Number</label>
-                  <input type="text" class="form-control" id="customerMobile" name="mobile_number" placeholder="Enter mobile number">
-                </div>
+                  <div class="form-group">
+                    <label for="customerAddress">Address</label>
+                    <textarea class="form-control" id="customerAddress" rows="3" name="address" placeholder="Enter address">{{ old('address') }}</textarea>
+                    @error('address')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="8">
+                  <div class="form-group">
+                    <label for="Cash">Cash</label>
+                <input type="text" class="form-control" id="Cash" name="cash" value="{{ old('cash')}} " placeholder="Enter the cash" min="0" required>
+                    @error('cash')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
+                </td>
+              </tr>
 
-
-                <div class="form-group">
-                  <label for="customerAddress">Address</label>
-                  <textarea class="form-control" id="customerAddress" rows="3" name="address" placeholder="Enter address"></textarea>
-                </div>
-              </td>
-            </tr>
             </tbody>
-
           </table>
-          <div class="form-group">
-            <label for="Cash">Cash</label>
-            <input type="text" class="form-control" id="Cash" name="cash" placeholder="Enter the cash">
-          </div>
           <div class="d-flex justify-content-center mt-1">
             <button type="submit" class="btn btn-primary w-50" data-toggle="modal" data-target="#customerFormModal">Save</button>
           </div>
         </form>
+
       </div>
     </div>
-    <!-- /.card-body -->
   </div>
-  <!-- /.card -->
 </div>
 </div>
 
@@ -173,16 +184,15 @@
 
     $(document).on('click', '#saveButton', function(e) {
       e.preventDefault();
-
-      // Serialize form data
       const formData = $('#productForm').serialize();
-
-      // Send data to the server via AJAX
       $.ajax({
-        url: $('#productForm').attr('action'), // Form action URL
+        url: $('#productForm').attr('action'),
         method: 'POST',
         data: formData,
         success: function(response) {
+          if (response.status === 'error') {
+            return;
+          }
           let newRow = `
                     <tr>
                         <td>${response.id}</td>
@@ -193,11 +203,9 @@
                     </tr>
                 `;
           $('#tableHolder').append(newRow);
-
           $('#productForm')[0].reset();
-
           let url = "{{ route('show.transaction') }}?t=" + new Date().getTime();
-          refreshtble(url);
+          window.location.href = url;
         },
         error: function(xhr) {
           alert('An error occurred: ' + xhr.responseText);
@@ -206,12 +214,9 @@
     });
     $(document).on('click', '.delete-sale', function() {
       const transactionId = $(this).data('id');
-
-      // Show a confirmation dialog before deletion
-
       Swal.fire({
         title: "Are you sure?",
-        text: "Do you really want to delete this product?",
+        text: "Do you really want to delete this Sale?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d33",
@@ -229,14 +234,11 @@
             success: function(response) {
               Swal.fire({
                 title: "Deleted!",
-                text: "Product deleted successfully!",
+                text: "Sale deleted successfully!",
                 icon: "success",
               });
-
-
-              // Refresh the table after deletion
               let url = "{{ route('show.transaction') }}?t=" + new Date().getTime();
-              refreshtble(url);
+              window.location.href = url;
             },
             error: function(xhr) {
               // Handle errors (e.g., if the product could not be deleted)
@@ -244,32 +246,27 @@
                 icon: "error",
                 title: "Oops...",
                 text: "Something went wrong!",
-                footer: '<a href="#">An error occurred while deleting the category. Please try again.</a>'
+                footer: '<a href="#">An error occurred while deleting the sale. Please try again.</a>'
               });
             }
           });
         } else {
-          // Optional: Handle cancellation (e.g., do nothing)
           Swal.fire({
             title: "Cancelled",
-            text: "The Category is safe.",
+            text: "The Sale is safe.",
             icon: "info"
           });
         }
       });
-
     });
 
     function refreshtble(url) {
       $("#tableHolder").load(url + " #tableHolder > *");
     }
-
-
-
     $('#customerName').on('input', function() {
       var customerName = $(this).val();
-
       if (customerName) {
+
         $.ajax({
           url: "{{ route('search.customer') }}",
           method: 'GET',
@@ -277,7 +274,8 @@
             name: customerName
           },
           success: function(response) {
-            if (response.status === 'success' && response.data ) {
+            console.log(response);
+            if (response.status === 'success' && response.data) {
               var customerListHTML = '';
               response.data.forEach(function(customer) {
                 customerListHTML += `
@@ -289,29 +287,23 @@
                                 ${customer.name}
                             </li>`;
               });
-
               $('#customerList').html(customerListHTML).show();
             } else {
-              // No matching customers - clear fields
               $('#customerCNIC, #customerMobile, #customerCash, #customerAddress').val('');
               $('#customerList').hide();
             }
           },
           error: function() {
-            // Error in fetching - clear fields
             $('#customerCNIC, #customerMobile, #customerCash, #customerAddress,#customerId').val('');
             $('#customerList').hide();
             alert('Error fetching customer data.');
           }
         });
       } else {
-        // Empty input - clear all fields
         $('#customerCNIC, #customerMobile, #customerCash, #customerAddress,#customerId').val('');
         $('#customerList').hide();
       }
     });
-
-    // Select customer from list
     $(document).on('click', '.customer-item', function() {
       $('#customerName').val($(this).text());
       $('#customerCNIC').val($(this).data('cnic'));
@@ -319,11 +311,8 @@
       $('#customerCash').val($(this).data('cash'));
       $('#customerAddress').val($(this).data('address'));
       $('#customerId').val($(this).data('id'));
-
       $('#customerList').hide();
     });
-
-    // Hide list when clicking outside
     $(document).on('click', function(event) {
       if (!$(event.target).closest('#customerName, #customerList').length) {
         $('#customerList').hide();

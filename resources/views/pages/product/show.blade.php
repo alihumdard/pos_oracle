@@ -20,9 +20,9 @@
         <form id="productForm">
           <div class="row">
             <div class="form-group col-lg-6 ">
-              <label for="gen_name">Generic Name</label>
-              <input type="text" name="gen_name" class="form-control" id="gen_name" placeholder="Enter Generic Name">
-              <small class="text-danger d-none" id="genNameError">Generic name is required.</small>
+              <label for="item_code">Item Code</label>
+              <input type="text" name="item_code" class="form-control" id="item_code" placeholder="Enter Item Code">
+              <small class="text-danger d-none" id="itemCodeError">Item code is required.</small>
             </div>
             <div class="form-group col-lg-6">
               <label for="item_name">Item Name</label>
@@ -92,34 +92,45 @@
           </button>
         </div>
       </div>
-
+      
       <!-- /.card-header -->
       <div class="card-body">
-        <table class="table table-hover w-100" id="example1">
-          <thead>
-            <tr>
-              <th>#Sr.No</th>
-              <th>Item Name</th>
-              <th>Original price</th>
-              <th>Selling price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="tableHolder">
-            @foreach($products as $product)
-            <tr>
-              <td>{{ $loop->iteration }}</td>
-              <td>{{ $product->item_name }}</td>
-              <td>{{ $product->original_price }}</td>
-              <td>{{ $product->selling_price }}</td>
-              <td>
-                <a href="javascript:void(0)" class="btn btn-primary edit-product" data-id="{{ $product->id }}">Edit</a>
-                <a href="javascript:void(0)" class="btn btn-danger delete-product" data-id="{{ $product->id }}">Delete</a>
-              </td>
-            </tr>
-            @endforeach
-          </tbody>
-        </table>
+        <div class="container-fluid">
+        <div class="row text-right">
+        <a href="{{route('product_all')}}" class="btn btn-success view-product">
+        <i class="fa fa-box"></i> All Product
+        </a>
+      </div>
+          <table class="table table-hover w-100" id="example1">
+            <thead class="bg-primary">
+              <tr>
+                <th>#Sr.No</th>
+                <th>Item Name</th>
+                <th>Original price</th>
+                <th>Selling price</th>
+                <th>Quantity</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableHolder">
+              @foreach($products as $product)
+              <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $product->item_name }}</td>
+                <td>{{ $product->original_price }}</td>
+                <td>{{ $product->selling_price }}</td>
+                <td>{{ $product->qty }}</td>
+                <td>
+                  <a href="javascript:void(0)" class="btn btn-primary edit-product" data-id="{{ $product->id }}">Edit</a>
+                  <a href="javascript:void(0)" class="btn btn-danger delete-product" data-id="{{ $product->id }}">Delete</a>
+
+                </td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+
       </div>
       <!-- /.card-body -->
     </div>
@@ -148,7 +159,7 @@
 
       $('#nameError').addClass('d-none');
       $('#duplicateError').addClass('d-none');
-      $('#submitBtn').text('Save Product').data('action', 'add'); // Set button action
+      $('#submitBtn').text('Save Product').data('action', 'add');
       $('#addProductModal').modal('show');
     });
     $('#productForm').submit(function(e) {
@@ -158,7 +169,7 @@
       const url = actionType === 'add' ? "{{ route('add.products') }}" : '/products/' + $('#submitBtn').data('id');
       const formData = {
         _token: '{{ csrf_token() }}',
-        gen_name: $('#gen_name').val().trim(),
+        item_code: $('#item_code').val().trim(),
         item_name: $('#item_name').val().trim(),
         selling_price: $('#selling_price').val().trim(),
         original_price: $('#original_price').val().trim(),
@@ -207,6 +218,13 @@
         },
         error: function(xhr) {
           if (xhr.status === 422) {
+            const errors = xhr.responseJSON.errors;
+            Object.keys(errors).forEach(function(key) {
+              const errorElementId = getErrorElementId(key);
+              $('#' + errorElementId).text(errors[key][0]).removeClass('d-none');
+            });
+
+
             Swal.fire({
               icon: "error",
               title: "Oops...",
@@ -260,7 +278,7 @@
           $('#original_price').val(response.original_price);
           $('#selling_price').val(response.selling_price);
           $('#item_name').val(response.item_name);
-          $('#gen_name').val(response.gen_name);
+          $('#item_code').val(response.item_code);
           $('#nameError').addClass('d-none');
           $('#duplicateError').addClass('d-none');
           $('#submitBtn').text('Update Product').data('action', 'edit').data('id', productId);
@@ -277,7 +295,6 @@
     });
     $(document).on('click', '.delete-product', function() {
       const productId = $(this).data('id');
-
       // Show a confirmation dialog before deletion
       Swal.fire({
         title: "Are you sure?",
@@ -306,6 +323,7 @@
               refreshtble(url);
             },
             error: function(xhr) {
+              console.log(xhr);
               Swal.fire({
                 icon: "error",
                 title: "Oops...",
@@ -324,12 +342,22 @@
       });
 
     });
+    $(document).on('click', '.view-product', function() {
+      // alert();
+      $.ajax({
+        url: '/all/products',
+        type: 'get',
+        data: {
+          _token: '{{ csrf_token() }}'
+        },
+      });
 
-    function refreshtble(url) {
-      $("#tableHolder").load(url + " #tableHolder > *");
-    }
+      function refreshtble(url) {
+        $("#tableHolder").load(url + " #tableHolder > *");
+      }
 
 
+    });
   });
 </script>
 
