@@ -27,7 +27,6 @@
             <div class="form-group col-lg-6">
               <label for="item_name">Item Name</label>
               <input type="text" name="item_name" class="form-control" id="item_name" placeholder="Enter Item Name">
-              <small class="text-danger d-none" id="itemNameError">Item name is required.</small>
             </div>
             <div class="form-group col-lg-6">
               <label for="category_id">Category</label>

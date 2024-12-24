@@ -45,7 +45,7 @@
   <div class="col-12">
     <div class="card">
       <div>
-        <h2 class="text-center mt-3">Cutomer Detail</h2>
+        <h2 class="text-center mt-3">Customer Detail</h2>
       </div>
       <div class="row">
         <div class="col text-right">
@@ -97,207 +97,176 @@
 </div>
 
 <script>
-  $(function() {
-    $("#example1").DataTable({
-      "responsive": true,
-      "lengthChange": true,
-      "autoWidth": true,
-      "scrollY": true,
-      "scrollX": false,
-      "buttons": ["excel", "pdf"]
-    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-  });
-  $(document).ready(function() {
-    // Open modal for adding a new category
+ $(function() {
+    // Initializing DataTable
+    initDataTable();
+
+    // Open modal for adding a new customer
     $('#addCustomerBtn').click(function() {
-      $('#addCutomerModalLabel').text('Add New Customer');
-      $('#customerForm')[0].reset(); // Reset form fields
-      $('#nameError').addClass('d-none'); // Hide validation errors
-      $('#duplicateError').addClass('d-none');
-      $('#submitBtn').text('Add Customer').data('action', 'add'); // Set button action
-      $('#addCutomerModal').modal('show');
+        $('#addCutomerModalLabel').text('Add New Customer');
+        $('#customerForm')[0].reset(); // Reset form fields
+        $('#nameError').addClass('d-none'); // Hide validation errors
+        $('#duplicateError').addClass('d-none');
+        $('#submitBtn').text('Add Customer').data('action', 'add'); // Set button action
+        $('#addCutomerModal').modal('show');
     });
 
     // Form submit handler
     $('#customerForm').submit(function(e) {
-      e.preventDefault();
+        e.preventDefault();
 
-      const actionType = $('#submitBtn').data('action');
-      const url = actionType === 'add' ? '{{ route("add.customers") }}' : '/suppliers/' + $('#submitBtn').data('id'); // Dynamic URL for add or update
-      const formData = {
-        _token: '{{ csrf_token() }}',
-        name: $('#name').val().trim(),
-        mobile_no: $('#mobile_no').val().trim(),
-        address: $('#address').val().trim(),
-        cnic: $('#cnic').val().trim(),
-      };
-      // Frontend validation
-      let hasError = false;
+        const actionType = $('#submitBtn').data('action');
+        const url = actionType === 'add' ? '{{ route("add.customers") }}' : '/suppliers/' + $('#submitBtn').data('id'); // Dynamic URL for add or update
+        const formData = {
+            _token: '{{ csrf_token() }}',
+            name: $('#name').val().trim(),
+            mobile_no: $('#mobile_no').val().trim(),
+            address: $('#address').val().trim(),
+            cnic: $('#cnic').val().trim(),
+        };
 
-      // Helper function to map field names to error message IDs
-      function getErrorElementId(key) {
-        // Convert snake_case to camelCase for error IDs
-        return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) + 'Error';
-      }
+        // Frontend validation
+        let hasError = false;
 
-      Object.keys(formData).forEach(function(key) {
-        const value = formData[key];
-        const errorElement = $('#' + getErrorElementId(key)); // Correctly map to error ID
-        console.log(errorElement);
-        if (!value && key !== '_token') {
-          errorElement.removeClass('d-none');
-          hasError = true;
-        } else {
-          errorElement.addClass('d-none');
+        // Helper function to map field names to error message IDs
+        function getErrorElementId(key) {
+            return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) + 'Error';
         }
-      });
 
+        Object.keys(formData).forEach(function(key) {
+            const value = formData[key];
+            const errorElement = $('#' + getErrorElementId(key));
+            if (!value && key !== '_token') {
+                errorElement.removeClass('d-none');
+                hasError = true;
+            } else {
+                errorElement.addClass('d-none');
+            }
+        });
 
-      if (hasError) return;
-      // AJAX request for add or update
-      $.ajax({
-        url: url,
-        type: actionType === 'add' ? 'POST' : 'PUT',
-        data: formData,
-        success: function(response) {
-          if(response.status=='success')
-        {
-          Swal.fire({
-            title: "Good job!",
-            text: actionType === 'add' ? 'Customer added successfully!' : 'Supplier updated successfully!',
-            icon: "success",
-          });
-          $('#addCutomerModal').modal('hide');
-          let url = "{{ route('show.customers') }}?t=" + new Date().getTime();
-          refreshtble(url);
-        }
-        },
-        error: function(xhr) {
-          if (xhr.status === 'error') {
-            alert('Validation error occurred. Please check your inputs.');
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Something went wrong!",
-              footer: '<a href="#">An error occurred. Please try again.</a>'
-            });
-          }
-        },
-      });
-    });
+        if (hasError) return;
 
-
-    function refreshtble(url) {
-      $("#tableHolder").load(url + " #tableHolder > *");
-
-      if ($.fn.DataTable.isDataTable('#example1')) {
-        $('#example1').DataTable().destroy();
-      }
-
-      // Reinitialize the DataTable
-      $("#example1").DataTable({
-        responsive: true,
-        lengthChange: true,
-        autoWidth: true,
-        scrollY: true,
-        scrollX: true,
-        buttons: ["excel", "pdf"]
-      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-
-    }
-
-    // Edit category logic
-    $(document).on('click', '.edit-customer', function() {
-      const supplierId = $(this).data('id');
-      $.ajax({
-        url: '/suppliers/' + supplierId,
-        type: 'GET',
-        success: function(response) {
-          $('#addCutomerModalLabel').text('Edit Supplier');
-
-          $('#customer').val(response.customer);
-          $('#contact_person').val(response.contact_person);
-          $('#address').val(response.address);
-          $('#contact_no').val(response.contact_no);
-          $('#note').val(response.note);
-          $('#nameError').addClass('d-none');
-          $('#duplicateError').addClass('d-none');
-          $('#submitBtn').text('Update Supplier').data('action', 'edit').data('id', supplierId);
-          $('#addCutomerModal').modal('show');
-
-          function refreshtble(url) {
-            $("#tableHolder").load(url + " #tableHolder > *");
-          }
-        },
-        error: function() {
-          alert('Error fetching Supplier details.');
-        },
-      });
-    });
-    $(document).on('click', '.delete-customer', function() {
-      const supplierId = $(this).data('id');
-
-      Swal.fire({
-        title: "Are you sure?",
-        text: "Do you really want to delete this customer?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel!"
-      }).then((result) => {
-        if (result.isConfirmed) {
-          $.ajax({
-            url: '/customer/' + supplierId, // Endpoint for deletion
-            type: 'DELETE', // HTTP DELETE method
-            data: {
-              _token: '{{ csrf_token() }}' // Include CSRF token for security
-            },
+        // AJAX request for add or update
+        $.ajax({
+            url: url,
+            type: actionType === 'add' ? 'POST' : 'PUT',
+            data: formData,
             success: function(response) {
-              Swal.fire({
-                title: "Good job!",
-                text: "Supplier deleted successfully!",
-                icon: "success",
-              });
-
-              // Refresh the table after deletion
-              let url = "{{ route('show.suppliers') }}?t=" + new Date().getTime();
-              refreshtble(url);
+                if(response.status == 'success') {
+                    Swal.fire({
+                        title: "Good job!",
+                        text: actionType === 'add' ? 'Customer added successfully!' : 'Customer updated successfully!',
+                        icon: "success",
+                    });
+                    $('#addCutomerModal').modal('hide');
+                    refreshTable();
+                }
             },
             error: function(xhr) {
-              // Handle errors (e.g., if the customer could not be deleted)
-              Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Something went wrong!",
-                footer: '<a href="#">An error occurred while deleting the customer. Please try again.</a>'
-              });
-            }
-          });
-        } else {
-          // Optional: Handle cancellation (e.g., do nothing)
-          Swal.fire({
-            title: "Cancelled",
-            text: "The customer is safe.",
-            icon: "info"
-          });
-        }
-      });
-
-
-
-
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    if (errors.cnic) {
+                        $('#cnicError').text(errors.cnic[0]).removeClass('d-none');
+                    }
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Something went wrong!",
+                        footer: '<a href="#">An error occurred. Please try again.</a>'
+                    });
+                }
+            },
+        });
     });
 
-    // Function to refresh the table
-    function refreshtble(url) {
-      $("#tableHolder").load(url + " #tableHolder > *");
+    // Refresh the table content and reinitialize DataTable
+    function refreshTable() {
+        $("#tableHolder").load("{{ route('show.customers') }} #tableHolder > *", function() {
+            // Reinitialize DataTable after loading new content
+            initDataTable();
+        });
     }
 
+    // Initialize DataTable function
+    function initDataTable() {
+        if ($.fn.DataTable.isDataTable('#example1')) {
+            // Destroy previous instance of DataTable
+            $('#example1').DataTable().clear().destroy();
+        }
 
-  });
+        // Re-initialize DataTable with options
+        $('#example1').DataTable({
+            responsive: true,
+            lengthChange: true,
+            autoWidth: true,
+            scrollY: true,
+            scrollX: false,
+            buttons: ["excel", "pdf"]
+        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    }
+
+    // Edit customer logic
+    $(document).on('click', '.edit-customer', function() {
+        const customerId = $(this).data('id');
+        $.ajax({
+            url: '/customers/' + customerId,
+            type: 'GET',
+            success: function(response) {
+                $('#addCutomerModalLabel').text('Edit Customer');
+                $('#customerForm')[0].reset();
+                $('#submitBtn').text('Update Customer').data('action', 'edit').data('id', customerId);
+                $('#name').val(response.customer.name);
+                $('#mobile_no').val(response.customer.mobile_number);
+                $('#address').val(response.customer.address);
+                $('#cnic').val(response.customer.cnic);
+                $('#addCutomerModal').modal('show');
+            },
+            error: function() {
+                alert('Error fetching customer details.');
+            },
+        });
+    });
+
+    // Delete customer logic
+    $(document).on('click', '.delete-customer', function() {
+        const customerId = $(this).data('id');
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to delete this customer?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/customers/' + customerId,
+                    type: 'DELETE',
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function(response) {
+                        Swal.fire({
+                            title: "Good job!",
+                            text: "Customer deleted successfully!",
+                            icon: "success",
+                        });
+                        refreshTable();
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Something went wrong while deleting the customer. Please try again.",
+                        });
+                    }
+                });
+            }
+        });
+    });
+});
+
 </script>
 
 @stop

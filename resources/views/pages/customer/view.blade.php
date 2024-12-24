@@ -75,8 +75,9 @@
             </div>
         </div>
     </div>
-    <h5 class="text-center mt-4 mb-4">Manual Payments Detail</h5>
+    <div class="col-12">
     <div class="card w-100">
+        <h5 class="text-center mt-4 mb-4">Manual Payments Detail</h5>
         <table class="table table-hover w-100" id="example1">
             <thead class="bg-primary">
                 <tr>
@@ -99,8 +100,10 @@
             </tbody>
         </table>
     </div>
-    <h5 class="text-center mt-4 mb-4">Sales Detail</h5>
+    </div>
+    <div class="col-12">
     <div class="card w-100">
+        <h5 class="text-center mt-4 mb-4">Sales Detail</h5>
         <table class="table table-hover w-100" id="example1">
             <thead class="bg-primary">
                 <tr>
@@ -127,6 +130,7 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
     </div>
 </div>
 </div>
