@@ -15,7 +15,7 @@ class CustomerController extends Controller
 {
     public function customer_show()
     {
-        $data['customers'] = Customer::orderBy('id', 'DESC')->get();
+        $data['customers'] = Customer::orderBy('created_at', 'desc')->get();
         return view('pages.customer.show', $data);
     }
     public function view($id)
@@ -24,18 +24,7 @@ class CustomerController extends Controller
             $query->orderBy('created_at', 'desc');
         }])->findOrFail($id);
         $data['customer'] = Customer::with('sales')->findOrFail($id);
-        // dd($data['customer']);
-        $data['sales'] = Sale::where('customer_id', $id)->get();
-        // dd($data['sales']);
-        // $transactionIds = $data['customer']->sales->pluck('transaction_id');
-        // $flattenedTransactionIds = $transactionIds
-        //     ->map(function ($item) {
-        //         return json_decode($item, true);
-        //     })
-        //     ->flatten()
-        //     ->unique();
-        // $data['transactions'] = Transaction::with(['products'])->whereIn('id', $flattenedTransactionIds)->get();
-        // dd($data['transactions']);
+        $data['sales'] = Sale::where('customer_id', $id)->orderBy('created_at', 'desc')->get();
         return view('pages.customer.view', $data);
     }
     public function detail($id)
@@ -43,14 +32,14 @@ class CustomerController extends Controller
         $sale = Sale::findOrFail($id);
         $transactionIds = json_decode($sale->transaction_id, true);
         $data['transactions'] = Transaction::with('products')->whereIn('id', $transactionIds)->get();
-        
+
         return view('pages.sales.detail', $data);
     }
     public function customer_add(Request $request)
     {
         if ($request->action != 'youGot' && $request->action != 'youGive') {
             $validator = Validator::make($request->all(), [
-                'cnic' => 'required|string|max:15',
+                'cnic' => 'required|string|max:15|unique:customers,cnic',
                 'address' => 'required|string|max:255',
                 'name' => 'required|string|max:100',
                 'mobile_no' => 'required',

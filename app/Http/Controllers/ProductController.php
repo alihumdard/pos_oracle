@@ -38,7 +38,7 @@ class ProductController extends Controller
     // Validate input fields
     $request->validate([
       'item_code' => 'required|string|max:255|unique:products,item_code',
-      'item_name' => 'required|string|max:255|unique:products,item_name',
+      'item_name' => 'required|string|max:255',
       'selling_price' => 'required|numeric',
       'original_price' => 'required|numeric',
       'qty' => 'required|numeric',
