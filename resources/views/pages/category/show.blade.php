@@ -88,10 +88,10 @@ $(document).ready(function () {
   // Open modal for adding a new category
   $('#addCategoryBtn').click(function () {
     $('#addCategoryModalLabel').text('Add New Category');
-    $('#categoryForm')[0].reset(); // Reset form fields
-    $('#nameError').addClass('d-none'); // Hide validation errors
+    $('#categoryForm')[0].reset(); 
+    $('#nameError').addClass('d-none'); 
     $('#duplicateError').addClass('d-none');
-    $('#submitBtn').text('Save Category').data('action', 'add'); // Set button action
+    $('#submitBtn').text('Save Category').data('action', 'add'); 
     $('#addCategoryModal').modal('show');
   });
 
@@ -101,7 +101,7 @@ $(document).ready(function () {
 
     const actionType = $('#submitBtn').data('action');
     const categoryName = $('#categoryName').val().trim();
-    const url = actionType === 'add' ? '{{ route('add.categories') }}' : '/categories/' + $('#submitBtn').data('id'); // Dynamic URL for add or update
+    const url = actionType === 'add' ? '{{ route("add.categories") }}' : '/categories/' + $('#submitBtn').data('id'); // Dynamic URL for add or update
 
     // Frontend validation
     if (!categoryName) {
@@ -134,10 +134,10 @@ $(document).ready(function () {
         if(xhr.status === 422) { 
           $('#duplicateError').removeClass('d-none');
           Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Something went wrong!",
-      footer: '<a href="#">Validation error occurred. Please check your inputs</a>'
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+            footer: '<a href="#">Validation error occurred. Please check your inputs</a>'
     });
         } 
         else{
@@ -158,7 +158,6 @@ $(document).ready(function () {
     if ($.fn.DataTable.isDataTable('#example1')) {
         $('#example1').DataTable().destroy();
     }
-
     // Reinitialize the DataTable
     $("#example1").DataTable({
         responsive: true,

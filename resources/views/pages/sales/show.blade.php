@@ -5,6 +5,7 @@
 <!-- Button to Open Modal -->
 
 <!-- Modal -->
+
 <form id="productForm" action="{{route('transaction.sales')}}" method="POST">
   @csrf <!-- Include CSRF token for Laravel -->
   <div class="card-body">
@@ -61,7 +62,7 @@
       <div class="card-body">
         <form action="{{route('sale.store')}}" method="post">
           @csrf
-          <table class="table table-bordered w-100">
+          <table class="table table-bordered w-100" id="example1">
             <thead class="bg-primary text-white">
               <tr>
                 <th>#Sr.No</th>
@@ -176,9 +177,21 @@
     </div>
   </div>
 </div>
-</div>
 
+@stop
+@pushOnce('scripts')
 <script>
+   $(function() {
+    $("#example1").DataTable({
+      "responsive": true,
+      "lengthChange": true,
+      "autoWidth": true,
+      "scrollY": true,
+      "scrollX": true,
+      "buttons": ["excel", "pdf"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+  });
+
   $(document).ready(function() {
 
 
@@ -322,5 +335,4 @@
 
   });
 </script>
-
-@stop
+@endPushOnce
