@@ -51,3 +51,5 @@
       <script src="{{asset('assets/plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
       <script src="{{asset('assets/dist/js/adminlte.min.js')}}"></script>
       <script src="{{asset('assets/dist/js/demo.js')}}"></script>
+      {{-- select2 --}}
+      <script src="{{asset('assets/plugins/select2/js/select2.full.min.js')}}"></script>
