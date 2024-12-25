@@ -23,7 +23,9 @@
   <!-- Toastr -->
   <link rel="stylesheet" href="{{asset('assets/plugins/toastr/toastr.min.css')}}">
   <link rel="stylesheet" href="{{asset('assets/dist/css/adminlte.min.css')}}">
- 
+  {{-- select2 --}}
+  <link rel="stylesheet" href="{{asset('assets/plugins/select2/css/select2.min.css')}}">
+  <link rel="stylesheet" href="{{asset('assets/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
   <!-- Font Awesome CDN for icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
