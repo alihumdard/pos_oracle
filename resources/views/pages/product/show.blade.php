@@ -105,6 +105,7 @@
               <tr>
                 <th>#Sr.No</th>
                 <th>Item Name</th>
+                <th>Item Code</th>
                 <th>Original price</th>
                 <th>Selling price</th>
                 <th>Quantity</th>
@@ -116,6 +117,7 @@
               <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $product->item_name }}</td>
+                <td>{{ $product->item_code }}</td>
                 <td>{{ $product->original_price }}</td>
                 <td>{{ $product->selling_price }}</td>
                 <td>{{ $product->qty }}</td>
