@@ -52,7 +52,11 @@ class TransactionController extends Controller
     }
     public function transaction_delete($id)
     {
-        $transaction = Transaction::findOrFail($id);
+        $transaction   = Transaction::findOrFail($id);
+        $product       = Product::find($transaction->product_id);
+        $product->qty += $transaction->quantity;
+        $product->save();
+
         $transaction->delete();
         return response()->json(['message' => ' deleted successfully!']);
     }
@@ -114,13 +118,13 @@ class TransactionController extends Controller
             $customer->address = $request->address;
             $customer->name = $request->name;
             $customer->mobile_number = $request->mobile_number;
-            $previous_credit=$customer->credit;
-            $previous_debit=$customer->debit;
+            $previous_credit = $customer->credit;
+            $previous_debit = $customer->debit;
             if ($request->total_amount > $request->cash) {
                 $customer->credit += $request->total_amount - $request->cash;
             } else {
                 $customer->debit += $request->cash - $request->total_amount;
-            }    
+            }
             if ($customer->debit) {
                 if ($customer->credit >= $customer->debit) {
                     $customer->credit -= $customer->debit;
@@ -131,7 +135,7 @@ class TransactionController extends Controller
                 }
             }
             $customer->save();
-            return redirect()->route('pages.customer.invoice', ['id' => $sale->id, 'cash' => $request->cash,'credit'=> $previous_credit,'debit'=>$previous_debit]);
+            return redirect()->route('pages.customer.invoice', ['id' => $sale->id, 'cash' => $request->cash, 'credit' => $previous_credit, 'debit' => $previous_debit]);
         } else {
             $transactionIds = [];
             $sale = new Sale();
@@ -155,8 +159,8 @@ class TransactionController extends Controller
             $customer->address = $request->address;
             $customer->name = $request->name;
             $customer->mobile_number = $request->mobile_number;
-            $previous_credit=0;
-            $previous_debit=0;
+            $previous_credit = 0;
+            $previous_debit = 0;
             if ($request->total_amount > $request->cash) {
                 $customer->credit += $request->total_amount - $request->cash;
             } else {
@@ -174,10 +178,10 @@ class TransactionController extends Controller
             $customer->save();
             $sale->customer_id = $customer->id;
             $sale->save();
-            return redirect()->route('pages.customer.invoice', ['id' => $sale->id,'cash' => $request->cash,'credit'=> $previous_credit,'debit'=>$previous_debit]);
+            return redirect()->route('pages.customer.invoice', ['id' => $sale->id, 'cash' => $request->cash, 'credit' => $previous_credit, 'debit' => $previous_debit]);
         }
     }
-    public function invoice($id = null, $cash = null,$credit=null,$debit=null)
+    public function invoice($id = null, $cash = null, $credit = null, $debit = null)
     {
         $data['sale'] = Sale::with('customers')->findOrFail($id);
         // dd($data['sale']);
