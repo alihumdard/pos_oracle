@@ -75,11 +75,22 @@
                                         <h1 class="heading mt-3">Rana Electronics Invoice</h1>
                                     </div>
                                 </div>
-
+                                @php
+                                
+                                $mytime = Carbon\Carbon::now();
+                                $mytime->toDateTimeString();
+                                @endphp
+                                <div class="row">
+                                    <div class="col-6 text-start">
+                                        <h5 class="mb-0">Date: {{date('d-m-Y')}}</h5>
+                                        <h3 class="mt-1"></h3>
+                                    </div>
+                                    </div>
+                                    
                                 <div class="row">
                                     <div class="col-6 text-start">
                                         <h5 class="mb-0">Chief Executive</h5>
-                                        <h3 class="mt-1">USAMA RANA</h3>
+                                        <h5 class="mt-1">USAMA RANA</h5>
                                     </div>
                                     <div class="col-6 text-end">
                                         <h4 class="mb-0">Mobile Number</h4>
