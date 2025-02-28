@@ -45,6 +45,8 @@ Route::delete('/supplier/{id}', [SupplierController::class, 'supplier_delete'])-
 
 Route::get('/customer/show', [CustomerController::class,'customer_show'])->name('show.customers');
 Route::post('/customer/add', [CustomerController::class,'customer_add'])->name('add.customers');
+Route::get('/customer/filter', [CustomerController::class,'customer_filter'])->name('customer.filter');
+
 // Route::post('/supplier/add', [SupplierController::class, 'supplier_add'])->name('add.suppliers');
 // Route::get('suppliers/{id}', [SupplierController::class, 'supplier_edit']);
 // Route::put('/suppliers/{id}', [SupplierController::class, 'supplier_update'])->name('suppliers.update');

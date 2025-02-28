@@ -1,8 +1,76 @@
 @extends('index')
-
+<style>
+  body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f7fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+  }
+  form {
+    border: 2px solid blue;
+      background: white;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      max-width: 100%;
+      margin-left: 10%;
+  }
+  select, input[type="checkbox"], button {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: all 0.3s ease-in-out;
+  }
+  select {
+      cursor: pointer;
+  }
+  .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+  input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 5px;
+      accent-color: #007bff;
+  }
+  button {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      cursor: pointer;
+      border: none;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: transform 0.2s ease-in-out; 
+      text-align: center;
+  }
+  button:hover {
+      background: linear-gradient( #0056b3, #004494);
+      transform: scale(1.05);
+  }
+  @media (max-width: 768px) {
+      form {
+          flex-direction: column;
+          align-items: flex-start;
+      }
+      button {
+          width: 100%;
+      }
+  }
+</style>
 @section('content')
 
-<div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel" aria-hidden="true">
+<div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -34,20 +102,37 @@
             <input type="text" name="address" class="form-control" id="address" placeholder="Enter Address">
             <small class="text-danger d-none" id="addressError">Address is required.</small>
           </div>
-        
+
           <button type="submit" class="btn btn-primary" id="submitBtn" data-action="add">Save Customer</button>
         </form>
       </div>
     </div>
   </div>
 </div>
+
 <div class="row mt-5">
   <div class="col-12">
-    <div class="card">
+    <div class="card ">
       <div>
         <h2 class="text-center mt-3">Customer Detail</h2>
       </div>
-      <div class="row">
+      <div class="row ">
+        <form action="{{ route('customer.filter') }}" method="GET">
+          @csrf
+          <label>Sort By:</label>
+          <select name="sort_order">
+              <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
+              <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
+          </select>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}> Debit</label>
+            <label><input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}> Credit</label>
+            <label><input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}> Hide Zero Balance</label>
+        </div>
+          <button type="submit">Apply Filter</button>
+      </form>
+      
+      
         <div class="col text-right">
           <button type="button" class="btn btn-primary" id="addCustomerBtn">
             Add Customer
@@ -58,37 +143,36 @@
 
         <table class="table table-hover w-100" id="example1">
           <thead class="bg-primary">
-            <tr>
-              <th>#Sr.No</th>
-              <th>Customer Name</th>
-              <th>Mobile Number</th>
-              <th>Address</th>
-              <th>CNIC</th>
-              <th>Debit</th>
-              <th>Credit</th>
-              <th colspan="3">Actions</th>
-            </tr>
+              <tr>
+                  <th>#Sr.No</th>
+                  <th>Customer Name</th>
+                  <th>Mobile Number</th>
+                  <th>Address</th>
+                  <th>CNIC</th>
+                  <th>Debit</th>
+                  <th>Credit</th>
+                  <th>Actions</th> <!-- Removed colspan="3" -->
+              </tr>
           </thead>
           <tbody id="tableHolder">
-            @foreach($customers as $customer)
-            <tr>
-              <td>{{ $loop->iteration }}</td>
-              <td>{{ $customer->name }}</td>
-              <td>{{ $customer->mobile_number }}</td>
-              <td>{{ $customer->address }}</td>
-              <td>{{ $customer->cnic }}</td>
-              <td>{{ $customer->debit }}</td>
-              <td>{{ $customer->credit }}</td>
-
-              <td>
-                <a href="{{ route('customer.view', ['id' => $customer->id]) }}" class="btn btn-sm btn-primary">
-                  <i class="fa fa-eye"></i> View
-                </a>
-              </td>
-            </tr>
-            @endforeach
+              @foreach($customers as $customer)
+              <tr>
+                  <td>{{ $loop->iteration }}</td>
+                  <td>{{ $customer->name }}</td>
+                  <td>{{ $customer->mobile_number }}</td>
+                  <td>{{ $customer->address }}</td>
+                  <td>{{ $customer->cnic }}</td>
+                  <td>{{ $customer->debit }}</td>
+                  <td>{{ $customer->credit }}</td>
+                  <td>
+                      <a href="{{ route('customer.view', ['id' => $customer->id]) }}" class="btn btn-sm btn-primary">
+                          <i class="fa fa-eye"></i> View
+                      </a>
+                  </td>
+              </tr>
+              @endforeach
           </tbody>
-        </table>
+      </table>
       </div>
       <!-- /.card-body -->
     </div>
@@ -97,7 +181,7 @@
 </div>
 
 <script>
- $(function() {
+$(function() {
     // Initializing DataTable
     initDataTable();
 
@@ -190,20 +274,25 @@
 
     // Initialize DataTable function
     function initDataTable() {
-        if ($.fn.DataTable.isDataTable('#example1')) {
-            // Destroy previous instance of DataTable
-            $('#example1').DataTable().clear().destroy();
-        }
+        // Check agar table exist karti hai tab hi DataTable initialize karo
+        if ($('#example1').length) {
+            if ($.fn.DataTable.isDataTable('#example1')) {
+                // Destroy previous instance of DataTable
+                $('#example1').DataTable().clear().destroy();
+            }
 
-        // Re-initialize DataTable with options
-        $('#example1').DataTable({
-            responsive: true,
-            lengthChange: true,
-            autoWidth: true,
-            scrollY: true,
-            scrollX: false,
-            buttons: ["excel", "pdf"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            // Re-initialize DataTable with options
+            $('#example1').DataTable({
+                responsive: true,
+                lengthChange: true,
+                autoWidth: true,
+                scrollY: true,
+                scrollX: false,
+                // buttons: ["excel", "pdf"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        } else {
+            console.log('Table #example1 not found in DOM, skipping initialization');
+        }
     }
 
     // Edit customer logic

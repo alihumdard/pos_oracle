@@ -144,4 +144,31 @@ class CustomerController extends Controller
 
         return response()->json(['message' => 'Customer deleted successfully!']);
     }
+    public function customer_filter(Request $request)
+    {
+        $query = Customer::query();
+        $sortOrder = $request->input('sort_order', 'asc');
+    
+        // Apply sorting based on filters
+        if ($request->has('filter_debit')) {
+            $query->orderBy('debit', $sortOrder); // Sort debit column based on sort_order
+        }
+    
+        if ($request->has('filter_credit')) {
+            $query->orderBy('credit', $sortOrder); // Sort credit column based on sort_order
+        }
+    
+        // Hide zero balance SIRF jab checkbox ticked ho
+        if ($request->has('hide_zero_balance')) {
+            $query->where(function ($q) {
+                $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
+            });
+        }
+    
+        // Fetch the filtered and sorted data
+        $data['customers'] = $query->get();
+    
+        // Return to view with filtered data
+        return view('pages.customer.show', $data);
+    }
 }
