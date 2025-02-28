@@ -50,7 +50,7 @@ Route::get('/customer/filter', [CustomerController::class,'customer_filter'])->n
 // Route::post('/supplier/add', [SupplierController::class, 'supplier_add'])->name('add.suppliers');
 // Route::get('suppliers/{id}', [SupplierController::class, 'supplier_edit']);
 // Route::put('/suppliers/{id}', [SupplierController::class, 'supplier_update'])->name('suppliers.update');
-// Route::delete('/supplier/{id}', [SupplierController::class, 'supplier_delete'])->name('supplier.delete');
+Route::delete('/supplier/{id}', [SupplierController::class, 'supplier_delete'])->name('supplier.delete');
 Route::get('/customer/view/{id}', [CustomerController::class, 'view'])->name('customer.view');
 Route::get('/sales/{id}/detail', [CustomerController::class, 'detail'])->name('sales.detail');
 Route::get('/transaction/show', [TransactionController::class,'transaction_show'])->name('show.transaction');
