@@ -19,6 +19,7 @@ class TransactionController extends Controller
     }
     public function store_transaction(Request $request)
     {
+        
         $total_amount = 0;
         $product = Product::find($request->product_id);
         if ($product->qty < $request->quantity) {
@@ -31,11 +32,11 @@ class TransactionController extends Controller
         $product->save();
         $amount_product = $product->selling_price * $request->quantity;
         $amount         = $amount_product + $request->service ?? 0;
-        $total_amount   = $amount - $request->discount ?? 0;
+        $total_amount   = $amount - ($request->discount * $request->quantity) ?? 0;
         $transaction    = Transaction::create([
             'product_id'      => $request->product_id,
             'quantity'        => $request->quantity,
-            'discount'        => $request->discount ?? 0,
+            'discount'        => $request->discount * $request->quantity ?? 0,
             'service_charges' => $request->service ?? 0,
             'amount'          => $amount_product,
             'total_amount'    => $total_amount,
@@ -73,6 +74,7 @@ class TransactionController extends Controller
     }
     public function sale_store(Request $request)
     {
+        // dd($request->all());
         if ($request->id && !empty($request->note)) {
             $sale_id = Sale::findorfail($request->id);
             $sale_id->update([
@@ -83,13 +85,13 @@ class TransactionController extends Controller
             );
         }
         $rules = [
-            'name' => 'required',
-            'mobile_number' => 'required',
-            'address' => 'required',
+            // 'name' => 'required',
+            // 'mobile_number' => 'required',
+            // 'address' => 'required',
             'cash' => 'required',
         ];
-        if (empty($request->customer_id)) {
-            $rules['cnic'] = 'required|unique:customers,cnic';
+        if (!empty($request->customer_id)) {
+            $rules['cnic'] = 'unique:customers,cnic';
         }
         $request->validate($rules);
         $data['transactions'] = Transaction::where('status', 'active')->get();
@@ -100,7 +102,7 @@ class TransactionController extends Controller
                 $transactionIds[] = $transactionId;
             }
             $sale->transaction_id = json_encode($transactionIds);
-            $sale->customer_id = $request->customer_id;
+            $sale->customer_id = $request->customer_id ?? '';
             $sale->total_discount = $request->total_discount;
             $sale->cash = $request->cash;
             $sale->total_amount = $request->total_amount;
@@ -114,12 +116,12 @@ class TransactionController extends Controller
                 }
             }
             $customer = Customer::findOrFail($request->customer_id);
-            $customer->cnic = $request->cnic;
-            $customer->address = $request->address;
-            $customer->name = $request->name;
-            $customer->mobile_number = $request->mobile_number;
-            $previous_credit = $customer->credit;
-            $previous_debit = $customer->debit;
+            $customer->cnic = $request->cnic ?? '';
+            $customer->address = $request->address ?? '';
+            $customer->name = $request->name ?? '';
+            $customer->mobile_number = $request->mobile_number ??'';
+            $previous_credit = $customer->credit ?? '';
+            $previous_debit = $customer->debit ?? '';
             if ($request->total_amount > $request->cash) {
                 $customer->credit += $request->total_amount - $request->cash;
             } else {
@@ -155,10 +157,10 @@ class TransactionController extends Controller
                     ]);
                 }
             }
-            $customer->cnic = $request->cnic;
-            $customer->address = $request->address;
-            $customer->name = $request->name;
-            $customer->mobile_number = $request->mobile_number;
+            $customer->cnic = $request->cnic ?? '';
+            $customer->address = $request->address ?? '';
+            $customer->name = $request->name ?? '';
+            $customer->mobile_number = $request->mobile_number ?? '';
             $previous_credit = 0;
             $previous_debit = 0;
             if ($request->total_amount > $request->cash) {
@@ -176,7 +178,7 @@ class TransactionController extends Controller
                 }
             }
             $customer->save();
-            $sale->customer_id = $customer->id;
+            $sale->customer_id = $customer->id ?? '';
             $sale->save();
             return redirect()->route('pages.customer.invoice', ['id' => $sale->id, 'cash' => $request->cash, 'credit' => $previous_credit, 'debit' => $previous_debit]);
         }
