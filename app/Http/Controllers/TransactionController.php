@@ -90,7 +90,7 @@ class TransactionController extends Controller
             // 'address' => 'required',
             'cash' => 'required',
         ];
-        if (!empty($request->customer_id)) {
+        if (empty($request->customer_id)) {
             $rules['cnic'] = 'unique:customers,cnic';
         }
         $request->validate($rules);

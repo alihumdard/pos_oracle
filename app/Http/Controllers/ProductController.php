@@ -17,13 +17,14 @@ class ProductController extends Controller
 
     $data['products'] = Product::orderBy('id', 'DESC')->get();
     // $data['suppliers'] = Supplier::all();
-    $data['categories'] = Category::all();
     $data['suppliers'] = Supplier::all();
+    $data['categories'] = Category::all();
     return view('pages.product.show',  $data);
   }
   public function product_all()
   {
     $data['products'] = Product::all();
+    $data['suppliers'] = Supplier::all();
     return view('pages.product.all_product', $data);
   }
   public function products_pdf()
@@ -61,8 +62,8 @@ class ProductController extends Controller
   }
   public function product_delete($id)
   {
-        $product = Product::findOrFail($id);
-        $product->delete();
+    $product = Product::findOrFail($id);
+    $product->delete();
 
     return response()->json(['message' => 'Product deleted successfully!']);
   }
@@ -95,5 +96,23 @@ class ProductController extends Controller
     $product->save();
 
     return response()->json(['message' => 'Product updated successfully!'], 200);
+  }
+  public function supplier_category_filter(Request $request)
+  {
+    $data['suppliers'] = Supplier::all();
+    $data['categories'] = Category::all();
+    $query = Product::query();
+    if ($request->filled('supplier_id')) {
+      $query->where('supplier_id', $request->supplier_id);
+    }
+
+    // Filter by category
+    if ($request->filled('category_id')) {
+      $query->where('category_id', $request->category_id);
+    }
+
+    $data['products'] =$query->orderBy('id','DESC')->get();
+    return view('pages.product.show',  $data);
+    
   }
 }

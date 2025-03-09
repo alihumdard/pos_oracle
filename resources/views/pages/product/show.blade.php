@@ -1,12 +1,91 @@
 @extends('index')
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
 
+  form {
+    border: 2px solid blue;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    max-width: 100%;
+    margin-left: 10%;
+  }
+
+  select,
+  input[type="checkbox"],
+  button {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  select {
+    cursor: pointer;
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 5px;
+    accent-color: #007bff;
+  }
+
+  button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: transform 0.2s ease-in-out;
+    text-align: center;
+  }
+
+  button:hover {
+    background: linear-gradient(#0056b3, #004494);
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    form {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+</style>
 @section('content')
 
 <!-- Button to Open Modal -->
 
 
 <!-- Modal -->
-<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel" aria-hidden="true">
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+  aria-hidden="true">
   <div class=" modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -51,12 +130,14 @@
 
             <div class="form-group col-lg-6">
               <label for="selling_price">Selling Price</label>
-              <input type="number" name="selling_price" class="form-control" id="selling_price" placeholder="Enter Selling Price">
+              <input type="number" name="selling_price" class="form-control" id="selling_price"
+                placeholder="Enter Selling Price">
               <small class="text-danger d-none" id="sellingPriceError">Selling price is required.</small>
             </div>
             <div class="form-group col-lg-6">
               <label for="original_price">Original Price</label>
-              <input type="number" name="original_price" class="form-control" id="original_price" placeholder="Enter Original Price">
+              <input type="number" name="original_price" class="form-control" id="original_price"
+                placeholder="Enter Original Price">
               <small class="text-danger d-none" id="originalPriceError">Original price is required.</small>
             </div>
 
@@ -78,6 +159,28 @@
 </div>
 
 <div class="row mt-5">
+  <form action="{{ route('supplier_category.filter') }}" method="GET">
+    <div class="filter-group">
+        <label>Supplier:
+            <select name="supplier_id" class="select2 w-100" >
+             <option value=""></option>
+             @foreach($suppliers ?? [] as $supplier)
+             <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
+             @endforeach
+            </select>
+        </label>
+        
+        <label>Category:
+            <select name="category_id" class="select2 w-100">
+                <option value=""></option>
+                @foreach($categories ?? [] as $category)
+                    <option value="{{ $category->id }}" >{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </label>
+    </div>
+    <button type="submit">Apply Filter</button>
+</form>
   <div class="col-12">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
@@ -91,15 +194,15 @@
           </button>
         </div>
       </div>
-      
+
       <!-- /.card-header -->
       <div class="card-body">
         <div class="container-fluid">
-        <div class="row text-right">
-        <a href="{{route('product_all')}}" class="btn btn-success view-product">
-        <i class="fa fa-box"></i> All Product
-        </a>
-      </div>
+          <div class="row text-right">
+            <a href="{{route('product_all')}}" class="btn btn-success view-product">
+              <i class="fa fa-box"></i> All Product
+            </a>
+          </div>
           <table class="table table-hover w-100" id="example1">
             <thead class="bg-primary">
               <tr>
@@ -122,8 +225,10 @@
                 <td>{{ $product->selling_price }}</td>
                 <td>{{ $product->qty }}</td>
                 <td>
-                  <a href="javascript:void(0)" class="btn btn-primary edit-product" data-id="{{ $product->id }}">Edit</a>
-                  <a href="javascript:void(0)" class="btn btn-danger delete-product" data-id="{{ $product->id }}">Delete</a>
+                  <a href="javascript:void(0)" class="btn btn-primary edit-product"
+                    data-id="{{ $product->id }}">Edit</a>
+                  <a href="javascript:void(0)" class="btn btn-danger delete-product"
+                    data-id="{{ $product->id }}">Delete</a>
 
                 </td>
               </tr>
@@ -264,6 +369,15 @@
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
     }
+    $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+  });
 
     // Edit category logic
     $(document).on('click', '.edit-product', function() {
