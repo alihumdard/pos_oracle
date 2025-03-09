@@ -35,6 +35,7 @@ Route::get('/all/products',[ProductController::class,'product_all'])->name('prod
 Route::get('products/{id}', [ProductController::class, 'product_edit']);
 Route::put('/products/{id}', [ProductController::class, 'products_update'])->name('products.update');
 Route::get('/generate/product', [ProductController::class, 'products_pdf'])->name('generate.product');
+Route::get('/supplier/category/filter', [ProductController::class,'supplier_category_filter'])->name('supplier_category.filter');
 
 
 Route::post('/supplier/add', [SupplierController::class, 'supplier_add'])->name('add.suppliers');
