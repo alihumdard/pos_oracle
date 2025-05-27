@@ -62,6 +62,7 @@ Route::get('/search-customer', [TransactionController::class, 'search'])->name('
 
 Route::get('/customer/invoice/{id?}/{cash?}/{credit?}/{debit?}', [TransactionController::class, 'invoice'])->name('pages.customer.invoice');
 Route::get('generate-pdf/{id}', [TransactionController::class, 'generatePDF'])->name('generate-pdf');
+Route::get('/invoice/{id}/{cash?}/{credit?}/{debit?}', [CustomerController::class, 'showInvoice'])->name('invoice.show');
 // Route::get('test',function()
 // {
 // return view('pages.customer.pdf_generate');
