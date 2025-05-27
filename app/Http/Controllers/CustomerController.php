@@ -16,6 +16,7 @@ class CustomerController extends Controller
     public function customer_show()
     {
         $data['customers'] = Customer::orderBy('created_at', 'desc')->get();
+        $data['sales'] = Sale::with('customers')->orderBy('created_at', 'desc')->get();
         return view('pages.customer.show', $data);
     }
     public function view($id)
@@ -149,26 +150,32 @@ class CustomerController extends Controller
         $query = Customer::query();
         $sortOrder = $request->input('sort_order', 'asc');
     
-        // Apply sorting based on filters
         if ($request->has('filter_debit')) {
-            $query->orderBy('debit', $sortOrder); // Sort debit column based on sort_order
+            $query->orderBy('debit', $sortOrder); 
         }
     
         if ($request->has('filter_credit')) {
-            $query->orderBy('credit', $sortOrder); // Sort credit column based on sort_order
+            $query->orderBy('credit', $sortOrder); 
         }
-    
-        // Hide zero balance SIRF jab checkbox ticked ho
+
         if ($request->has('hide_zero_balance')) {
             $query->where(function ($q) {
                 $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
             });
         }
-    
-        // Fetch the filtered and sorted data
+
         $data['customers'] = $query->get();
     
-        // Return to view with filtered data
         return view('pages.customer.show', $data);
+    } 
+
+    public function showInvoice($id, $cash = null, $credit = null, $debit = null)
+    {
+        $sale = Sale::with('customers')->findOrFail($id);
+        $transaction_ids = json_decode($sale->transaction_id);
+        $invoices = Transaction::with('products')
+            ->whereIn('id', $transaction_ids)
+            ->get();
+        return view('pages.customer.invoice', compact('sale', 'cash', 'credit', 'debit', 'invoices'));
     }
 }

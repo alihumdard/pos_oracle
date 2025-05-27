@@ -82,6 +82,7 @@
               </tr>
             </thead>
             <tbody id="tableHolder">
+             
               @foreach($transactions as $transaction)
               <tr>
                 <td>{{ $loop->iteration }}
@@ -300,15 +301,17 @@
     function refreshtble(url) {
       $("#tableHolder").load(url + " #tableHolder > *");
     }
-    $('#customerName').on('input', function() {
-      var customerName = $(this).val();
-      if (customerName) {
+    $('#customerName, #customerMobile').on('input', function() {
+     var customerName = $('#customerName').val();
+  var customerMobile = $('#customerMobile').val();
+      if (customerName || customerMobile) {
 
         $.ajax({
           url: "{{ route('search.customer') }}",
           method: 'GET',
           data: {
-            name: customerName
+            name: customerName,
+            mobile_number: customerMobile
           },
           success: function(response) {
             console.log(response);

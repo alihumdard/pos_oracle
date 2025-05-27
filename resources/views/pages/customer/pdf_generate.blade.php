@@ -163,6 +163,7 @@
                     <h3 class="mt-1">USAMA RANA</h3>
                 </div>
                 <div class="col-6 text-end">
+                    <h4 class="mb-0">Invoice Number : 0000{{ $sale->id }}</h4>
                     <h4 class="mb-0">Mobile Number</h4>
                     <h5 class="mt-1">03007667440</h4>
                         <h5 class="mt-2">03218991304</h4>

@@ -155,18 +155,22 @@
               </tr>
           </thead>
           <tbody id="tableHolder">
-              @foreach($customers as $customer)
+              @foreach($sales as $sale)
               <tr>
                   <td>{{ $loop->iteration }}</td>
-                  <td>{{ $customer->name }}</td>
-                  <td>{{ $customer->mobile_number }}</td>
-                  <td>{{ $customer->address }}</td>
-                  <td>{{ $customer->cnic }}</td>
-                  <td>{{ $customer->debit }}</td>
-                  <td>{{ $customer->credit }}</td>
+                  <td>{{ $sale->customers->name }}</td>
+                  <td>{{ $sale->customers->mobile_number }}</td>
+                  <td>{{ $sale->customers->address }}</td>
+                  <td>{{ $sale->customers->cnic }}</td>
+                  <td>{{ $sale->customers->debit }}</td>
+                  <td>{{ $sale->customers->credit }}</td>
+                  
                   <td>
-                      <a href="{{ route('customer.view', ['id' => $customer->id]) }}" class="btn btn-sm btn-primary">
+                      <a href="{{ route('customer.view', ['id' =>  $sale->customers->id]) }}" class="btn btn-sm btn-primary">
                           <i class="fa fa-eye"></i> View
+                      </a>
+                       <a href="{{ route('invoice.show', ['id' => $sale->id, 'cash' => 0, 'credit' => 0, 'debit' => 0]) }}" class="btn btn-sm btn-primary">
+                         Invoice
                       </a>
                   </td>
               </tr>

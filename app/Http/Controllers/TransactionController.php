@@ -62,19 +62,32 @@ class TransactionController extends Controller
         return response()->json(['message' => ' deleted successfully!']);
     }
     public function search(Request $request)
-    {
-        // $customerName = $request->input('name');
-        $customers = Customer::where('name', 'like', '%' . $request->name . '%')->get();
+{
+    $query = Customer::query();
 
-        if ($customers->isEmpty()) {
-            return response()->json(['status' => 'error', 'message' => 'No customers found']);
-        }
-
-        return response()->json(['status' => 'success', 'data' => $customers]);
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
     }
+
+    if ($request->filled('mobile_number')) {
+        $query->where('mobile_number', 'like', '%' . $request->mobile_number . '%');
+    }
+
+    $customers = $query->get();
+
+    if ($customers->isEmpty()) {
+        return response()->json(['status' => 'no_results']);
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $customers,
+    ]);
+}
+
+
     public function sale_store(Request $request)
     {
-        // dd($request->all());
         if ($request->id && !empty($request->note)) {
             $sale_id = Sale::findorfail($request->id);
             $sale_id->update([
@@ -137,7 +150,13 @@ class TransactionController extends Controller
                 }
             }
             $customer->save();
-            return redirect()->route('pages.customer.invoice', ['id' => $sale->id, 'cash' => $request->cash, 'credit' => $previous_credit, 'debit' => $previous_debit]);
+           return redirect()->route('invoice.show', [
+            'id' => $sale->id,
+            'cash' => $request->cash,
+            'credit' => $previous_credit,
+            'debit' => $previous_debit
+        ]);
+
         } else {
             $transactionIds = [];
             $sale = new Sale();
@@ -180,13 +199,18 @@ class TransactionController extends Controller
             $customer->save();
             $sale->customer_id = $customer->id ?? '';
             $sale->save();
-            return redirect()->route('pages.customer.invoice', ['id' => $sale->id, 'cash' => $request->cash, 'credit' => $previous_credit, 'debit' => $previous_debit]);
+            return redirect()->route('invoice.show', [
+            'id' => $sale->id,
+            'cash' => $request->cash,
+            'credit' => $previous_credit,
+            'debit' => $previous_debit
+        ]);
+        
         }
     }
     public function invoice($id = null, $cash = null, $credit = null, $debit = null)
     {
         $data['sale'] = Sale::with('customers')->findOrFail($id);
-        // dd($data['sale']);
         $data['cash'] = $cash;
         $data['credit'] = $credit;
         $data['debit'] = $debit;
@@ -195,6 +219,7 @@ class TransactionController extends Controller
             ->whereIn('id', $transaction_id)->get();
         // $data['sale'];
         return view('pages.customer.invoice', $data);
+        
     }
     public function generatePDF($id)
     {
@@ -208,4 +233,6 @@ class TransactionController extends Controller
 
         return $pdf->download('invoice.pdf');
     }
+
+
 }
