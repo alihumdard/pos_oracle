@@ -110,7 +110,6 @@
 
                     <th>Total Amount</th>
                     <th>Cash</th>
-                    <!-- <th>Note</th> -->
                     <th>Action</th>
                 </tr>
             </thead>
@@ -122,14 +121,21 @@
                     <td>{{ $sale->total_amount ?? 'N/A' }}</td>
                     <td>{{ $sale->cash ?? 'N/A' }}</td>
                     <!-- <td>{{ $sale->note ?? 'N/A' }}</td> -->
-                    <td>
+                    <td style="display: flex; justify-content: space-between;">
                         <a href="javascript:void(0)" class="view-detail" data-id="{{ $sale->id }}">
                             <i class="fa fa-eye" aria-hidden="true"></i> View</a>
+                            <a href="{{ route('pages.customer.invoice', $sale->id) }}" 
+                        class="btn btn-sm btn-primary">
+                            Regenerate Invoice
+                        </a>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
+            <a href="{{ route('customer.sales.summary', $customer->id) }}" class="btn btn-primary" style="width: 180px; margin-top: 20px;" >
+                View Sales Summary
+            </a>
     </div>
     </div>
 </div>
