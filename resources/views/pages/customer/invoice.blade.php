@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,12 +8,19 @@
 
     <style>
         @media print {
-            .content-wrapper, .invoice-box {
+
+            .content-wrapper,
+            .invoice-box {
                 display: block !important;
                 background: white;
             }
 
-            #print_invoice, #gen_pdf, .note_button, button, .note, .btn-primary {
+            #print_invoice,
+            #gen_pdf,
+            .note_button,
+            button,
+            .note,
+            .btn-primary {
                 display: none !important;
             }
         }
@@ -50,13 +58,14 @@
             margin-top: 5px;
         }
 
-        .table th, .table td {
+        .table th,
+        .table td {
             vertical-align: middle !important;
         }
 
         .table thead th {
-            background-color: #007bff;
-            color: white;
+            background-color: rgb(213, 167, 99);
+            color: black;
             text-align: center;
         }
 
@@ -65,8 +74,8 @@
         }
 
         .section-title {
-            background: #343a40;
-            color: white;
+            background: rgb(213, 167, 99);
+            color: black;
             padding: 10px 15px;
             font-weight: bold;
             border-left: 5px solid #007bff;
@@ -74,7 +83,8 @@
             margin: 30px 0 15px;
         }
 
-        .btn-primary, .btn-danger {
+        .btn-primary,
+        .btn-danger {
             margin: 5px;
         }
 
@@ -95,156 +105,188 @@
 </head>
 
 <body class="hold-transition sidebar-mini">
-<div class="wrapper">
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        @include('pages.sidebar')
-    </aside>
+    <div class="wrapper">
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            @include('pages.sidebar')
+        </aside>
 
-    <div class="content-wrapper">
-        <section class="content">
-            <div class="container-fluid">
-                <div class="invoice-box">
-                    <div class="text-center">
-                        <img src="{{ asset('assets/logo/logo.jpg') }}" alt="Logo" width="120" height="120" class="invoice-logo">
-                        <h1 class="heading">Rana Electronics Invoice</h1>
-                        <p class="sub-heading">Near ABL Bank, Fawara Chowk, Chanab Bazar, Kot Momin</p>
-                    </div>
-
-                    @php $mytime = Carbon\Carbon::now(); @endphp
-
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <p><strong>Date:</strong> {{ date('d-m-Y') }}</p>
+        <div class="content-wrapper">
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="invoice-box">
+                        <div class="text-center">
+                            <img src="{{ asset('assets/logo/logo.jpg') }}" alt="Logo" width="120" height="120" class="invoice-logo">
+                            <h1 class="heading">Rana Electronics Invoice</h1>
+                            <p class="sub-heading">Near ABL Bank, Fawara Chowk, Chanab Bazar, Kot Momin</p>
                         </div>
-                        <div class="col-md-6 text-md-end">
-                             <p><strong>Invoice Number</strong> {{ $sale->id }}</p>
-                            <p><strong>Chief Executive:</strong> USAMA RANA</p>
-                            <p><strong>Mobile:</strong> 03007667440 | 03218991304</p>
+
+                        @php $mytime = Carbon\Carbon::now(); @endphp
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <p><strong>Date:</strong> {{ date('d-m-Y') }}</p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <p><strong>Invoice Number: </strong> RE-{{ $sale->id }}</p>
+                                <p><strong>Chief Executive:</strong> USAMA RANA</p>
+                                <p><strong>Mobile:</strong> 03007667440 | 03218991304</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="section-title">Customer Details</div>
-                    <p><strong>Name:</strong> {{ $sale->customers->name }}</p>
-                    <p><strong>Mobile No:</strong> {{ $sale->customers->mobile_number }}</p>
-                    <p><strong>Address:</strong> {{ $sale->customers->address }}</p>
+                        <div class="section-title">Customer Details</div>
+                        <p><strong>Name:</strong> {{ $sale->customers->name }}</p>
+                        <p><strong>Mobile No:</strong> {{ $sale->customers->mobile_number }}</p>
+                        <p><strong>Address:</strong> {{ $sale->customers->address }}</p>
 
-                    <div class="section-title">Invoice Details</div>
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Item Name</th>
-                                    <th>Price</th>
-                                    <th>Qty</th>
-                                    <th>Discount</th>
-                                    <th>Service Charges</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($invoices as $invoice)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $invoice->products->item_name }}</td>
-                                    <td>{{ $invoice->products->selling_price }}</td>
-                                    <td>{{ $invoice->quantity }}</td>
-                                    <td>{{ $invoice->discount }}</td>
-                                    <td>{{ $invoice->service_charges }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
+                        <div class="section-title">Invoice Details</div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Item Name</th>
+                                        <th>Item code</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Discount</th>
+                                        <th>Service Charges</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach($invoices as $invoice)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $invoice->products->item_name  ?? ''}}</td>
+                                        <td>{{ $invoice->products->item_code }}</td>
+                                        <td>{{ $invoice->products->selling_price }}</td>
+                                        <td>{{ $invoice->quantity }}</td>
+                                        <td>{{ $invoice->discount }}</td>
+                                        <td>{{ $invoice->service_charges }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="section-title">Payment Summary</div>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <th>Total Discount:</th>
+                                <td>{{ $invoices->sum('discount') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Current Bill:</th>
+                                <td>{{ $invoices->sum('total_amount') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total Service Charges:</th>
+                                <td>{{ $invoices->sum('service_charges') }}</td>
+                            </tr>
+
+                            @if($sale->customers->credit > 0)
+                            <tr>
+                                <th>Pending Payment:</th>
+                                <td>{{ $credit }}</td>
+                            </tr>
+                            @else
+                            <tr>
+                                <th>Remaining Payment:</th>
+                                <td>{{ $sale->customers->debit }}</td>
+                            </tr>
+                            @endif
+
+                            <tr>
+                                <th>Cash:</th>
+                                <td>{{ $sale->cash }}</td>
+                            </tr>
+
+                            @php
+                            $total_pending_amount = ($invoices->sum('total_amount') + $credit) - $sale->cash;
+                            @endphp
+                            <tr>
+                                <th><strong>Total Pending Amount:</strong></th>
+                                <td><strong>{{ $total_pending_amount }}</strong></td>
+                            </tr>
                         </table>
-                    </div>
-
-                    <div class="section-title">Payment Summary</div>
-                    <table class="table table-sm table-borderless">
-                        <tr><th>Total Discount:</th><td>{{ $invoices->sum('discount') }}</td></tr>
-                        <tr><th>Current Bill:</th><td>{{ $invoices->sum('total_amount') }}</td></tr>
-                        <tr><th>Total Service Charges:</th><td>{{ $invoices->sum('service_charges') }}</td></tr>
-
-                        @if($sale->customers->credit > 0)
-                        <tr><th>Pending Payment:</th><td>{{ $credit }}</td></tr>
-                        @else
-                        <tr><th>Remaining Payment:</th><td>{{ $sale->customers->debit }}</td></tr>
+                        @if(empty($sale->note))
+                        <form id="noteForm" class="note-form mt-4">
+                            @csrf
+                            <div class="section-title">Add Note</div>
+                            <div class="form-group note">
+                                <textarea name="note" id="note" rows="3" class="form-control" placeholder="Enter your note here..."></textarea>
+                            </div>
+                            <div class="text-end mt-3 note_button">
+                                <button type="button" id="submitNote" class="btn btn-success">Submit Note</button>
+                            </div>
+                        </form>
                         @endif
-
-                        <tr><th>Cash:</th><td>{{ $sale->cash }}</td></tr>
-
-                        @php
-                        $total_pending_amount = ($invoices->sum('total_amount') + $credit) - $sale->cash;
-                        @endphp
-                        <tr>
-                            <th><strong>Total Pending Amount:</strong></th>
-                            <td><strong>{{ $total_pending_amount }}</strong></td>
-                        </tr>
-                    </table>
-
-                    <form id="noteForm" class="note-form mt-4">
-                        @csrf
-                        <div class="section-title">Add Note</div>
-                        <div class="form-group note">
-                            <textarea name="note" id="note" rows="3" class="form-control" placeholder="Enter your note here..."></textarea>
+                        
+                        <div id="displayNote" class="mt-3" @if(empty($sale->note)) style="display: none;" @endif>
+                            <h5><strong>Note:</strong></h5>
+                            <p id="noteText">
+                                {!! !empty($sale->note) ? $sale->note : '' !!}
+                            </p>
                         </div>
-                        <div class="text-end mt-3 note_button">
-                            <button type="button" id="submitNote" class="btn btn-success">Submit Note</button>
+            
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary" onclick="printContent()" id="print_invoice">
+                                <i class="fas fa-print"></i> Print Invoice
+                            </button>
+
+                            <a class="btn btn-danger" href="{{ route('generate-pdf', ['id' => $sale->id]) }}" id="gen_pdf">
+                                <i class="fas fa-file-pdf"></i> Generate PDF
+                            </a>
                         </div>
-                    </form>
-
-                    <div id="displayNote" class="mt-3" style="display: none;">
-                        <h5><strong>Note:</strong></h5>
-                        <p id="noteText"></p>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <button class="btn btn-primary" onclick="printContent()" id="print_invoice">
-                            <i class="fas fa-print"></i> Print Invoice
-                        </button>
-
-                        <a class="btn btn-danger" href="{{ route('generate-pdf', ['id' => $sale->id]) }}" id="gen_pdf">
-                            <i class="fas fa-file-pdf"></i> Generate PDF
-                        </a>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
-</div>
+    @include('pages.script')
 
-@include('pages.script')
+    <!-- CKEditor Script -->
+    <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+    @if(empty($sale->note))
+    <script>
+        $(document).ready(function() {
+            $('#submitNote').click(function() {
+                let note = CKEDITOR.instances.note.getData(); // updated to get CKEditor data
+                let saleId = "{{ $sale->id }}";
 
-<script>
-    $(document).ready(function () {
-        $('#submitNote').click(function () {
-            let note = $('#note').val();
-            let saleId = "{{ $sale->id }}";
-
-            $.ajax({
-                url: "{{ route('sale.store') }}",
-                method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    id: saleId,
-                    note: note,
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        $('#noteForm').hide();
-                        $('#noteText').text(response.note);
-                        $('#displayNote').show();
-                    } else {
-                        alert('Failed to update the note.');
-                    }
-                },
-                error: function () {
-                    alert('Something went wrong. Please try again.');
-                },
+                $.ajax({
+                    url: "{{ route('sale.store') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: saleId,
+                        note: note,
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#noteForm').hide();
+                            $('#noteText').html(response.note);
+                            $('#displayNote').show();
+                        } else {
+                            alert('Failed to update the note.');
+                        }
+                    },
+                    error: function() {
+                        alert('Something went wrong. Please try again.');
+                    },
+                });
             });
-        });
-    });
 
-    function printContent() {
-        window.print();
-    }
-</script>
+            // Initialize CKEditor
+            CKEDITOR.replace('note');
+        });
+
+        function printContent() {
+            window.print();
+        }
+    </script>
+    @endif
 </body>
+
 </html>

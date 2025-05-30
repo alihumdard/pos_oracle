@@ -129,6 +129,15 @@
               <tr>
                 <td colspan="8">
                   <div class="form-group">
+                    <label for="customerMobile">Mobile Number</label>
+                    <input type="text" class="form-control" id="customerMobile" name="mobile_number"
+                      placeholder="Enter mobile number" value="{{ old('mobile_number') }}">
+                    @error('mobile_number')
+                    <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                  </div>
+
+                  <div class="form-group">
                     <label for="customerName">Name</label>
                     <input type="text" class="form-control" id="customerName" name="name"
                       placeholder="Enter customer name" value="{{ old('name') }}">
@@ -150,15 +159,6 @@
               </tr>
               <tr>
                 <td colspan="8">
-                  <div class="form-group">
-                    <label for="customerMobile">Mobile Number</label>
-                    <input type="text" class="form-control" id="customerMobile" name="mobile_number"
-                      placeholder="Enter mobile number" value="{{ old('mobile_number') }}">
-                    @error('mobile_number')
-                    <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                  </div>
-
                   <div class="form-group">
                     <label for="customerAddress">Address</label>
                     <textarea class="form-control" id="customerAddress" rows="3" name="address"
@@ -208,7 +208,7 @@
       "buttons": ["excel", "pdf"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
   });
-  $(function () {
+  $(function() {
     //Initialize Select2 Elements
     $('.select2').select2()
 
@@ -301,49 +301,46 @@
     function refreshtble(url) {
       $("#tableHolder").load(url + " #tableHolder > *");
     }
-    $('#customerName, #customerMobile').on('input', function() {
-     var customerName = $('#customerName').val();
-  var customerMobile = $('#customerMobile').val();
-      if (customerName || customerMobile) {
-
+    $('#customerMobile').on('input', function() {
+      var customerMobile = $('#customerMobile').val();
+      if (customerMobile >=300000000) {
         $.ajax({
           url: "{{ route('search.customer') }}",
           method: 'GET',
           data: {
-            name: customerName,
+            name: '',
             mobile_number: customerMobile
           },
           success: function(response) {
             console.log(response);
             if (response.status === 'success' && response.data) {
-              var customerListHTML = '';
               response.data.forEach(function(customer) {
-                customerListHTML += `
-                            <li class="list-group-item customer-item"
-                                data-cnic="${customer.cnic}"
-                                data-mobile="${customer.mobile_number}"
-                                data-cash="${customer.cash}"
-                                data-address="${customer.address}" data-id="${customer.id}" >
-                                ${customer.name}
-                            </li>`;
+                $('#customerName').val(customer.name);
+                $('#customerCNIC').val(customer.cnic);
+                $('#customerMobile').val(customer.mobile_number);
+                $('#customerCash').val(customer.cash);
+                $('#customerAddress').val(customer.address);
+                $('#customerId').val(customer.id);
               });
-              $('#customerList').html(customerListHTML).show();
+
             } else {
-              $('#customerCNIC, #customerMobile, #customerCash, #customerAddress').val('');
+              $('#customerCNIC, #customerCash, #customerAddress').val('');
               $('#customerList').hide();
             }
           },
           error: function() {
-            $('#customerCNIC, #customerMobile, #customerCash, #customerAddress,#customerId').val('');
+            $('#customerCNIC, #customerCash, #customerAddress,#customerId').val('');
             $('#customerList').hide();
             alert('Error fetching customer data.');
           }
         });
       } else {
-        $('#customerCNIC, #customerMobile, #customerCash, #customerAddress,#customerId').val('');
+        $('#customerCNIC, #customerCash, #customerAddress,#customerId').val('');
         $('#customerList').hide();
       }
     });
+
+
     $(document).on('click', '.customer-item', function() {
       $('#customerName').val($(this).text());
       $('#customerCNIC').val($(this).data('cnic'));
@@ -353,6 +350,7 @@
       $('#customerId').val($(this).data('id'));
       $('#customerList').hide();
     });
+
     $(document).on('click', function(event) {
       if (!$(event.target).closest('#customerName, #customerList').length) {
         $('#customerList').hide();
@@ -362,4 +360,39 @@
 
   });
 </script>
+<script>
+    $(document).ready(function() {
+        $('#saveButton').click(function(e) {
+            e.preventDefault(); // Prevent default action
+
+            const productSelected = $('#productSelect').val();
+            const quantity = $('#quantity').val();
+            const discount = $('#discount').val();
+            const service = $('#service').val().trim();
+
+            if (!productSelected || productSelected.length === 0) {
+                alert("Please select at least one product.");
+                return;
+            }
+
+            if (!quantity || quantity <= 0) {
+                alert("Please enter a valid quantity.");
+                return;
+            }
+
+            if (discount === '' || discount < 0) {
+                alert("Please enter a valid discount.");
+                return;
+            }
+
+            if (service === '') {
+                alert("Please enter the service.");
+                return;
+            }
+
+            $('#productForm').submit(); // All good, submit the form
+        });
+    });
+</script>
+
 @endPushOnce

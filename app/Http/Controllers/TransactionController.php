@@ -87,127 +87,87 @@ class TransactionController extends Controller
 
 
     public function sale_store(Request $request)
-    {
-        if ($request->id && !empty($request->note)) {
-            $sale_id = Sale::findorfail($request->id);
-            $sale_id->update([
-                'note' => $request->note,
-            ]);
-            return response()->json(
-                ['status' => 'success', 'note' => $sale_id->note],
-            );
-        }
-        $rules = [
-            // 'name' => 'required',
-            // 'mobile_number' => 'required',
-            // 'address' => 'required',
-            'cash' => 'required',
-        ];
-        if (empty($request->customer_id)) {
-            $rules['cnic'] = 'unique:customers,cnic';
-        }
-        $request->validate($rules);
-        $data['transactions'] = Transaction::where('status', 'active')->get();
-        if (isset($request->customer_id)) {
-            $transactionIds = [];
-            $sale = new Sale();
-            foreach ($request->transaction_id as $transactionId) {
-                $transactionIds[] = $transactionId;
-            }
-            $sale->transaction_id = json_encode($transactionIds);
-            $sale->customer_id = $request->customer_id ?? '';
-            $sale->total_discount = $request->total_discount;
-            $sale->cash = $request->cash;
-            $sale->total_amount = $request->total_amount;
-            $sale->save();
-            foreach ($transactionIds as $transactionId) {
-                $transaction = Transaction::find($transactionId);
-                if ($transaction) {
-                    $transaction->update([
-                        'status' => 'inactive',
-                    ]);
-                }
-            }
-            $customer = Customer::findOrFail($request->customer_id);
-            $customer->cnic = $request->cnic ?? '';
-            $customer->address = $request->address ?? '';
-            $customer->name = $request->name ?? '';
-            $customer->mobile_number = $request->mobile_number ??'';
-            $previous_credit = $customer->credit ?? '';
-            $previous_debit = $customer->debit ?? '';
-            if ($request->total_amount > $request->cash) {
-                $customer->credit += $request->total_amount - $request->cash;
-            } else {
-                $customer->debit += $request->cash - $request->total_amount;
-            }
-            if ($customer->debit) {
-                if ($customer->credit >= $customer->debit) {
-                    $customer->credit -= $customer->debit;
-                    $customer->debit = 0;
-                } else {
-                    $customer->debit -= $customer->credit;
-                    $customer->credit = 0;
-                }
-            }
-            $customer->save();
-           return redirect()->route('invoice.show', [
-            'id' => $sale->id,
-            'cash' => $request->cash,
-            'credit' => $previous_credit,
-            'debit' => $previous_debit
-        ]);
+{
+    if ($request->id && !empty($request->note)) {
+        $sale = Sale::findOrFail($request->id);
+        $sale->update(['note' => $request->note]);
+        return response()->json(['status' => 'success', 'note' => $sale->note]);
+    }
 
+    $rules = [
+        'cash' => 'required',
+    ];
+    if (empty($request->customer_id)) {
+        $rules['cnic'] = 'unique:customers,cnic';
+    }
+    $request->validate($rules);
+
+    $transactionIds = $request->transaction_id ?? [];
+
+    $sale = new Sale();
+    $sale->transaction_id = json_encode($transactionIds);
+    $sale->total_discount = $request->total_discount;
+    $sale->total_amount = $request->total_amount;
+    $sale->cash = $request->cash;
+
+    // If customer exists, use it
+    if (isset($request->customer_id)) {
+        $customer = Customer::findOrFail($request->customer_id);
+    } else {
+        // Create new customer
+        $customer = new Customer();
+    }
+
+    // Update customer details
+    $customer->cnic = $request->cnic ?? '';
+    $customer->address = $request->address ?? '';
+    $customer->name = $request->name ?? '';
+    $customer->mobile_number = $request->mobile_number ?? '';
+
+    $previous_credit = $customer->credit ?? 0;
+    $previous_debit = $customer->debit ?? 0;
+
+    // Update credit/debit based on sale
+    if ($request->total_amount > $request->cash) {
+        $customer->credit += $request->total_amount - $request->cash;
+    } else {
+        $customer->debit += $request->cash - $request->total_amount;
+    }
+
+    if ($customer->debit > 0) {
+        if ($customer->credit >= $customer->debit) {
+            $customer->credit -= $customer->debit;
+            $customer->debit = 0;
         } else {
-            $transactionIds = [];
-            $sale = new Sale();
-            foreach ($request->transaction_id as $transactionId) {
-                $transactionIds[] = $transactionId;
-            }
-            $sale->transaction_id = json_encode($transactionIds);
-            $sale->total_discount = $request->total_discount;
-            $sale->total_amount = $request->total_amount;
-            $sale->cash = $request->cash;
-            $customer = new Customer();
-            foreach ($transactionIds as $transactionId) {
-                $transaction = Transaction::find($transactionId);
-                if ($transaction) {
-                    $transaction->update([
-                        'status' => 'inactive',
-                    ]);
-                }
-            }
-            $customer->cnic = $request->cnic ?? '';
-            $customer->address = $request->address ?? '';
-            $customer->name = $request->name ?? '';
-            $customer->mobile_number = $request->mobile_number ?? '';
-            $previous_credit = 0;
-            $previous_debit = 0;
-            if ($request->total_amount > $request->cash) {
-                $customer->credit += $request->total_amount - $request->cash;
-            } else {
-                $customer->debit += $request->cash - $request->total_amount;
-            }
-            if ($customer->debit) {
-                if ($customer->credit >= $customer->debit) {
-                    $customer->credit -= $customer->debit;
-                    $customer->debit = 0;
-                } else {
-                    $customer->debit -= $customer->credit;
-                    $customer->credit = 0;
-                }
-            }
-            $customer->save();
-            $sale->customer_id = $customer->id ?? '';
-            $sale->save();
-            return redirect()->route('invoice.show', [
-            'id' => $sale->id,
-            'cash' => $request->cash,
-            'credit' => $previous_credit,
-            'debit' => $previous_debit
-        ]);
-        
+            $customer->debit -= $customer->credit;
+            $customer->credit = 0;
         }
     }
+
+    $customer->save();
+
+    // Assign the customer to the sale
+    $sale->customer_id = $customer->id;
+    $sale->save();
+
+    // Mark transactions as inactive
+    foreach ($transactionIds as $transactionId) {
+        $transaction = Transaction::find($transactionId);
+        if ($transaction) {
+            $transaction->update(['status' => 'inactive']);
+        }
+    }
+
+    // Redirect to invoice page
+    return redirect()->route('pages.customer.invoice', [
+        'id' => $sale->id,
+        'cash' => $request->cash,
+        'credit' => $previous_credit,
+        'debit' => $previous_debit
+    ]);
+}
+
+
     public function invoice($id = null, $cash = null, $credit = null, $debit = null)
     {
         $data['sale'] = Sale::with('customers')->findOrFail($id);
