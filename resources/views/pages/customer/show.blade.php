@@ -118,19 +118,19 @@
       </div>
       <div class="row ">
         <form action="{{ route('customer.filter') }}" method="GET">
-          @csrf
-          <label>Sort By:</label>
-          <select name="sort_order">
-              <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
-              <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
-          </select>
-          <div class="checkbox-group">
-            <label><input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}> Debit</label>
-            <label><input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}> Credit</label>
-            <label><input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}> Hide Zero Balance</label>
-        </div>
-          <button type="submit">Apply Filter</button>
-      </form>
+            @csrf
+            <label>Sort By:</label>
+            <select name="sort_order">
+                <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
+                <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
+            </select>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}> Debit</label>
+                <label><input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}> Credit</label>
+                <label><input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}> Hide Zero Balance</label>
+            </div>
+            <button type="submit">Apply Filter</button>
+        </form>
       
       
         <div class="col text-right">
@@ -158,12 +158,12 @@
               @foreach($customers as $customer)
               <tr>
                   <td>{{ $loop->iteration }}</td>
-                  <td>{{ $customer->name }}</td>
-                  <td>{{ $customer->mobile_number }}</td>
-                  <td>{{ $customer->address }}</td>
-                  <td>{{ $customer->cnic }}</td>
-                  <td>{{ $customer->debit }}</td>
-                  <td>{{ $customer->credit }}</td>
+                  <td>{{ $customer->name ?? '' }}</td>
+                  <td>{{ $customer->mobile_number  ?? ''}}</td>
+                  <td>{{ $customer->address ?? '' }}</td>
+                  <td>{{ $customer->cnic ?? '' }}</td>
+                  <td>{{ $customer->debit ?? '' }}</td>
+                  <td>{{ $customer->credit ?? '' }}</td>
                   
                   <td>
                       <a href="{{ route('customer.view', ['id' => $customer->id]) }}" class="btn btn-sm btn-primary">
@@ -187,7 +187,7 @@ $(function() {
     // Initializing DataTable
     initDataTable();
 
-    // Open modal for adding a new customer
+    
     $('#addCustomerBtn').click(function() {
         $('#addCutomerModalLabel').text('Add New Customer');
         $('#customerForm')[0].reset(); // Reset form fields
@@ -197,7 +197,7 @@ $(function() {
         $('#addCutomerModal').modal('show');
     });
 
-    // Form submit handler
+   
     $('#customerForm').submit(function(e) {
         e.preventDefault();
 
@@ -266,7 +266,7 @@ $(function() {
         });
     });
 
-    // Refresh the table content and reinitialize DataTable
+    
     function refreshTable() {
         $("#tableHolder").load("{{ route('show.customers') }} #tableHolder > *", function() {
             // Reinitialize DataTable after loading new content
@@ -274,7 +274,7 @@ $(function() {
         });
     }
 
-    // Initialize DataTable function
+    
     function initDataTable() {
         // Check agar table exist karti hai tab hi DataTable initialize karo
         if ($('#example1').length) {
