@@ -71,11 +71,11 @@
 <div class="row">
   <div class="col-12">
     <div class="card">
-      <div class="card-body">
+      <div class="card-body" style="overflow-x: scroll;">
        <form id="saleForm" action="{{ isset($sale) ? route('sale.update', $sale->id) : route('sale.store') }}" method="POST">
         @csrf
         <input type="hidden" id="saleMode" value="{{ isset($sale) ? 'edit' : 'create' }}">
-          <table class="table table-bordered w-100" id="example1">
+          <table class="table table-bordered w-100 " id="example1">
             <thead class="bg-primary text-white">
               <tr>
                 <th>#Sr.No</th>

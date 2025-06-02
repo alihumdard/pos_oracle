@@ -47,8 +47,8 @@
     </div>
 
       <!-- /.card-header -->
-      <div class="card-body">
-        <table class="table table-hover text-nowrap" id="example1">
+      <div class="card-body" style="overflow-x: scroll;">
+        <table class="table" id="example1">
           <thead class="bg-primary">
             <tr>
               <th>#Sr.No</th>
