@@ -1,229 +1,247 @@
 @extends('index')
 <style>
-:root {
-    --primary-color: #4361ee;
-    --primary-hover: #3a56d4;
-    --secondary-color: #f8f9fa;
-    --text-color: #2b2d42;
-    --light-gray: #e9ecef;
-    --border-radius: 8px;
-    --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --transition: all 0.3s ease;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f8fafc;
-    color: var(--text-color);
-}
-
-/* Filter Form Styles */
-.filter-container {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--light-gray);
-}
-
-.filter-container .form-control,
-.filter-container .select2-selection {
-    height: 45px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--light-gray);
-    transition: var(--transition);
-}
-
-.filter-container .form-control:focus,
-.filter-container .select2-selection:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-}
-
-.filter-container .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    height: 45px;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.filter-container .btn-primary:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
-
-/* Card Styles */
-.card {
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-}
-
-.card-header {
-    background-color: white;
-    border-bottom: 1px solid var(--light-gray);
-    padding: 1.25rem 1.5rem;
-}
-
-.card-title {
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 0;
-}
-
-/* Table Styles */
-.table-responsive {
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
-
-.table {
-    margin-bottom: 0;
-}
-
-.table thead th {
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: 500;
-    border: none;
-    padding: 1rem;
-}
-
-.table tbody tr {
-    transition: var(--transition);
-}
-
-.table tbody tr:hover {
-    background-color: rgba(67, 97, 238, 0.05);
-}
-
-.table tbody td {
-    padding: 1rem;
-    vertical-align: middle;
-    border-top: 1px solid var(--light-gray);
-}
-
-/* Button Styles */
-.btn {
-    border-radius: var(--border-radius);
-    padding: 0.5rem 1.25rem;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
-
-.btn-success {
-    background-color: #2e7d32;
-    border-color: #2e7d32;
-}
-
-.btn-success:hover {
-    background-color: #276a2b;
-    border-color: #276a2b;
-}
-
-.btn-danger {
-    background-color: #d32f2f;
-    border-color: #d32f2f;
-}
-
-.btn-danger:hover {
-    background-color: #b71c1c;
-    border-color: #b71c1c;
-}
-
-.btn-sm {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.875rem;
-}
-
-/* Modal Styles */
-.modal-content {
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-    border-bottom: 1px solid var(--light-gray);
-    padding: 1.25rem 1.5rem;
-}
-
-.modal-title {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.form-group label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.form-control {
-    height: 45px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--light-gray);
-    transition: var(--transition);
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-}
-
-.text-danger {
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .filter-container .form-row>div {
-        margin-bottom: 1rem;
+    :root {
+        --primary-color: #4361ee;
+        --primary-hover: #3a56d4;
+        --secondary-color: #f8f9fa;
+        --text-color: #2b2d42;
+        --light-gray: #e9ecef;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
     }
 
-    .action-buttons {
-        flex-direction: column;
-        gap: 0.5rem;
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8fafc;
+        color: var(--text-color);
+        /* Ensure no global overflow-x: hidden; here or on html */
+        /* If you have it, remove it or find a more specific element to hide overflow */
     }
 
+    /* Filter Form Styles */
+    .filter-container {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--light-gray);
+    }
+
+    .filter-container .form-control,
+    .filter-container .select2-selection {
+        height: 45px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--light-gray);
+        transition: var(--transition);
+    }
+
+    .filter-container .form-control:focus,
+    .filter-container .select2-selection:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+
+    .filter-container .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        height: 45px;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .filter-container .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Card Styles */
+    .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden; /* This is fine for hiding content that overflows the card itself */
+    }
+
+    .card-header {
+        background-color: white;
+        border-bottom: 1px solid var(--light-gray);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+        border-radius: var(--border-radius);
+        /* THIS IS THE CRITICAL LINE FOR DEBUGGING */
+        overflow-x: auto !important; /* Force horizontal scrolling, use !important for debugging */
+        -webkit-overflow-scrolling: touch; /* Improves scrolling performance on iOS */
+        /* End of critical line */
+        overflow-y: hidden; /* Prevent vertical scrollbar if not needed, or set to auto */
+    }
+
+    .table {
+        margin-bottom: 0;
+        width: 100%; /* Ensure table takes full width of its parent */
+        min-width: 768px; /* Optional: Set a minimum width for the table if you want it to always be wide enough to scroll on small devices. Adjust as needed. */
+    }
+
+    .table thead th {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 500;
+        border: none;
+        padding: 1rem;
+        white-space: nowrap; /* Keep headers on one line */
+    }
+
+    .table tbody tr {
+        transition: var(--transition);
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-top: 1px solid var(--light-gray);
+        white-space: nowrap; /* Keep cell content on one line to force horizontal overflow */
+    }
+
+    /* Button Styles */
     .btn {
-        width: 100%;
+        border-radius: var(--border-radius);
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        transition: var(--transition);
     }
-}
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+    }
+
+    .btn-success {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+    }
+
+    .btn-success:hover {
+        background-color: #276a2b;
+        border-color: #276a2b;
+    }
+
+    .btn-danger {
+        background-color: #d32f2f;
+        border-color: #d32f2f;
+    }
+
+    .btn-danger:hover {
+        background-color: #b71c1c;
+        border-color: #b71c1c;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid var(--light-gray);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }
+
+    .form-control {
+        height: 45px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--light-gray);
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .filter-container .form-row > div {
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            width: 100%;
+        }
+        /* Ensure select2 dropdowns are fully responsive inside modals/forms */
+        .select2-container {
+            width: 100% !important;
+        }
+        /* Make sure table is wide enough to scroll */
+        .table {
+            min-width: 768px; /* Example: Ensures table is always at least 768px wide, forcing scroll if needed */
+        }
+    }
 </style>
 @section('content')
 
-<!-- Add Product Modal -->
 <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document"> {{-- modal-lg for larger screens --}}
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
@@ -244,10 +262,11 @@ body {
                             <label for="item_name">Item Name</label>
                             <input type="text" name="item_name" class="form-control" id="item_name"
                                 placeholder="Enter Item Name">
+                            <small class="text-danger d-none" id="itemNameError">Item name is required.</small>
                         </div>
                         <div class="form-group col-lg-6 col-md-6 col-12">
                             <label for="category_id">Category</label>
-                            <select name="category_id" class="form-control" id="category_id">
+                            <select name="category_id" class="form-control select2" id="category_id" style="width:100%;">
                                 <option value="" disabled selected>Select Category</option>
                                 @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -257,7 +276,7 @@ body {
                         </div>
                         <div class="form-group col-lg-6 col-md-6 col-12">
                             <label for="supplier_id">Supplier</label>
-                            <select name="supplier_id" class="form-control" id="supplier_id">
+                            <select name="supplier_id" class="form-control select2" id="supplier_id" style="width:100%;">
                                 <option value="" disabled selected>Select Supplier</option>
                                 @foreach($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
@@ -298,87 +317,57 @@ body {
 </div>
 
 <div class="container-fluid mt-3">
-    <!-- Filter Form -->
- <div class="row">
-    <div class="col-12">
-        <form action="{{ route('supplier_category.filter') }}" method="GET" class="filter-form p-3 bg-white rounded shadow-sm">
-            <div class="row g-3 align-items-end">
-                <!-- Supplier Dropdown -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="form-group">
-                        <label for="supplier_id" class="form-label fw-medium text-secondary mb-1">Supplier</label>
-                        <select name="supplier_id"
-                                id="supplier_id"
-                                class="select2"
-                                style="
-                                    width: 100%;
-                                    padding: 8px 12px;
-                                    font-size: 14px;
-                                    line-height: 1.5;
-                                    color: #495057;
-                                    background-color: #fff;
-                                    background-clip: padding-box;
-                                    border: 1px solid #ced4da;
-                                    border-radius: 4px;
-                                    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-                                    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
-                                ">
-                            <option value=""></option>
-                            @foreach($suppliers ?? [] as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
-                            @endforeach
-                        </select>
-
-                    </div>
-                </div>
-
-                <!-- Category Dropdown -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="form-group">
-                        <label for="category_id" class="form-label fw-medium text-secondary mb-1">Category</label>
-                        <select name="category_id" class="form-select select2" id="category_id" style="
-                                    width: 100%;
-                                    padding: 8px 12px;
-                                    font-size: 14px;
-                                    line-height: 1.5;
-                                    color: #495057;
-                                    background-color: #fff;
-                                    background-clip: padding-box;
-                                    border: 1px solid #ced4da;
-                                    border-radius: 4px;
-                                    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-                                    box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
-                                ">
-                            <option value=""></option>
-                            @foreach($categories ?? [] as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="col-12 col-md-12 col-lg-4">
-                    <div class="d-grid" style="margin-bottom: 10px;">
-                        <button type="submit" class="btn btn-primary py-2">
-                            <i class="fas fa-filter me-2"></i>Apply Filter
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-    <!-- Products Table -->
     <div class="row">
+        <div class="col-12">
+            <form action="{{ route('supplier_category.filter') }}" method="GET" class="filter-form p-3 bg-white rounded shadow-sm">
+                <div class="row g-3 align-items-end"> {{-- Use g-3 for consistent guttering --}}
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="filter_supplier_id" class="form-label fw-medium text-secondary mb-1">Supplier</label>
+                            <select name="supplier_id"
+                                id="filter_supplier_id"
+                                class="form-control select2"
+                                style="width: 100%;">
+                                <option value="">Select Supplier</option>
+                                @foreach($suppliers ?? [] as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="filter_category_id" class="form-label fw-medium text-secondary mb-1">Category</label>
+                            <select name="category_id" class="form-control select2" id="filter_category_id" style="width: 100%;">
+                                <option value="">Select Category</option>
+                                @foreach($categories ?? [] as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-12 col-lg-4">
+                        <div class="d-grid" style="margin-bottom: 10px;">
+                            <button type="submit" class="btn btn-primary py-2">
+                                <i class="fas fa-filter me-2"></i>Apply Filter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mt-3">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                     <div class="mb-2 mb-md-0">
                         <h3 class="card-title">All Products</h3>
                     </div>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
                         <a href="{{route('product_all')}}" class="btn btn-success">
                             <i class="fa fa-box mr-2"></i>All Products
                         </a>
@@ -389,8 +378,8 @@ body {
                 </div>
 
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover" style="width: 100%;" id="example1">
+                    <div class="table-responsive"> {{-- This is the key wrapper --}}
+                        <table class="table table-hover w-100" id="example1">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -438,34 +427,44 @@ body {
 
 @pushOnce('scripts')
 <script>
-$(function() {
+$(document).ready(function() {
+    // Initial DataTables setup
     $("#example1").DataTable({
-        "responsive": true,
+        "responsive": false, // Disable DataTables' built-in responsive features
         "lengthChange": true,
-        "autoWidth": true,
-        "scrollY": true,
-        "scrollX": true,
+        "autoWidth": false, // Important: allows Bootstrap's CSS to control width
+        "scrollY": false,
+        "scrollX": false, // Let Bootstrap's .table-responsive handle this
         "buttons": ["excel", "pdf"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-});
 
+    // Initialize Select2 for filter dropdowns
+    $('.select2').select2({
+        placeholder: "Select an option",
+        allowClear: true // Allows clearing the selection
+    });
 
-$(document).ready(function() {
-
+    // Open modal for adding a new product
     $('#addCategoryBtn').click(function() {
         $('#addProductModalLabel').text('Add New Product');
+        $('#productForm')[0].reset(); // Reset form fields
+        $('.text-danger').addClass('d-none'); // Hide all validation errors
+        // Reset select2 dropdowns to placeholder
+        $('#category_id').val('').trigger('change');
+        $('#supplier_id').val('').trigger('change');
 
-        $('#nameError').addClass('d-none');
-        $('#duplicateError').addClass('d-none');
         $('#submitBtn').text('Save Product').data('action', 'add');
         $('#addProductModal').modal('show');
     });
+
+    // Form submit handler for add/edit
     $('#productForm').submit(function(e) {
         e.preventDefault();
 
         const actionType = $('#submitBtn').data('action');
-        const url = actionType === 'add' ? "{{ route('add.products') }}" : '/products/' + $(
-            '#submitBtn').data('id');
+        const productId = $('#submitBtn').data('id');
+        const url = actionType === 'add' ? "{{ route('add.products') }}" : '/products/' + productId;
+
         const formData = {
             _token: '{{ csrf_token() }}',
             item_code: $('#item_code').val().trim(),
@@ -475,62 +474,61 @@ $(document).ready(function() {
             category_id: $('#category_id').val(),
             supplier_id: $('#supplier_id').val(),
             qty: $('#qty').val().trim(),
-
         };
+
+        // Frontend validation
         let hasError = false;
+        $('.text-danger').addClass('d-none'); // Hide previous errors
 
         function getErrorElementId(key) {
+            // Converts item_code to itemCodeError
             return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) + 'Error';
         }
 
+        // Validate each field
         Object.keys(formData).forEach(function(key) {
             const value = formData[key];
             const errorElement = $('#' + getErrorElementId(key));
-            console.log(errorElement);
-            if (!value && key !== '_token') {
+
+            if (!value && key !== '_token') { // _token doesn't need validation
                 errorElement.removeClass('d-none');
                 hasError = true;
-            } else {
-                errorElement.addClass('d-none');
             }
         });
 
+        if (hasError) return; // Stop if there are frontend validation errors
 
-        if (hasError) return;
+        // AJAX request for add or update
         $.ajax({
             url: url,
             type: actionType === 'add' ? 'POST' : 'PUT',
             data: formData,
             success: function(response) {
-
                 Swal.fire({
-                    title: "Good job!",
-                    text: actionType === 'add' ? 'Product added successfully!' :
-                        'Product updated successfully!',
+                    title: "Success!",
+                    text: response.message || (actionType === 'add' ? 'Product added successfully!' : 'Product updated successfully!'),
                     icon: "success",
                 });
 
                 $('#addProductModal').modal('hide');
-                $('#productForm')[0].reset();
+                $('#productForm')[0].reset(); // Reset form fields
+                $('#category_id').val('').trigger('change'); // Reset Select2
+                $('#supplier_id').val('').trigger('change'); // Reset Select2
 
-                let url = "{{ route('show.products') }}?t=" + new Date().getTime();
-                refreshtble(url);
+                let refreshUrl = "{{ route('show.products') }}?t=" + new Date().getTime();
+                refreshtble(refreshUrl);
             },
             error: function(xhr) {
-                if (xhr.status === 422) {
+                if (xhr.status === 422) { // Validation errors from backend
                     const errors = xhr.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
                         const errorElementId = getErrorElementId(key);
-                        $('#' + errorElementId).text(errors[key][0]).removeClass(
-                            'd-none');
+                        $('#' + errorElementId).text(errors[key][0]).removeClass('d-none');
                     });
-
-
                     Swal.fire({
                         icon: "error",
-                        title: "Oops...",
-                        text: "Something went wrong!",
-                        footer: '<a href="#">Validation error occurred. Please check your inputs.</a>'
+                        title: "Validation Error",
+                        text: "Please correct the highlighted fields.",
                     });
                 } else {
                     Swal.fire({
@@ -544,69 +542,66 @@ $(document).ready(function() {
         });
     });
 
-
+    // Function to refresh the table content and reinitialize DataTables
     function refreshtble(url) {
-        $("#tableHolder").load(url + " #tableHolder > *");
+        // Use a temporary element to load the new table content to avoid issues during reinitialization
+        $('body').append('<div id="tempTableContent" style="display:none;"></div>');
+        $('#tempTableContent').load(url + " #tableHolder > *", function() {
+            // Destroy the old DataTable instance if it exists
+            if ($.fn.DataTable.isDataTable('#example1')) {
+                $('#example1').DataTable().destroy();
+            }
 
-        if ($.fn.DataTable.isDataTable('#example1')) {
-            $('#example1').DataTable().destroy();
-        }
+            // Replace the old table body with the new one
+            $('#tableHolder').html($('#tempTableContent #tableHolder').html());
+            $('#tempTableContent').remove(); // Remove the temporary element
 
-        // Reinitialize the DataTable
-        $("#example1").DataTable({
-            responsive: true,
-            lengthChange: true,
-            autoWidth: true,
-            scrollY: true,
-            scrollX: true,
-            buttons: ["excel", "pdf"]
-        }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-
+            // Reinitialize the DataTable with consistent settings
+            $("#example1").DataTable({
+                "responsive": false,
+                "lengthChange": true,
+                "autoWidth": false,
+                "scrollY": false,
+                "scrollX": false,
+                "buttons": ["excel", "pdf"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        });
     }
-    $(function() {
-        //Initialize Select2 Elements
-        $('.select2').select2()
 
-        //Initialize Select2 Elements
-        $('.select2bs4').select2({
-            theme: 'bootstrap4'
-        })
-    });
-
-    // Edit category logic
+    // Edit product logic
     $(document).on('click', '.edit-product', function() {
         const productId = $(this).data('id');
         $.ajax({
             url: '/products/' + productId,
             type: 'GET',
             success: function(response) {
-                console.log(response);
                 $('#addProductModalLabel').text('Edit Product');
                 $('#qty').val(response.qty);
-                $('#category_id').val(response.category_id);
-                $('#supplier_id').val(response.supplier_id);
+                $('#category_id').val(response.category_id).trigger('change'); // Update Select2
+                $('#supplier_id').val(response.supplier_id).trigger('change'); // Update Select2
                 $('#original_price').val(response.original_price);
                 $('#selling_price').val(response.selling_price);
                 $('#item_name').val(response.item_name);
                 $('#item_code').val(response.item_code);
-                $('#nameError').addClass('d-none');
-                $('#duplicateError').addClass('d-none');
-                $('#submitBtn').text('Update Product').data('action', 'edit').data('id',
-                    productId);
-                $('#addProductModal').modal('show');
 
-                function refreshtble(url) {
-                    $("#tableHolder").load(url + " #tableHolder > *");
-                }
+                $('.text-danger').addClass('d-none'); // Hide any previous validation errors
+                $('#submitBtn').text('Update Product').data('action', 'edit').data('id', productId);
+                $('#addProductModal').modal('show');
             },
             error: function() {
-                alert('Error fetching category details.');
+                Swal.fire({
+                    icon: "error",
+                    title: "Error!",
+                    text: "Could not fetch product details. Please try again.",
+                });
             },
         });
     });
+
+    // Delete product logic
     $(document).on('click', '.delete-product', function() {
         const productId = $(this).data('id');
-        // Show a confirmation dialog before deletion
+
         Swal.fire({
             title: "Are you sure?",
             text: "Do you really want to delete this product?",
@@ -630,12 +625,10 @@ $(document).ready(function() {
                             text: "Product deleted successfully!",
                             icon: "success",
                         });
-                        let url = "{{ route('show.products') }}?t=" + new Date()
-                            .getTime();
-                        refreshtble(url);
+                        let refreshUrl = "{{ route('show.products') }}?t=" + new Date().getTime();
+                        refreshtble(refreshUrl);
                     },
                     error: function(xhr) {
-                        console.log(xhr);
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
@@ -652,23 +645,6 @@ $(document).ready(function() {
                 });
             }
         });
-
-    });
-    $(document).on('click', '.view-product', function() {
-        // alert();
-        $.ajax({
-            url: '/all/products',
-            type: 'get',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-        });
-
-        function refreshtble(url) {
-            $("#tableHolder").load(url + " #tableHolder > *");
-        }
-
-
     });
 });
 </script>
