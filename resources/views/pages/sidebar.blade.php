@@ -1,4 +1,12 @@
-<div class="sidebar">
+<style>
+@media (max-width: 990px) {
+  .sidebars {
+    display: none;
+  }
+}
+</style>
+
+<div class="sidebars sidebar">
    <!-- Sidebar user panel (optional) -->
    
 
@@ -17,7 +25,15 @@
             </a>
          </li>
 
+           <li class="nav-item">
+            <a href="{{route('show.transaction')}}" class="nav-link">
+               <i class="nav-icon fas fa-book"></i>
+               <p>
+                  Sales
+               </p>
+            </a>
 
+         </li>
          <li class="nav-item">
             <a href="{{route('show.categories')}}" class="nav-link">
                <i class="nav-icon fas fa-book"></i>
@@ -54,15 +70,7 @@
             </a>
 
          </li>
-         <li class="nav-item">
-            <a href="{{route('show.transaction')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Sales
-               </p>
-            </a>
-
-         </li>
+       
 
 
 

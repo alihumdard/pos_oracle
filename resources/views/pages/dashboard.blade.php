@@ -4,7 +4,6 @@
      <div class="row mt-5">
      
             <div class="col-lg-3 col-6">
-            
                <!-- small box -->
                <div class="small-box bg-info">
                   <div class="inner">

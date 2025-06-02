@@ -68,128 +68,128 @@
       <div class="card-body">
         <form action="{{route('sale.store')}}" method="post">
           @csrf
-          <table class="table table-bordered w-100" id="example1">
-            <thead class="bg-primary text-white">
-              <tr>
-                <th>#Sr.No</th>
-                <th>Product Name</th>
-                <th>Product Price</th>
-                <th>Quantity</th>
-                <th>Discount</th>
-                <th>Service Charges</th>
-                <th>Amount</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="tableHolder">
-             
-              @foreach($transactions as $transaction)
-              <tr>
-                <td>{{ $loop->iteration }}
-                  <input type="hidden" value="{{ $transaction->id }}" name="transaction_id[]" id="transaction_id">
-                </td>
-                <td>{{ $transaction->products->item_name }}</td>
-                <td>{{ $transaction->products->selling_price }}</td>
-                <td>{{ $transaction->quantity }}</td>
-                <td>{{ $transaction->discount }}</td>
-                <td>{{ $transaction->service_charges }}</td>
-                <td>{{ $transaction->total_amount }}</td>
-                <td>
-                  <a href="javascript:void(0)" class="btn btn-mini btn-warning delete-sale"
-                    data-id="{{ $transaction->id }}">
-                    <i class="fas fa-trash"></i> Cancel
-                  </a>
-                </td>
+          <div class="table-responsive">
+            <table class="table table-bordered" id="example1">
+              <thead class="bg-primary text-white">
+                <tr>
+                  <th class="text-nowrap">#Sr.No</th>
+                  <th class="text-nowrap">Product Name</th>
+                  <th class="text-nowrap">Product Price</th>
+                  <th class="text-nowrap">Quantity</th>
+                  <th class="text-nowrap">Discount</th>
+                  <th class="text-nowrap">Service Charges</th>
+                  <th class="text-nowrap">Amount</th>
+                  <th class="text-nowrap">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="tableHolder">
+               
+                @foreach($transactions as $transaction)
+                <tr>
+                  <td>{{ $loop->iteration }}
+                    <input type="hidden" value="{{ $transaction->id }}" name="transaction_id[]" id="transaction_id">
+                  </td>
+                  <td>{{ $transaction->products->item_name ?? ''}}</td>
+                  <td>{{ $transaction->products->selling_price ?? ''}}</td>
+                  <td>{{ $transaction->quantity ?? ''}}</td>
+                  <td>{{ $transaction->discount ?? ''}}</td>
+                  <td>{{ $transaction->service_charges ?? ''}}</td>
+                  <td>{{ $transaction->total_amount ?? ''}}</td>
+                  <td>
+                    <a href="javascript:void(0)" class="btn btn-sm btn-warning delete-sale"
+                      data-id="{{ $transaction->id }}">
+                      <i class="fas fa-trash"></i> Cancel
+                    </a>
+                  </td>
+                </tr>
+                @endforeach
+                <td><input type="hidden" name="qty" value="{{$transactions->sum('quantity')}}"></td>
 
-              </tr>
-              @endforeach
-              <td><input type="hidden" name="qty" value="{{$transactions->sum('quantity')}}"></td>
+                <tr>
+                  <th colspan="7" class="text-right font-weight-bold">Total Discount:</th>
+                  <td class="text-right font-weight-bold">{{ $transactions->sum('discount') }}
+                    <input type="hidden" value="{{ $transactions->sum('discount') }}" name="total_discount"
+                      id="total_discount">
+                  </td>
+                </tr>
+                <tr>
+                  <th colspan="7" class="text-right font-weight-bold">Total Amount:</th>
+                  <td class="text-right font-weight-bold">{{ $transactions->sum('total_amount') }}
+                    <input type="hidden" value="{{ $transactions->sum('total_amount') }}" name="total_amount"
+                      id="total_amount">
+                  </td>
+                </tr>
+                <tr>
+                  <th colspan="8" class="text-center font-weight-bold bg-primary">Customer Detail</th>
+                </tr>
 
-              <tr>
-                <th colspan="7" style="text-align: right; font-weight: bold;">Total Discount:</th>
-                <td colspan="5" style="text-align: right; font-weight: bold;">{{ $transactions->sum('discount') }}
-                  <input type="hidden" value="{{ $transactions->sum('discount') }}" name="total_discount"
-                    id="total_discount">
-                </td>
-              </tr>
-              <tr>
-                <th colspan="7" style="text-align: right; font-weight: bold;">Total Amount:</th>
-                <td colspan="6" style="text-align: right; font-weight: bold;">{{ $transactions->sum('total_amount') }}
-                  <input type="hidden" value="{{ $transactions->sum('total_amount') }}" name="total_amount"
-                    id="total_amount">
-                </td>
-              </tr>
-              <tr>
-                <th colspan="8" style="text-align: center; font-weight: bold;" class="bg-primary">Customer Detail</th>
-              </tr>
+                <input type="hidden" class="form-control" id="customerId" name="customer_id"
+                  value="{{ old('customer_id') }}">
 
-              <input type="hidden" class="form-control" id="customerId" name="customer_id"
-                value="{{ old('customer_id') }}">
+                <tr>
+                  <td colspan="8">
+                    <div class="form-group">
+                      <label for="customerName">Name</label>
+                      <input type="text" class="form-control" id="customerName" name="name"
+                        placeholder="Enter customer name" value="{{ old('name') }}">
+                      <ul id="customerList"></ul>
+                      @error('name')
+                      <span class="text-danger">{{ $message }}</span>
+                      @enderror
+                    </div>
 
-              <tr>
-                <td colspan="8">
-                  <div class="form-group">
-                    <label for="customerName">Name</label>
-                    <input type="text" class="form-control" id="customerName" name="name"
-                      placeholder="Enter customer name" value="{{ old('name') }}">
-                    <ul id="customerList"></ul>
-                    @error('name')
-                    <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                  </div>
+                    <div class="form-group">
+                      <label for="customerCNIC">CNIC</label>
+                      <input type="text" class="form-control" id="customerCNIC" name="cnic"
+                        placeholder="Enter CNIC (e.g., 12345-6789012-3)" value="{{ old('cnic') }}">
+                      @error('cnic')
+                      <span class="text-danger">{{ $message }}</span>
+                      @enderror
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+                    <div class="form-group">
+                      <label for="customerMobile">Mobile Number</label>
+                      <input type="text" class="form-control" id="customerMobile" name="mobile_number"
+                        placeholder="Enter mobile number" value="{{ old('mobile_number') }}">
+                      @error('mobile_number')
+                      <span class="text-danger">{{ $message }}</span>
+                      @enderror
+                    </div>
 
-                  <div class="form-group">
-                    <label for="customerCNIC">CNIC</label>
-                    <input type="text" class="form-control" id="customerCNIC" name="cnic"
-                      placeholder="Enter CNIC (e.g., 12345-6789012-3)" value="{{ old('cnic') }}">
-                    @error('cnic')
-                    <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="8">
-                  <div class="form-group">
-                    <label for="customerMobile">Mobile Number</label>
-                    <input type="text" class="form-control" id="customerMobile" name="mobile_number"
-                      placeholder="Enter mobile number" value="{{ old('mobile_number') }}">
-                    @error('mobile_number')
-                    <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                  </div>
+                    <div class="form-group">
+                      <label for="customerAddress">Address</label>
+                      <textarea class="form-control" id="customerAddress" rows="3" name="address"
+                        placeholder="Enter address">{{ old('address') }}</textarea>
+                      @error('address')
+                      <span class="text-danger">{{ $message }}</span>
+                      @enderror
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+                    <div class="form-group">
+                      <label for="Cash">Cash</label>
+                      <input type="text" class="form-control" id="Cash" name="cash" value="{{ old('cash')}} "
+                        placeholder="Enter the cash" min="0" required>
+                      @error('cash')
+                      <span class="text-danger">{{ $message }}</span>
+                      @enderror
+                    </div>
+                  </td>
+                </tr>
 
-                  <div class="form-group">
-                    <label for="customerAddress">Address</label>
-                    <textarea class="form-control" id="customerAddress" rows="3" name="address"
-                      placeholder="Enter address">{{ old('address') }}</textarea>
-                    @error('address')
-                    <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="8">
-                  <div class="form-group">
-                    <label for="Cash">Cash</label>
-                    <input type="text" class="form-control" id="Cash" name="cash" value="{{ old('cash')}} "
-                      placeholder="Enter the cash" min="0" required>
-                    @error('cash')
-                    <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                  </div>
-                </td>
-              </tr>
-
-            </tbody>
-          </table>
-          <div class="d-flex justify-content-center mt-1">
-            <button type="submit" class="btn btn-primary w-50" data-toggle="modal"
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-center mt-3">
+            <button type="submit" class="btn btn-primary w-100 w-md-50" data-toggle="modal"
               data-target="#customerFormModal">Save</button>
           </div>
         </form>
-
       </div>
     </div>
   </div>
