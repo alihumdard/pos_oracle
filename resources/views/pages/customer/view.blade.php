@@ -6,7 +6,6 @@
     <div class="col-12">
         
         <div class="card mt-4">
-            <!-- Payment Box -->
             <div class="row">
                 <div class="col-6 mb-3 mt-4 p-4">
                     <div style="background-color: black; color: white; padding: 20px; border-radius: 10px;">
@@ -38,7 +37,6 @@
 
                 <div class="col-5 mb-4 mt-5 p-1">
                     <form id="paymentForm">
-                        <!-- Dropdowns -->
                         <div class="form-group">
                             <label for="dropdownAction">Select Payment Method</label>
                             <select id="dropdownAction" class="form-control">
@@ -48,8 +46,6 @@
                             </select>
 
                         </div>
-
-                        <!-- You Give Form -->
                         <div id="youGiveForm" class="mt-3" style="display: none;">
                             <div class="form-group">
                                 <label for="paymentInputYouGive">Enter Payment</label>
@@ -59,8 +55,6 @@
                             </div>
                             <button type="button" id="addPaymentYouGive" class="btn btn-primary">Add Payment</button>
                         </div>
-
-                        <!-- You Got Form -->
                         <div id="youGotForm" class="mt-3" style="display: none;">
                             <div class="form-group">
                                 <label for="paymentInputYouGot">Enter Payment</label>
@@ -107,7 +101,6 @@
         <table class="table table-hover w-100" id="example1">
             <thead class="bg-primary">
                 <tr>
-
                     <th>Total Amount</th>
                     <th>Cash</th>
                     <th>Action</th>
@@ -127,6 +120,9 @@
                             <a href="{{ route('pages.customer.invoice', $sale->id) }}" 
                         class="btn btn-sm btn-primary">
                             Regenerate Invoice
+                        </a>
+                        <a href="{{ route('show.transaction', ['id' => $sale->id]) }}" class="btn btn-warning">
+                        Return Sale
                         </a>
                     </td>
                 </tr>
@@ -196,15 +192,15 @@
             }
         });
 
-        // Add payment for "You Give"
+      
         $('#addPaymentYouGive').on('click', function() {
             var credit = $('#paymentInputYouGive').val();
             var customerId = $('#customerId').val();
             if (credit) {
-                sendPaymentData('youGive', credit, customerId); // Send data to backend for "You Give"
+                sendPaymentData('youGive', credit, customerId); 
             }
         });
-        // Add payment for "You Got"
+        
         $('#addPaymentYouGot').on('click', function() {
             var debit = $('#paymentInputYouGot').val();
             var customerId = $('#customerId').val();

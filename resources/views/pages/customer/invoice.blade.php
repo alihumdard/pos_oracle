@@ -170,45 +170,55 @@
                         </div>
 
                         <div class="section-title">Payment Summary</div>
+                       @php
+                            $total_discount = $invoices->sum('discount');
+                            $total_bill = $invoices->sum('total_amount');
+                            $total_services = $invoices->sum('service_charges');
+                            $credit = $sale->customers->credit ?? 0;
+                            $cash = $sale->cash ?? 0;
+
+                            $total_due = $total_bill + $credit;
+                            $remaining_payment = $cash - $total_due;
+                            $total_pending_amount = $total_due - $cash;
+                        @endphp
+
                         <table class="table table-sm table-borderless">
                             <tr>
                                 <th>Total Discount:</th>
-                                <td>{{ $invoices->sum('discount') }}</td>
+                                <td>{{ $total_discount }}</td>
                             </tr>
                             <tr>
                                 <th>Current Bill:</th>
-                                <td>{{ $invoices->sum('total_amount') }}</td>
+                                <td>{{ $total_bill }}</td>
                             </tr>
                             <tr>
                                 <th>Total Service Charges:</th>
-                                <td>{{ $invoices->sum('service_charges') }}</td>
+                                <td>{{ $total_services }}</td>
                             </tr>
-
-                            @if($sale->customers->credit > 0)
+                            
+                            @if($remaining_payment < 0)
                             <tr>
                                 <th>Pending Payment:</th>
-                                <td>{{ $credit }}</td>
+                                <td>{{ abs($remaining_payment) }}</td>
                             </tr>
                             @else
                             <tr>
                                 <th>Remaining Payment:</th>
-                                <td>{{ $sale->customers->debit }}</td>
+                                <td>{{ $remaining_payment }}</td>
                             </tr>
                             @endif
-
                             <tr>
                                 <th>Cash:</th>
-                                <td>{{ $sale->cash }}</td>
+                                <td>{{ $cash }}</td>
                             </tr>
 
-                            @php
-                            $total_pending_amount = ($invoices->sum('total_amount') + $credit) - $sale->cash;
-                            @endphp
+
                             <tr>
                                 <th><strong>Total Pending Amount:</strong></th>
                                 <td><strong>{{ $total_pending_amount }}</strong></td>
                             </tr>
                         </table>
+
                         @if(empty($sale->note))
                         <form id="noteForm" class="note-form mt-4">
                             @csrf
@@ -247,12 +257,12 @@
     @include('pages.script')
 
     <!-- CKEditor Script -->
-    <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+   <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
     @if(empty($sale->note))
     <script>
         $(document).ready(function() {
             $('#submitNote').click(function() {
-                let note = CKEDITOR.instances.note.getData(); // updated to get CKEditor data
+                let note = CKEDITOR.instances.note.getData(); 
                 let saleId = "{{ $sale->id }}";
 
                 $.ajax({
@@ -278,7 +288,7 @@
                 });
             });
 
-            // Initialize CKEditor
+           
             CKEDITOR.replace('note');
         });
 
