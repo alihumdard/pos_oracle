@@ -16,7 +16,6 @@ class CustomerController extends Controller
     public function customer_show()
     {
         $data['customers'] = Customer::orderBy('created_at', 'desc')->get();
-        $data['sales'] = Sale::with('customers')->orderBy('created_at', 'desc')->get();
         return view('pages.customer.show', $data);
     }
     public function view($id)
@@ -169,13 +168,21 @@ class CustomerController extends Controller
         return view('pages.customer.show', $data);
     } 
 
-    public function showInvoice($id, $cash = null, $credit = null, $debit = null)
+    public function salesSummary($id)
     {
-        $sale = Sale::with('customers')->findOrFail($id);
-        $transaction_ids = json_decode($sale->transaction_id);
-        $invoices = Transaction::with('products')
-            ->whereIn('id', $transaction_ids)
-            ->get();
-        return view('pages.customer.invoice', compact('sale', 'cash', 'credit', 'debit', 'invoices'));
+        
+        $customer = Customer::with('sales')->findOrFail($id);
+
+        $summary = [
+            'total_sales' => $customer->sales->count(),
+            'total_amount' => $customer->sales->sum('total_amount'),
+            'total_cash' => $customer->sales->sum('cash'),
+            'total_discount' => $customer->sales->sum('total_discount'),
+            'credit' => $customer->credit,
+            'debit' => $customer->debit,
+        ];
+
+        return view('pages.customer.sales_summary', compact('customer', 'summary'));
     }
+
 }

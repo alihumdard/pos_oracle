@@ -54,7 +54,7 @@ Route::get('/customer/filter', [CustomerController::class,'customer_filter'])->n
 Route::delete('/supplier/{id}', [SupplierController::class, 'supplier_delete'])->name('supplier.delete');
 Route::get('/customer/view/{id}', [CustomerController::class, 'view'])->name('customer.view');
 Route::get('/sales/{id}/detail', [CustomerController::class, 'detail'])->name('sales.detail');
-Route::get('/transaction/show', [TransactionController::class,'transaction_show'])->name('show.transaction');
+Route::get('/transaction/show/{id?}', [TransactionController::class,'transaction_show'])->name('show.transaction');
 Route::post('/store-transaction',[TransactionController::class, 'store_transaction'])->name('transaction.sales');
 Route::delete('/transaction/{id}',[TransactionController::class, 'transaction_delete'])->name('sales.delete');
 Route::post('/sale/store',[TransactionController::class, 'sale_store'])->name('sale.store');
@@ -62,8 +62,10 @@ Route::get('/search-customer', [TransactionController::class, 'search'])->name('
 
 Route::get('/customer/invoice/{id?}/{cash?}/{credit?}/{debit?}', [TransactionController::class, 'invoice'])->name('pages.customer.invoice');
 Route::get('generate-pdf/{id}', [TransactionController::class, 'generatePDF'])->name('generate-pdf');
-Route::get('/invoice/{id}/{cash?}/{credit?}/{debit?}', [CustomerController::class, 'showInvoice'])->name('invoice.show');
 // Route::get('test',function()
-// {
+Route::get('/customer/{id}/sales-summary', [CustomerController::class, 'salesSummary'])->name('customer.sales.summary');
+Route::post('/sale/update/{id}', [TransactionController::class, 'update_sale'])->name('sale.update');
+Route::put('/transaction/{id}', [TransactionController::class, 'update_transaction'])->name('transaction.update');
+
 // return view('pages.customer.pdf_generate');
 // });
