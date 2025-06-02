@@ -468,53 +468,72 @@
       });
 
 
-        $(document).on('click', '.delete-sale', function() {
-          const transactionId = $(this).data('id');
-          Swal.fire({
-            title: "Are you sure?",
-            text: "Do you really want to delete this Sale?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, cancel!"
-          }).then((result) => {
-            if (result.isConfirmed) {
-              $.ajax({
-                url: '/transaction/' + transactionId, 
-                type: 'DELETE', 
-                data: {
-                  _token: '{{ csrf_token() }}' 
-                },
-                success: function(response) {
-                  Swal.fire({
-                    title: "Deleted!",
-                    text: "Sale deleted successfully!",
-                    icon: "success",
-                  });
-                  let url = "{{ route('show.transaction') }}?t=" + new Date().getTime();
-                  window.location.href = url;
-                },
-                error: function(xhr) {
-                
-                  Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Something went wrong!",
-                    footer: '<a href="#">An error occurred while deleting the sale. Please try again.</a>'
-                  });
-                }
-              });
-            } else {
-              Swal.fire({
-                title: "Cancelled",
-                text: "The Sale is safe.",
-                icon: "info"
-              });
-            }
-          });
+  $(document).on('click', '.delete-sale', function() {
+    const transactionId = $(this).data('id');
+    const row = $(this).closest('tr'); // get the row to remove later
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this Sale?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/transaction/' + transactionId,
+          type: 'DELETE',
+          data: {
+            _token: '{{ csrf_token() }}'
+          },
+          success: function(response) {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Sale deleted successfully!",
+              icon: "success",
+              timer: 1500,
+              showConfirmButton: false
+            });
+
+            // ✅ Remove the row from the DOM without reload
+            row.remove();
+
+            // ✅ Recalculate totals
+            let totalDiscount = 0;
+            let totalAmount = 0;
+
+            $('#tableHolder tr[data-id]').each(function () {
+              const d = parseFloat($(this).find('td:eq(4)').text()) || 0;
+              const a = parseFloat($(this).find('td:eq(6)').text()) || 0;
+              totalDiscount += d;
+              totalAmount += a;
+            });
+
+            $('#total_discount').val(totalDiscount.toFixed(2));
+            $('#totalDiscountText').contents().filter(function () {
+              return this.nodeType === 3;
+            }).first().replaceWith(totalDiscount.toFixed(2) + ' ');
+
+            $('#total_amount').val(totalAmount.toFixed(2));
+            $('#totalAmountText').contents().filter(function () {
+              return this.nodeType === 3;
+            }).first().replaceWith(totalAmount.toFixed(2) + ' ');
+          },
+          error: function(xhr) {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Something went wrong!",
+              footer: '<a href="#">An error occurred while deleting the sale. Please try again.</a>'
+            });
+          }
         });
+      }
+    });
+  });
 
       function refreshtble(url) {
       $("#tableHolder").load(url + " #tableHolder > *");
