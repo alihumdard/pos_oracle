@@ -66,6 +66,7 @@ Route::get('generate-pdf/{id}', [TransactionController::class, 'generatePDF'])->
 Route::get('/customer/{id}/sales-summary', [CustomerController::class, 'salesSummary'])->name('customer.sales.summary');
 Route::post('/sale/update/{id}', [TransactionController::class, 'update_sale'])->name('sale.update');
 Route::put('/transaction/{id}', [TransactionController::class, 'update_transaction'])->name('transaction.update');
-
+Route::delete('/transaction/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
 // return view('pages.customer.pdf_generate');
 // });
+Route::get('/sales', [SaleController::class, 'index'])->name('sale.index');
