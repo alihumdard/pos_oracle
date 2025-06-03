@@ -36,7 +36,21 @@ class TransactionController extends Controller
 
         return view('pages.sales.show', $data);
     }
+     public function destroy($id)
+    {
+        try {
+            $transaction = Transaction::findOrFail($id);
+            $transaction->delete();
 
+            // You can return a JSON response indicating success
+            return response()->json(['status' => 'success', 'message' => 'Transaction deleted successfully!']);
+        } catch (\Exception $e) {
+            // Log the error (optional)
+            Log::error('Error deleting transaction: ' . $e->getMessage());
+            // Return an error response
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete transaction.'], 500);
+        }
+    }
    public function store_transaction(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
