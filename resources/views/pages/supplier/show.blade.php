@@ -77,7 +77,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $supplier->supplier }}</td>
                                 <td>{{ $supplier->contact_person }}</td>
-                                <td>{{ $supplier->address }}</td>
+                                <td style="max-width: 150px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">{{ $supplier->address }}</td>
                                 <td>
                                     <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-supplier" data-id="{{ $supplier->id }}">Edit</a>
                                     <a href="javascript:void(0)" class="btn btn-sm btn-danger delete-supplier" data-id="{{ $supplier->id }}">Delete</a>
