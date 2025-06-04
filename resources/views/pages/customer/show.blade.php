@@ -51,7 +51,6 @@
     form.filter-form select,
     form.filter-form input[type="checkbox"],
     form.filter-form button {
-        padding: 10px;
         border: 1px solid #ccc;
         border-radius: 6px;
         font-size: 16px;
@@ -348,9 +347,9 @@
                     </div>
 
                     {{-- DataTables Table --}}
-                    <div class="table-responsive"> {{-- IMPORTANT: This div handles horizontal scrolling --}}
+                    <div class="table-responsive" > {{-- IMPORTANT: This div handles horizontal scrolling --}}
                         <table class="table table-hover w-100" id="example1">
-                            <thead class="bg-primary text-white">
+                            <thead class="bg-primary text-white" >
                                 <tr>
                                     <th>#Sr.No</th>
                                     <th>Customer Name</th>
@@ -368,7 +367,9 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $customer->name ?? '' }}</td>
                                     <td>{{ $customer->mobile_number ?? ''}}</td>
-                                    <td>{{ $customer->address ?? '' }}</td>
+                                    <td style="max-width: 150px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">
+                                        {{ $customer->address ?? '' }}
+                                    </td>
                                     <td>{{ $customer->cnic ?? '' }}</td>
                                     <td>{{ $customer->debit ?? '' }}</td>
                                     <td>{{ $customer->credit ?? '' }}</td>
