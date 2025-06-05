@@ -59,35 +59,38 @@
                 </div>
             </div>
 
-            <div class="card-body">
-                <div class="table-responsive"> {{-- Essential for horizontal scrolling on small devices --}}
-                    <table class="table table-hover w-100" id="example1">
-                        <thead>
-                            <tr>
-                                <th>#Sr.No</th>
-                                <th>Supplier Name</th>
-                                <th>Contact Person</th>
-                                <th>Address</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableHolder">
-                            @foreach($suppliers as $supplier)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $supplier->supplier }}</td>
-                                <td>{{ $supplier->contact_person }}</td>
-                                <td style="max-width: 150px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">{{ $supplier->address }}</td>
-                                <td>
-                                    <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-supplier" data-id="{{ $supplier->id }}">Edit</a>
-                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger delete-supplier" data-id="{{ $supplier->id }}">Delete</a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+           <div class="card-body">
+            <div style="overflow-x: auto; width: 100%;">
+                <table class="table table-hover w-100" style="min-width: 800px;">
+                <thead class="bg-primary text-white">
+                    <tr>
+                    <th>#Sr.No</th>
+                    <th>Supplier Name</th>
+                    <th>Contact Person</th>
+                    <th>Address</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tableHolder">
+                    @foreach($suppliers as $supplier)
+                    <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $supplier->supplier }}</td>
+                    <td>{{ $supplier->contact_person }}</td>
+                    <td style="max-width: 150px; white-space: normal; word-break: break-word;">
+                        {{ $supplier->address }}
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+                </table>
             </div>
+</div>
+
             </div>
         </div>
 </div>

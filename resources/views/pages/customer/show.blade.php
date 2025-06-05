@@ -1,7 +1,9 @@
 @extends('index')
 
+@section('title', 'Customer Management')
+
+@section('content')
 <style>
-    /* Root Variables */
     :root {
         --primary-color: #007bff;
         --primary-hover: #0056b3;
@@ -13,27 +15,7 @@
         --transition: all 0.3s ease;
     }
 
-    /* General Body Styling - CRITICAL: REMOVED CENTERING STYLES */
-    body {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f4f7fc;
-        /* Removed: display: flex; justify-content: center; align-items: center; height: 100vh; */
-        margin: 0;
-        padding-top: 20px; /* Add some top padding if needed */
-        padding-bottom: 20px; /* Add some bottom padding if needed */
-        /* Ensure no overflow-x: hidden here */
-        overflow-x: auto; /* Allow body to scroll if content somehow pushes it */
-    }
-
-    /* Container for the filter form, adjusted for responsiveness */
-    .filter-container-wrapper {
-        display: flex;
-        justify-content: center; /* Center the form within its column */
-        width: 100%; /* Ensure it takes full width of its parent column */
-    }
-
-    /* Filter Form Styles */
-    form.filter-form {
+    .customer-filter-container {
         border: 1px solid var(--light-gray);
         background: white;
         padding: 20px;
@@ -43,239 +25,198 @@
         align-items: center;
         gap: 15px;
         flex-wrap: wrap;
-        max-width: 900px;
-        width: 100%;
-        margin: 0 auto;
+        margin-bottom: 1.5rem;
     }
 
-    form.filter-form select,
-    form.filter-form input[type="checkbox"],
-    form.filter-form button {
+    .customer-filter-container select,
+    .customer-filter-container input[type="checkbox"],
+    .customer-filter-container button {
+        padding: 8px 12px;
         border: 1px solid #ccc;
         border-radius: 6px;
-        font-size: 16px;
+        font-size: 0.9rem;
         transition: var(--transition);
-        flex-grow: 1;
     }
-
-    form.filter-form select {
+    .customer-filter-container select {
         cursor: pointer;
         min-width: 150px;
+        flex-grow: 1;
     }
-
-    .checkbox-group {
+    .customer-filter-container .checkbox-group {
         display: flex;
         align-items: center;
         gap: 15px;
         flex-wrap: wrap;
     }
-
-    .checkbox-group label {
+    .customer-filter-container .checkbox-group label {
         display: flex;
         align-items: center;
         margin-bottom: 0;
+        font-size: 0.9rem;
     }
-
-    input[type="checkbox"] {
-        transform: scale(1.1);
+    .customer-filter-container input[type="checkbox"] {
+        transform: scale(1.0);
         margin-right: 8px;
         accent-color: var(--primary-color);
-        min-width: unset;
     }
-
-    form.filter-form button {
+    .customer-filter-container button {
         background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
         color: white;
         cursor: pointer;
         border: none;
-        padding: 10px 20px;
-        font-weight: bold;
+        padding: 8px 20px;
+        font-weight: 500;
         border-radius: var(--border-radius);
         transition: transform 0.2s ease-in-out, background 0.3s ease-in-out;
         text-align: center;
         min-width: 120px;
+        flex-grow: 0;
     }
-
-    form.filter-form button:hover {
+    .customer-filter-container button:hover {
         background: linear-gradient(to right, var(--primary-hover), #004494);
         transform: translateY(-2px);
     }
 
-    /* Card and Table Styles */
-    .card {
+    .customer-card {
         border: none;
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow);
-        margin-top: 20px;
-        overflow: hidden; /* This is fine here to contain the card content */
+        overflow: hidden;
     }
-
-    .card-body {
-        padding: 1.5rem;
+    .customer-card .card-header {
+        background-color: white;
+        border-bottom: 1px solid var(--light-gray);
+        padding: 1rem 1.5rem;
     }
-
-    /* Table Responsive Wrapper - CRITICAL FOR HORIZONTAL SCROLLING */
-    .table-responsive {
-        overflow-x: auto; /* THIS IS THE KEY */
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-        padding-bottom: 10px; /* Add some padding at the bottom of the scrollable area */
+    .customer-card .card-title {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0;
     }
-
-    .table {
+    .customer-card .card-body {
+        padding: 0;
+    }
+    .customer-card .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .customer-card .table {
         width: 100%;
         margin-bottom: 0;
-        /* Do NOT set white-space: nowrap here on the table itself,
-           apply it to th/td if you want to force single line content */
     }
-
-    .table th, .table td {
+    .customer-card .table th, 
+    .customer-card .table td {
         padding: 1rem;
         vertical-align: middle;
         border-top: 1px solid var(--light-gray);
-        white-space: nowrap; /* Forces content into a single line, causing overflow */
-        min-width: 120px; /* Ensures columns are wide enough to trigger scroll */
+        white-space: nowrap;
+        min-width: 120px;
     }
-
-    .table thead th {
+    .customer-card .table thead th {
         background-color: var(--primary-color);
         color: white;
         font-weight: 600;
-        border: none;
-        white-space: nowrap; /* Keep headers on one line */
+        border-bottom: none;
     }
-
-    .table tbody tr:hover {
+    .customer-card .table tbody tr:hover {
         background-color: rgba(0, 123, 255, 0.05);
     }
-
-    /* Action Buttons within table */
-    .action-buttons {
+    .customer-card .action-buttons {
         display: flex;
         gap: 8px;
         justify-content: center;
-        flex-wrap: wrap;
     }
-
-    .action-buttons .btn {
+    .customer-card .action-buttons .btn {
         padding: 0.4rem 0.8rem;
         font-size: 0.85rem;
     }
+    .customer-card td[style*="max-width"] {
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
 
-    /* Modal Styling */
     .modal-content {
         border-radius: var(--border-radius);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
-
     .modal-header {
         border-bottom: 1px solid var(--light-gray);
         padding: 1.25rem 1.5rem;
         background-color: var(--primary-color);
         color: white;
-        border-top-left-radius: var(--border-radius);
-        border-top-right-radius: var(--border-radius);
+        border-top-left-radius: calc(var(--border-radius) - 1px);
+        border-top-right-radius: calc(var(--border-radius) - 1px);
     }
-
     .modal-title {
         font-weight: 600;
     }
-
-    .modal-header .close {
+    .modal-header .close, .modal-header .btn-close {
         color: white;
-        opacity: 0.8;
+        opacity: 0.9;
     }
-
     .modal-body {
         padding: 1.5rem;
     }
-
     .modal-body .form-group {
         margin-bottom: 1rem;
     }
-
     .modal-body .form-control {
         height: 45px;
         border-radius: 6px;
         border: 1px solid #ced4da;
     }
-
     .modal-body .form-control:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
-
     .modal-body .text-danger {
         font-size: 0.875rem;
         margin-top: 0.25rem;
         display: block;
     }
-
     .modal-footer {
         border-top: 1px solid var(--light-gray);
         padding: 1rem 1.5rem;
     }
 
-    /* Responsive Adjustments */
     @media (max-width: 768px) {
-        .card-header {
+        .customer-card .card-header {
             flex-direction: column;
             align-items: flex-start !important;
             padding: 1rem;
         }
-
-        .card-header .btn {
+        .customer-card .card-header .btn {
             width: 100%;
             margin-top: 10px;
         }
-
-        /* Adjust modal dialog for smaller screens */
-        .modal-dialog {
-            margin: 1rem;
-        }
-
-        .modal-body .row > .form-group {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-
-        /* Adjust filter form for smaller screens */
-        form.filter-form {
+        .customer-filter-container {
             flex-direction: column;
             align-items: stretch;
             gap: 10px;
             padding: 15px;
         }
-        form.filter-form select,
-        form.filter-form button {
+        .customer-filter-container select,
+        .customer-filter-container button {
             width: 100%;
             min-width: unset;
         }
-        .checkbox-group {
+        .customer-filter-container .checkbox-group {
             flex-direction: column;
             align-items: flex-start;
             gap: 5px;
         }
-        .checkbox-group label {
-            width: 100%;
-        }
-
-        .col-12.text-right {
-            text-align: left !important;
-            margin-top: 15px;
-        }
-        .col-12.text-right .btn {
+        .customer-filter-container .checkbox-group label {
             width: 100%;
         }
     }
 </style>
 
-@section('content')
-
 <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addCutomerModalLabel">Add New Supplier</h5>
+                <h5 class="modal-title" id="addCutomerModalLabel">Add New Customer</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -316,40 +257,39 @@
 <div class="container-fluid mt-3">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="customer-filter-container mb-4">
+                <form action="{{ route('customer.filter') }}" method="GET" class="filter-form w-100">
+                    @csrf
+                    <label class="mb-0 me-2">Sort By:</label>
+                    <select name="sort_order" class="form-control form-control-sm">
+                        <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
+                        <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
+                    </select>
+                    <div class="checkbox-group ms-3">
+                        <label><input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}> Debit</label>
+                        <label><input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}> Credit</label>
+                        <label><input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}> Hide Zero Balance</label>
+                    </div>
+                    <button type="submit" class="ms-auto">Apply Filter</button>
+                </form>
+            </div>
+
+            <div class="card customer-card" style="padding:10px;">
                 <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                     <div class="mb-2 mb-md-0">
                         <h3 class="card-title">Customer Detail</h3>
                     </div>
                     <div class="d-flex gap-2 flex-wrap">
-                        <button type="button" class="btn btn-primary" id="addCustomerBtn">
+                        <button type="button" class="btn btn-primary-custom" id="addCustomerBtn">
                             <i class="fa fa-plus mr-2"></i>Add Customer
                         </button>
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <div class="filter-container-wrapper mb-4">
-                        <form action="{{ route('customer.filter') }}" method="GET" class="filter-form">
-                            @csrf
-                            <label class="mb-0">Sort By:</label>
-                            <select name="sort_order" class="form-control">
-                                <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
-                                <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
-                            </select>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}> Debit</label>
-                                <label><input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}> Credit</label>
-                                <label><input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}> Hide Zero Balance</label>
-                            </div>
-                            <button type="submit">Apply Filter</button>
-                        </form>
-                    </div>
-
-                    {{-- DataTables Table --}}
-                    <div class="table-responsive" > {{-- IMPORTANT: This div handles horizontal scrolling --}}
+                <div class="card-body p-0">
+                    <div class="table-responsive">
                         <table class="table table-hover w-100" id="example1">
-                            <thead class="bg-primary text-white" >
+                            <thead>
                                 <tr>
                                     <th>#Sr.No</th>
                                     <th>Customer Name</th>
@@ -367,7 +307,7 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $customer->name ?? '' }}</td>
                                     <td>{{ $customer->mobile_number ?? ''}}</td>
-                                    <td style="max-width: 150px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">
+                                    <td style="max-width: 200px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">
                                         {{ $customer->address ?? '' }}
                                     </td>
                                     <td>{{ $customer->cnic ?? '' }}</td>
@@ -378,7 +318,6 @@
                                             <a href="{{ route('customer.view', ['id' => $customer->id]) }}" class="btn btn-sm btn-info" title="View Details">
                                                 <i class="fa fa-eye"></i> View
                                             </a>
-                                           
                                         </div>
                                     </td>
                                 </tr>
@@ -391,31 +330,47 @@
         </div>
     </div>
 </div>
-
 @stop
 
 @pushOnce('scripts')
 <script>
 $(document).ready(function() {
-    // Initializing DataTable
+    function initDataTable() {
+        if ($('#example1').length) {
+            if ($.fn.DataTable.isDataTable('#example1')) {
+                $('#example1').DataTable().clear().destroy();
+            }
+            $('#example1').DataTable({
+                responsive: false, 
+                lengthChange: true,
+                autoWidth: false, 
+                scrollY: false, 
+                scrollX: false, 
+                buttons: ["excel", "pdf"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        }
+    }
     initDataTable();
 
-    // Open modal for adding a new customer
     $('#addCustomerBtn').click(function() {
         $('#addCutomerModalLabel').text('Add New Customer');
-        $('#customerForm')[0].reset(); // Reset form fields
-        $('.text-danger').addClass('d-none'); // Hide all validation errors
-        $('#submitBtn').text('Save Customer').data('action', 'add');
+        $('#customerForm')[0].reset();
+        $('.text-danger').addClass('d-none');
+        $('#submitBtn').text('Save Customer').data('action', 'add').removeData('id');
         $('#addCutomerModal').modal('show');
     });
 
-    // Form submit handler for add/edit
     $('#customerForm').submit(function(e) {
         e.preventDefault();
-
         const actionType = $('#submitBtn').data('action');
         const customerId = $('#submitBtn').data('id');
-        const url = actionType === 'add' ? '{{ route("add.customers") }}' : '/customers/' + customerId;
+        let url = '{{ route("add.customers") }}';
+        let methodType = 'POST';
+
+        if (actionType === 'edit' && customerId) { 
+            url = '/customers/' + customerId; 
+            methodType = 'PUT'; 
+        }
 
         const formData = {
             _token: '{{ csrf_token() }}',
@@ -424,50 +379,57 @@ $(document).ready(function() {
             address: $('#address').val().trim(),
             cnic: $('#cnic').val().trim(),
         };
-
-        // Frontend validation
-        let hasError = false;
-        $('.text-danger').addClass('d-none'); // Hide previous errors
-
-        function getErrorElementId(key) {
-            return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) + 'Error';
+        if(methodType === 'PUT') {
+            formData._method = 'PUT';
         }
 
-        // Validate each field
-        Object.keys(formData).forEach(function(key) {
-            const value = formData[key];
-            const errorElement = $('#' + getErrorElementId(key));
+        let hasError = false;
+        $('.text-danger').addClass('d-none');
+        
+        function getErrorElementId(key) {
+            if (key === 'mobile_no') return 'mobileNoError';
+            return key + 'Error';
+        }
 
-            if (!value && key !== '_token') {
-                errorElement.removeClass('d-none');
+        Object.keys(formData).forEach(function(key) {
+            if (key === '_token' || key === '_method') return;
+            const value = formData[key];
+            const errorElementId = getErrorElementId(key);
+            const errorElement = $('#' + errorElementId);
+            
+            if (!value) {
+                if (errorElement.length) {
+                    errorElement.removeClass('d-none');
+                }
                 hasError = true;
             }
         });
 
-        if (hasError) return; // Stop if there are frontend validation errors
+        if (hasError) return;
 
-        // AJAX request for add or update
         $.ajax({
             url: url,
-            type: actionType === 'add' ? 'POST' : 'PUT',
+            type: methodType,
             data: formData,
             success: function(response) {
                 Swal.fire({
                     title: "Success!",
-                    text: response.message || (actionType === 'add' ? 'Customer added successfully!' : 'Customer updated successfully!'),
+                    text: (response.message || (actionType === 'add' ? 'Customer added successfully!' : 'Customer updated successfully!')),
                     icon: "success",
                 });
-
                 $('#addCutomerModal').modal('hide');
-                $('#customerForm')[0].reset(); // Reset form fields
+                $('#customerForm')[0].reset();
                 refreshTable();
             },
             error: function(xhr) {
-                if (xhr.status === 422) { // Validation errors from backend
+                if (xhr.status === 422) {
                     const errors = xhr.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
                         const errorElementId = getErrorElementId(key);
-                        $('#' + errorElementId).text(errors[key][0]).removeClass('d-none');
+                        const errorElement = $('#' + errorElementId);
+                         if (errorElement.length) {
+                            errorElement.text(errors[key][0]).removeClass('d-none');
+                        }
                     });
                     Swal.fire({
                         icon: "error",
@@ -478,127 +440,21 @@ $(document).ready(function() {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: "Something went wrong!",
-                        footer: '<a href="#">An error occurred. Please try again.</a>'
+                        text: "Something went wrong! Please try again.",
                     });
                 }
             },
         });
     });
 
-    // Function to refresh the table content and reinitialize DataTables
     function refreshTable() {
-        // Use a temporary element to load the new table content to avoid issues during reinitialization
-        $('body').append('<div id="tempTableContent" style="display:none;"></div>');
-        $('#tempTableContent').load("{{ route('show.customers') }} #tableHolder > *", function() {
-            // Destroy the old DataTable instance if it exists
+        $('#tableHolder').load("{{ route('show.customers') }} #tableHolder > *", function() {
             if ($.fn.DataTable.isDataTable('#example1')) {
                 $('#example1').DataTable().destroy();
             }
-
-            // Replace the old table body with the new one
-            $('#tableHolder').html($('#tempTableContent #tableHolder').html());
-            $('#tempTableContent').remove(); // Remove the temporary element
-
-            // Reinitialize the DataTable
             initDataTable();
         });
     }
-
-    // Initialize/Reinitialize DataTable
-    function initDataTable() {
-        if ($('#example1').length) {
-            if ($.fn.DataTable.isDataTable('#example1')) {
-                // Destroy previous instance of DataTable
-                $('#example1').DataTable().clear().destroy();
-            }
-
-            // Re-initialize DataTable with options
-            $('#example1').DataTable({
-                responsive: false, // <--- IMPORTANT: Changed to false
-                lengthChange: true,
-                autoWidth: false, // <--- IMPORTANT: Changed to false
-                scrollY: false,
-                scrollX: false,   // <--- IMPORTANT: Changed to false
-                buttons: ["excel", "pdf"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-        } else {
-            console.log('Table #example1 not found in DOM, skipping initialization');
-        }
-    }
-
-    // Edit customer logic
-    $(document).on('click', '.edit-customer', function() {
-        const customerId = $(this).data('id');
-        $.ajax({
-            url: '/customers/' + customerId,
-            type: 'GET',
-            success: function(response) {
-                $('#addCutomerModalLabel').text('Edit Customer');
-                $('#customerForm')[0].reset();
-                $('.text-danger').addClass('d-none'); // Hide errors
-                $('#submitBtn').text('Update Customer').data('action', 'edit').data('id', customerId);
-                $('#name').val(response.customer.name);
-                $('#mobile_no').val(response.customer.mobile_number);
-                $('#address').val(response.customer.address);
-                $('#cnic').val(response.customer.cnic);
-                $('#addCutomerModal').modal('show');
-            },
-            error: function() {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error!",
-                    text: "Could not fetch customer details. Please try again.",
-                });
-            },
-        });
-    });
-
-    // Delete customer logic
-    $(document).on('click', '.delete-customer', function() {
-        const customerId = $(this).data('id');
-
-        Swal.fire({
-            title: "Are you sure?",
-            text: "Do you really want to delete this customer?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, cancel!"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/customers/' + customerId,
-                    type: 'DELETE',
-                    data: { _token: '{{ csrf_token() }}' },
-                    success: function(response) {
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Customer deleted successfully!",
-                            icon: "success",
-                        });
-                        refreshTable();
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Something went wrong!",
-                            footer: '<a href="#">An error occurred while deleting the customer. Please try again.</a>'
-                        });
-                    }
-                });
-            } else {
-                Swal.fire({
-                    title: "Cancelled",
-                    text: "The customer is safe.",
-                    icon: "info"
-                });
-            }
-        });
-    });
 });
 </script>
 @endPushOnce

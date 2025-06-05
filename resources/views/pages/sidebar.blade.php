@@ -21,51 +21,41 @@
             </a>
          </li>
 
-           <li class="nav-item">
-            <a href="{{route('show.transaction')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Sales
-               </p>
-            </a>
+        <li class="nav-item">
+  <a href="{{route('show.transaction')}}" class="nav-link">
+    <i class="nav-icon fas fa-shopping-cart"></i>
+    <p>Sales</p>
+  </a>
+</li>
 
-         </li>
-         <li class="nav-item">
-            <a href="{{route('show.categories')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Category
-               </p>
-            </a>
+<li class="nav-item">
+  <a href="{{route('show.categories')}}" class="nav-link">
+    <i class="nav-icon fas fa-tags"></i>
+    <p>Category</p>
+  </a>
+</li>
 
-         </li>
-         <li class="nav-item">
-            <a href="{{route('show.products')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Product
-               </p>
-            </a>
+<li class="nav-item">
+  <a href="{{route('show.products')}}" class="nav-link">
+    <i class="nav-icon fas fa-box-open"></i>
+    <p>Product</p>
+  </a>
+</li>
 
-         </li>
-         <li class="nav-item">
-            <a href="{{route('show.suppliers')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Supplier
-               </p>
-            </a>
+<li class="nav-item">
+  <a href="{{route('show.suppliers')}}" class="nav-link">
+    <i class="nav-icon fas fa-truck"></i>
+    <p>Supplier</p>
+  </a>
+</li>
 
-         </li>
-         <li class="nav-item">
-            <a href="{{route('show.customers')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Customer
-               </p>
-            </a>
+<li class="nav-item">
+  <a href="{{route('show.customers')}}" class="nav-link">
+    <i class="nav-icon fas fa-users"></i>
+    <p>Customer</p>
+  </a>
+</li>
 
-         </li>
           <li class="nav-item">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-chart-line"></i> {{-- Icon for Reports --}}
