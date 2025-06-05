@@ -8,6 +8,11 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SaleController;
 
 Route::get('/run-commands', [DashboardController::class, 'runMigrations']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -70,3 +75,26 @@ Route::delete('/transaction/{id}', [TransactionController::class, 'destroy'])->n
 // return view('pages.customer.pdf_generate');
 // });
 Route::get('/sales', [SaleController::class, 'index'])->name('sale.index');
+// New Routes for Reports Module
+Route::prefix('reports')->group(function () {
+    Route::get('/dashboard', [ReportController::class, 'dashboard'])->name('reports.dashboard');
+    Route::get('/sales', [ReportController::class, 'sales'])->name('reports.sales');
+    Route::get('/products', [ReportController::class, 'products'])->name('reports.products');
+    Route::get('/customers', [ReportController::class, 'customers'])->name('reports.customers');
+    Route::get('/purchases-suppliers', [ReportController::class, 'purchasesAndSuppliers'])->name('reports.purchases_suppliers');
+    Route::get('/expenses', [ReportController::class, 'expensesReport'])->name('reports.expenses');
+});
+// ... other routes
+
+// Purchase Routes
+Route::prefix('purchases')->name('purchase.')->group(function () {
+    Route::get('/create', [PurchaseController::class, 'create'])->name('create');
+    Route::post('/store', [PurchaseController::class, 'store'])->name('store');
+    Route::get('/product-details/{id}', [PurchaseController::class, 'getProductDetails'])->name('product.details');
+    Route::get('/', [PurchaseController::class, 'index'])->name('index'); // Route to list purchases
+});
+
+Route::middleware('auth')->group(function () { // Assuming expenses should be behind auth
+    Route::resource('expense_categories', ExpenseCategoryController::class);
+    Route::resource('expenses', ExpenseController::class);
+});
