@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Transaction;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use PDF;
+
 class TransactionController extends Controller
 {
     public function transaction_show($id = null)
@@ -36,7 +37,21 @@ class TransactionController extends Controller
 
         return view('pages.sales.show', $data);
     }
+     public function destroy($id)
+    {
+        try {
+            $transaction = Transaction::findOrFail($id);
+            $transaction->delete();
 
+            // You can return a JSON response indicating success
+            return response()->json(['status' => 'success', 'message' => 'Transaction deleted successfully!']);
+        } catch (\Exception $e) {
+            // Log the error (optional)
+            Log::error('Error deleting transaction: ' . $e->getMessage());
+            // Return an error response
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete transaction.'], 500);
+        }
+    }
    public function store_transaction(Request $request)
     {
         $product = Product::findOrFail($request->product_id);

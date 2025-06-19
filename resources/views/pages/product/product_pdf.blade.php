@@ -72,6 +72,12 @@
 </style>
 
 <body>
+    <div class="row mt-4">
+    <div class="col-12 justify-content-end align-items-center d-flex">
+        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+    </div>
+</div>
+
     <div class="row mt-5">
         <div class="col-12">
             <div class="card">

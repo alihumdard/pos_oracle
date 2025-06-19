@@ -7,12 +7,10 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
-     // Add Category
+     
      public function supplier_add(Request $request)
      {
-        //  $request->validate([
-        //      'name' => 'required|unique:categories,name',
-        //  ]);
+    
     
          $supplier = new Supplier();
          $supplier->supplier = $request->supplier;
@@ -25,21 +23,20 @@ class SupplierController extends Controller
          return response()->json(['message' => 'Supplier added successfully!', 'Supplier' => $supplier]);
      }
  
-     // Show Categories
+   
      public function supplier_show()
      {
        $suppliers = Supplier::orderBy('id', 'DESC')->get();
          return view('pages.supplier.show', compact('suppliers'));
      }
  
-     // Edit Supplier (fetch data for editing)
+     
      public function supplier_edit($id)
      {
          $supplier = Supplier::findOrFail($id);
          return response()->json($supplier);
      }
  
-     // Update Supplier
      public function Supplier_update(Request $request, $id)
      {
          $supplier = Supplier::findOrFail($id);

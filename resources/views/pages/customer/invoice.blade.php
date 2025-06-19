@@ -113,6 +113,12 @@
         <div class="content-wrapper">
             <section class="content">
                 <div class="container-fluid">
+                    <div class="row mt-4">
+                        <div class="col-12 justify-content-end align-items-center d-flex">
+                            <button class="btn btn-primary" onclick="history.back()">← Back</button>
+                        </div>
+                    </div>
+
                     <div class="invoice-box">
                         <div class="text-center">
                             <img src="{{ asset('assets/logo/logo.jpg') }}" alt="Logo" width="120" height="120" class="invoice-logo">
@@ -171,15 +177,15 @@
 
                         <div class="section-title">Payment Summary</div>
                        @php
-                            $total_discount = $invoices->sum('discount');
+                          $total_discount = $invoices->sum('discount');
                             $total_bill = $invoices->sum('total_amount');
                             $total_services = $invoices->sum('service_charges');
-                            $credit = $sale->customers->credit ?? 0;
                             $cash = $sale->cash ?? 0;
 
-                            $total_due = $total_bill + $credit;
-                            $remaining_payment = $cash - $total_due;
-                            $total_pending_amount = $total_due - $cash;
+                            // Amount remaining for *this invoice only*
+                            $remaining_payment = $cash - $total_bill;
+                            $total_pending_amount = $total_bill - $cash;
+
                         @endphp
 
                         <table class="table table-sm table-borderless">
@@ -257,7 +263,7 @@
     @include('pages.script')
 
     <!-- CKEditor Script -->
-   <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
+   <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
     @if(empty($sale->note))
     <script>
         $(document).ready(function() {

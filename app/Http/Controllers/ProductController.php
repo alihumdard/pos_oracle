@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
-use PDF;
+use Barryvdh\DomPDF\Facade\PDF;
 
 // use App\Models\Supplier;
 
