@@ -15,9 +15,15 @@ class CustomerController extends Controller
 {
     public function customer_show()
     {
-        $data['customers'] = Customer::orderBy('created_at', 'desc')->get();
+$data['customers'] = Customer::with('sales')
+    ->whereHas('sales')
+    ->withMax('sales as last_sale_at', 'created_at')
+    ->orderByDesc('last_sale_at')
+    ->get();
+
         return view('pages.customer.show', $data);
     }
+    
     public function view($id)
     {
         $data['manual_customers'] = Customer::with(['manualPayments' => function ($query) {
@@ -27,6 +33,7 @@ class CustomerController extends Controller
         $data['sales'] = Sale::where('customer_id', $id)->orderBy('created_at', 'desc')->get();
         return view('pages.customer.view', $data);
     }
+    
     public function detail($id)
     {
         $sale = Sale::findOrFail($id);
@@ -35,6 +42,7 @@ class CustomerController extends Controller
 
         return view('pages.sales.detail', $data);
     }
+    
     public function customer_add(Request $request)
     {
         if ($request->action != 'youGot' && $request->action != 'youGive') {

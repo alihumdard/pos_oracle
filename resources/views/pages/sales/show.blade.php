@@ -2,6 +2,12 @@
 
 @section('content')
 
+<div class="row mt-4">
+    <div class="col-12 justify-content-end align-items-center d-flex">
+        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+    </div>
+</div>
+
 @php
     $editing = isset($editTransaction);
 @endphp

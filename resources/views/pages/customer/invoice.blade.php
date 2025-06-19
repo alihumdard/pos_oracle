@@ -113,6 +113,12 @@
         <div class="content-wrapper">
             <section class="content">
                 <div class="container-fluid">
+                    <div class="row mt-4">
+                        <div class="col-12 justify-content-end align-items-center d-flex">
+                            <button class="btn btn-primary" onclick="history.back()">← Back</button>
+                        </div>
+                    </div>
+
                     <div class="invoice-box">
                         <div class="text-center">
                             <img src="{{ asset('assets/logo/logo.jpg') }}" alt="Logo" width="120" height="120" class="invoice-logo">

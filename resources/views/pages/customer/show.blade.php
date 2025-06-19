@@ -270,6 +270,11 @@
 </style>
 
 @section('content')
+<div class="row mt-4">
+    <div class="col-12 justify-content-end align-items-center d-flex">
+        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+    </div>
+</div>
 
 <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">

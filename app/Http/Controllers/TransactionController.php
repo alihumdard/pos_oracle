@@ -7,8 +7,9 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\PDF;
 use Illuminate\Validation\Rule;
+use PDF;
+
 class TransactionController extends Controller
 {
     public function transaction_show($id = null)
