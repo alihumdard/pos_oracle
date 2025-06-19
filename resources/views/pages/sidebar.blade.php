@@ -16,7 +16,6 @@
                
                <p>
                   Dashboard
-                  <i class="right fas fa-angle-left"></i>
                </p>
             </a>
          </li>
@@ -28,8 +27,25 @@
                   Sales
                </p>
             </a>
+         </li>
+            <li class="nav-item">
+            <a href="{{route('show.customers')}}" class="nav-link">
+               <i class="nav-icon fas fa-book"></i>
+               <p>
+                  Customer
+               </p>
+            </a>
+         </li>
+        <li class="nav-item">
+            <a href="{{route('show.suppliers')}}" class="nav-link">
+               <i class="nav-icon fas fa-book"></i>
+               <p>
+                  Supplier
+               </p>
+            </a>
 
          </li>
+         
          <li class="nav-item">
             <a href="{{route('show.categories')}}" class="nav-link">
                <i class="nav-icon fas fa-book"></i>
@@ -44,24 +60,6 @@
                <i class="nav-icon fas fa-book"></i>
                <p>
                   Product
-               </p>
-            </a>
-
-         </li>
-         <li class="nav-item">
-            <a href="{{route('show.suppliers')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Supplier
-               </p>
-            </a>
-
-         </li>
-         <li class="nav-item">
-            <a href="{{route('show.customers')}}" class="nav-link">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Customer
                </p>
             </a>
 
