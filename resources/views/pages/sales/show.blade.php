@@ -567,13 +567,13 @@
 
     $('#customerMobile').on('input', function() {
         var customerMobile = $(this).val();
-        if (customerMobile.length < 4) {
+        if (customerMobile.length < 11) {
             $('#customerName, #customerCNIC, #customerAddress, #customerId').val('');
             $('#customerList').empty().hide();
             return;
         }
 
-        if (customerMobile.length >= 4) {
+        if (customerMobile.length == 11) {
             $.ajax({
                 url: "{{ route('search.customer') }}",
                 method: 'GET',
