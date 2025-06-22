@@ -16,11 +16,16 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name'     => 'Rana Electronics',
-            'email'    => 'ranaelectronics@gmail.com',
-            'role'     => 'admin',
-            'password' =>  Hash::make('admin@123'),
-        ]);
+        // This is the corrected, idempotent way to seed a specific user.
+        User::updateOrCreate(
+            [
+                'email' => 'ranaelectronics@gmail.com' // Attribute to find the user by
+            ],
+            [
+                'name'     => 'Rana Electronics',
+                'role'     => 'admin',
+                'password' => Hash::make('admin@123'),
+            ]
+        );
     }
 }

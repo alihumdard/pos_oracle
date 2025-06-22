@@ -2,14 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sale;
+use App\Models\Sale; 
 use Illuminate\Http\Request;
+use Mews\Purifier\Facades\Purifier; 
 
 class SaleController extends Controller
 {
-     public function index()
+    public function store(Request $request)
     {
-        $sales = Sale::latest()->paginate(15); // Example: Get latest sales, paginated
-        return view('sales.index', ['sales' => $sales]); // Pass sales to a view named 'sales.index'
+        $validated = $request->validate([
+            'id' => 'required|integer|exists:sales,id',
+            'note' => 'required|string',
+        ]);
+
+        $sale = Sale::findOrFail($validated['id']);
+
+        $clean_note = Purifier::clean($validated['note']);
+
+        $sale->note = $clean_note;
+        $sale->save();
+
+        return response()->json([
+            'status' => 'success',
+            'note' => $clean_note, 
+        ]);
     }
 }

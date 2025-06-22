@@ -1,88 +1,85 @@
 <style>
-@media (max-width: 990px) {
-  .sidebars {
-    display: none;
-  }
-}
+    @media (max-width: 990px) {
+        .sidebars {
+            display: none;
+        }
+    }
 
-<style>
     .main-sidebar {
         overflow-y: auto;
         max-height: 100vh;
     }
 </style>
 
-</style>
-
 <div class="sidebars sidebar">
-  
-   <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        
-         <li class="nav-item ">
-            <a href="{{route('reports.dashboard')}}" class="nav-link {{ Route::is('reports.dashboard') ? 'active' : '' }}">
-               
-               <p>
-                  Dashboard
-               </p>
-            </a>
-         </li>
 
-           <li class="nav-item">
-            <a href="{{route('show.transaction')}}" class="nav-link {{ Route::is('show.transaction') ? 'active' : '' }}">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Sale
-               </p>
-            </a>
-         </li>
+    <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+            <li class="nav-item ">
+                <a href="{{route('reports.dashboard')}}" class="nav-link {{ Route::is('reports.dashboard') ? 'active' : '' }}">
+
+                    <p>
+                        Dashboard
+                    </p>
+                </a>
+            </li>
+
             <li class="nav-item">
-            <a href="{{route('show.customers')}}" class="nav-link {{ Route::is('show.customers') ? 'active' : '' }}">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Customer
-               </p>
-            </a>
-         </li>
-        <li class="nav-item">
-            <a href="{{route('show.suppliers')}}" class="nav-link {{ Route::is('show.suppliers') ? 'active' : '' }}">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Supplier
-               </p>
-            </a>
+                <a href="{{route('show.transaction')}}" class="nav-link {{ Route::is('show.transaction') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-book"></i>
+                    <p>
+                        Sale
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('show.customers')}}" class="nav-link {{ Route::is('show.customers') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-book"></i>
+                    <p>
+                        Customer
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('show.suppliers')}}" class="nav-link {{ Route::is('show.suppliers') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-book"></i>
+                    <p>
+                        Supplier
+                    </p>
+                </a>
 
-         </li>
-         
-         <li class="nav-item">
-            <a href="{{route('show.categories')}}" class="nav-link {{ Route::is('show.categories') ? 'active' : '' }}">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Category
-               </p>
-            </a>
+            </li>
 
-         </li>
-         <li class="nav-item">
-            <a href="{{route('show.products')}}" class="nav-link {{ Route::is('show.products') ? 'active' : '' }}">
-               <i class="nav-icon fas fa-book"></i>
-               <p>
-                  Product
-               </p>
-            </a>
+            <li class="nav-item">
+                <a href="{{route('show.categories')}}" class="nav-link {{ Route::is('show.categories') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-book"></i>
+                    <p>
+                        Category
+                    </p>
+                </a>
 
-         </li>
-         
-        @php
-                $reportRoutes = [
-                    'reports.sales',
-                    'reports.products',
-                    'reports.customers',
-                    'reports.purchases_suppliers',
-                    'reports.expenses',
-                ];
+            </li>
+            <li class="nav-item">
+                <a href="{{route('show.products')}}" class="nav-link {{ Route::is('show.products') ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-book"></i>
+                    <p>
+                        Product
+                    </p>
+                </a>
+
+            </li>
+
+            @php
+            $reportRoutes = [
+            'reports.sales',
+            'reports.products',
+            'reports.customers',
+            'reports.purchases_suppliers',
+            'reports.expenses',
+            ];
             @endphp
-            
+
             <li class="nav-item {{ Route::is($reportRoutes) ? 'menu-open' : '' }}">
                 <a href="#" class="nav-link {{ Route::is($reportRoutes) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-chart-line"></i>
@@ -125,9 +122,9 @@
                 </ul>
             </li>
             @php
-                $purchaseRoutes = ['purchase.index', 'purchase.create'];
+            $purchaseRoutes = ['purchase.index', 'purchase.create'];
             @endphp
-            
+
             <li class="nav-item {{ Route::is($purchaseRoutes) ? 'menu-open' : '' }}">
                 <a href="#" class="nav-link {{ Route::is($purchaseRoutes) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-shopping-cart"></i>
@@ -154,9 +151,9 @@
 
             {{-- ... other sidebar items ... --}}
             @php
-                $expenseRoutes = ['expenses.index', 'expenses.create', 'expense_categories.index'];
+            $expenseRoutes = ['expenses.index', 'expenses.create', 'expense_categories.index'];
             @endphp
-            
+
             <li class="nav-item {{ Route::is($expenseRoutes) ? 'menu-open' : '' }}">
                 <a href="#" class="nav-link {{ Route::is($expenseRoutes) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-file-invoice-dollar"></i>
@@ -187,21 +184,21 @@
                 </ul>
             </li>
 
-      </ul>
-   </nav>
-   <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-      <div class="image">
-         <img src="{{asset('assets/dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
-      </div>
-      <div class="info">
-         <a href="{{route('logout')}}" class="d-block">Logout</a>
-      </div>
-   </div>
- 
+        </ul>
+    </nav>
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+            <img src="{{asset('assets/dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+            <a href="{{route('logout')}}" class="d-block">Logout</a>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         const activeLink = document.querySelector(".nav-link.active");
 
         if (activeLink) {
@@ -216,4 +213,3 @@
         }
     });
 </script>
-
