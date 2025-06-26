@@ -294,7 +294,7 @@
                     success: function(response) {
                         if (response.status === 'success') {
                             $('#noteForm').hide();
-                            $('#noteText').text(response.note);
+                            $('#noteText').html(response.note);
                             $('#displayNote').show();
                         } else {
                             alert('Failed to update the note.');
