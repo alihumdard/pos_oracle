@@ -1,3 +1,4 @@
+@include('pages.script')
 <style>
     @media (max-width: 990px) {
         .sidebars {
@@ -11,7 +12,7 @@
     }
 </style>
 
-<div class="sidebars sidebar">
+<div class=" sidebars sidebar ">
 
     <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
