@@ -15,9 +15,15 @@ class CustomerController extends Controller
 {
     public function customer_show()
     {
-        $data['customers'] = Customer::orderBy('created_at', 'desc')->get();
+$data['customers'] = Customer::with('sales')
+    ->whereHas('sales')
+    ->withMax('sales as last_sale_at', 'created_at')
+    ->orderByDesc('last_sale_at')
+    ->get();
+
         return view('pages.customer.show', $data);
     }
+    
     public function view($id)
     {
         $data['manual_customers'] = Customer::with(['manualPayments' => function ($query) {
@@ -27,10 +33,23 @@ class CustomerController extends Controller
         $data['sales'] = Sale::where('customer_id', $id)->orderBy('created_at', 'desc')->get();
         return view('pages.customer.view', $data);
     }
+
     public function detail($id)
     {
         $sale = Sale::findOrFail($id);
-        $transactionIds = json_decode($sale->transaction_id, true);
+
+        $transaction_id_from_sale = $sale->transaction_id;
+        $transactionIds = [];
+
+        if (is_array($transaction_id_from_sale)) {
+            $transactionIds = $transaction_id_from_sale;
+        } elseif (is_string($transaction_id_from_sale)) {
+            $decoded_ids = json_decode($transaction_id_from_sale, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_ids)) {
+                $transactionIds = $decoded_ids;
+            }
+        }
+
         $data['transactions'] = Transaction::with('products')->whereIn('id', $transactionIds)->get();
 
         return view('pages.sales.detail', $data);

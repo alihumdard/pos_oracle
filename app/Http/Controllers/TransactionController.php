@@ -7,31 +7,45 @@ use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\PDF;
 use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
+
 class TransactionController extends Controller
 {
+
     public function transaction_show($id = null)
     {
         $data['transactions'] = Transaction::where('status', 'active')->get();
         $data['products'] = Product::all();
-        $data['editTransactions'] = collect(); // for sale
-        $data['editTransaction'] = null; // for single transaction edit
+        $data['editTransactions'] = collect();
+        $data['editTransaction'] = null;
         $data['sale'] = null;
         $data['customer'] = null;
 
         if ($id) {
             $sale = Sale::with('customers')->findOrFail($id);
-            $transactionIds = json_decode($sale->transaction_id, true);
+
+            $transaction_id_from_sale = $sale->transaction_id;
+            $transactionIds = [];
+
+            if (is_array($transaction_id_from_sale)) {
+                $transactionIds = $transaction_id_from_sale;
+            } elseif (is_string($transaction_id_from_sale)) {
+                $decoded_ids = json_decode($transaction_id_from_sale, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_ids)) {
+                    $transactionIds = $decoded_ids;
+                }
+            }
 
             $data['transactions'] = Transaction::with('products')
-            ->whereIn('id', $transactionIds)
-            ->get();
+                ->whereIn('id', $transactionIds)
+                ->get();
+
             $data['sale'] = $sale;
             $data['customer'] = $sale->customers;
 
-            // OPTIONAL: if editing the first transaction only
-            $data['editTransaction'] = $data['editTransactions']->first();
+            $data['editTransaction'] = $data['transactions']->first();
         }
 
         return view('pages.sales.show', $data);
@@ -42,16 +56,14 @@ class TransactionController extends Controller
             $transaction = Transaction::findOrFail($id);
             $transaction->delete();
 
-            // You can return a JSON response indicating success
             return response()->json(['status' => 'success', 'message' => 'Transaction deleted successfully!']);
         } catch (\Exception $e) {
-            // Log the error (optional)
             Log::error('Error deleting transaction: ' . $e->getMessage());
-            // Return an error response
             return response()->json(['status' => 'error', 'message' => 'Failed to delete transaction.'], 500);
         }
     }
-   public function store_transaction(Request $request)
+
+    public function store_transaction(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
 
@@ -81,7 +93,7 @@ class TransactionController extends Controller
         ]);
 
         return response()->json([
-            'status' => 'success', 
+            'status' => 'success',
             'id' => $transaction->id,
             'product_id' => $transaction->product_id,
             'product_name' => $transaction->products->item_name,
@@ -267,22 +279,45 @@ class TransactionController extends Controller
         $data['cash'] = $cash;
         $data['credit'] = $credit;
         $data['debit'] = $debit;
-        $transaction_id = json_decode($data['sale']->transaction_id);
+
+        $transaction_id_from_sale = $data['sale']->transaction_id;
+        $transaction_ids = [];
+
+        if (is_array($transaction_id_from_sale)) {
+            $transaction_ids = $transaction_id_from_sale;
+        } elseif (is_string($transaction_id_from_sale)) {
+            $decoded_ids = json_decode($transaction_id_from_sale, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_ids)) {
+                $transaction_ids = $decoded_ids;
+            }
+        }
+
         $data['invoices'] = Transaction::with('products')
-            ->whereIn('id', $transaction_id)->get();
+            ->whereIn('id', $transaction_ids)->get();
+
         return view('pages.customer.invoice', $data);
-        
     }
 
     public function generatePDF($id)
     {
         $data['sale'] = Sale::with('customers')->findOrFail($id);
-        $transaction_id = json_decode($data['sale']->transaction_id);
+
+        $transaction_id_from_sale = $data['sale']->transaction_id;
+        $transaction_ids = [];
+
+        if (is_array($transaction_id_from_sale)) {
+            $transaction_ids = $transaction_id_from_sale;
+        } elseif (is_string($transaction_id_from_sale)) {
+            $decoded_ids = json_decode($transaction_id_from_sale, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_ids)) {
+                $transaction_ids = $decoded_ids;
+            }
+        }
+
         $data['invoices'] = Transaction::with('products')
-            ->whereIn('id', $transaction_id)->get();
+            ->whereIn('id', $transaction_ids)->get();
 
-
-        $pdf = PDF::loadView('pages.customer.pdf_generate', $data);
+        $pdf = Pdf::loadView('pages.customer.pdf_generate', $data);
 
         return $pdf->download('invoice.pdf');
     }

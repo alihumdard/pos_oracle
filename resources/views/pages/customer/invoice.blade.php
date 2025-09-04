@@ -113,6 +113,12 @@
         <div class="content-wrapper">
             <section class="content">
                 <div class="container-fluid">
+                    <div class="row mt-4">
+                        <div class="col-12 justify-content-end align-items-center d-flex">
+                            <button class="btn btn-primary" onclick="history.back()">← Back</button>
+                        </div>
+                    </div>
+
                     <div class="invoice-box">
                         <div class="text-center">
                             <img src="{{ asset('assets/logo/logo.jpg') }}" alt="Logo" width="120" height="120" class="invoice-logo">
@@ -170,15 +176,15 @@
                         </div>
 
                         <div class="section-title">Payment Summary</div>
-                       @php
-                          $total_discount = $invoices->sum('discount');
-                            $total_bill = $invoices->sum('total_amount');
-                            $total_services = $invoices->sum('service_charges');
-                            $cash = $sale->cash ?? 0;
+                        @php
+                        $total_discount = $invoices->sum('discount');
+                        $total_bill = $invoices->sum('total_amount');
+                        $total_services = $invoices->sum('service_charges');
+                        $cash = $sale->cash ?? 0;
 
-                            // Amount remaining for *this invoice only*
-                            $remaining_payment = $cash - $total_bill;
-                            $total_pending_amount = $total_bill - $cash;
+                        // Amount remaining for *this invoice only*
+                        $remaining_payment = $cash - $total_bill;
+                        $total_pending_amount = $total_bill - $cash;
 
                         @endphp
 
@@ -195,28 +201,28 @@
                                 <th>Total Service Charges:</th>
                                 <td>{{ $total_services }}</td>
                             </tr>
-                            
+
                             @if($remaining_payment < 0)
-                            <tr>
+                                <tr>
                                 <th>Pending Payment:</th>
                                 <td>{{ abs($remaining_payment) }}</td>
-                            </tr>
-                            @else
-                            <tr>
-                                <th>Remaining Payment:</th>
-                                <td>{{ $remaining_payment }}</td>
-                            </tr>
-                            @endif
-                            <tr>
-                                <th>Cash:</th>
-                                <td>{{ $cash }}</td>
-                            </tr>
+                                </tr>
+                                @else
+                                <tr>
+                                    <th>Remaining Payment:</th>
+                                    <td>{{ $remaining_payment }}</td>
+                                </tr>
+                                @endif
+                                <tr>
+                                    <th>Cash:</th>
+                                    <td>{{ $cash }}</td>
+                                </tr>
 
 
-                            <tr>
-                                <th><strong>Total Pending Amount:</strong></th>
-                                <td><strong>{{ $total_pending_amount }}</strong></td>
-                            </tr>
+                                <tr>
+                                    <th><strong>Total Pending Amount:</strong></th>
+                                    <td><strong>{{ $total_pending_amount }}</strong></td>
+                                </tr>
                         </table>
 
                         @if(empty($sale->note))
@@ -231,15 +237,15 @@
                             </div>
                         </form>
                         @endif
-                        
+
                         <div id="displayNote" class="mt-3" @if(empty($sale->note)) style="display: none;" @endif>
                             <h5><strong>Note:</strong></h5>
                             <p id="noteText">
                                 {!! !empty($sale->note) ? $sale->note : '' !!}
                             </p>
                         </div>
-            
-                        
+
+
                         <div class="text-center mt-4">
                             <button class="btn btn-primary" onclick="printContent()" id="print_invoice">
                                 <i class="fas fa-print"></i> Print Invoice
@@ -257,13 +263,25 @@
     @include('pages.script')
 
     <!-- CKEditor Script -->
-   <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+
     @if(empty($sale->note))
     <script>
+        let noteEditor;
+
+        ClassicEditor
+            .create(document.querySelector('#note'))
+            .then(editor => {
+                noteEditor = editor;
+            })
+            .catch(error => {
+                console.error('There was a problem initializing CKEditor 5:', error);
+            });
+
         $(document).ready(function() {
             $('#submitNote').click(function() {
-                let note = CKEDITOR.instances.note.getData(); 
-                let saleId = "{{ $sale->id }}";
+                const note = noteEditor.getData();
+                const saleId = "{{ $sale->id }}";
 
                 $.ajax({
                     url: "{{ route('sale.store') }}",
@@ -287,9 +305,6 @@
                     },
                 });
             });
-
-           
-            CKEDITOR.replace('note');
         });
 
         function printContent() {

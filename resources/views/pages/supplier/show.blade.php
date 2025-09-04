@@ -1,6 +1,11 @@
 @extends('index')
 
 @section('content')
+<div class="row mt-4">
+    <div class="col-12 justify-content-end align-items-center d-flex">
+        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+    </div>
+</div>
 
 <div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document"> {{-- Added modal-lg for a larger modal on wider screens --}}
