@@ -68,7 +68,6 @@
                         Product
                     </p>
                 </a>
-
             </li>
 
             @php

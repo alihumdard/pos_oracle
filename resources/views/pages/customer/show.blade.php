@@ -212,8 +212,6 @@
     }
 </style>
 
-<<<<<<< HEAD
-=======
 @section('content')
 <div class="row mt-4">
     <div class="col-12 justify-content-end align-items-center d-flex">
@@ -221,7 +219,6 @@
     </div>
 </div>
 
->>>>>>> 248bd0604ed91cdb797dba05bcaa117de31951b9
 <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
