@@ -9,31 +9,8 @@
 </style>
 
 @section('content')
-<div class="container-fluid">
-    <div class="row mb-4 pt-4 align-items-center justify-content-between">
-        <div class="col-lg-8 col-md-7 d-flex align-items-center mb-3 mb-md-0">
-            <div class="rounded-circle d-flex justify-content-center align-items-center me-3 bg-light-primary shadow-sm"
-                style="width: 56px; height: 56px;">
-                <i class="fas fa-tachometer-alt text-primary fs-4"></i>
-            </div>
-
-            <div>
-                <h1 class="h3 fw-bold mt-1 text-dark">Dashboard Overview</h1>
-                <small class="text-muted fw-normal">Your business performance at a glance</small>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-5 d-flex justify-content-md-end justify-content-start gap-2">
-            <a href="{{ route('reports.dashboard') }}"
-                class="btn btn-outline-secondary btn-sm d-flex align-items-center">
-                <i class="fas fa-sync-alt me-2"></i> Reset
-            </a>
-
-            <button class="btn bg-indigo-600 btn-primary btn-sm d-flex align-items-center">
-                <i class="fas fa-download me-2"></i> Export
-            </button>
-        </div>
-    </div>
+<div class="">
+    @include('pages.header')
 
     {{-- Filter Form for Dashboard --}}
     <div class="bg-white shadow-md rounded-xl p-6 mb-6">
@@ -836,7 +813,8 @@
     {{-- Top Spenders Row --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Top Customers by Spending -->
-        <div class="bg-white shadow-lg mb-20 rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+        <div
+            class="bg-white shadow-lg mb-20 rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
             <div class="bg-gradient-to-r from-blue-500 to-blue-700 p-4">
                 <h6 class="text-white font-bold text-lg">Top 5 Customers by Spending</h6>
             </div>
@@ -876,7 +854,8 @@
         </div>
 
         <!-- Top Suppliers by Purchase Value -->
-        <div class="bg-white shadow-lg mb-20 rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+        <div
+            class="bg-white shadow-lg mb-20 rounded-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
             <div class="bg-gradient-to-r from-yellow-500 to-yellow-700 p-4">
                 <h6 class="text-white font-bold text-lg">Top 5 Suppliers by Purchase Value</h6>
             </div>
