@@ -40,45 +40,76 @@
     */
 </style>
 
-<div class="container-fluid mt-3">
+<div class="container-fluid py-10">
     <div class="row">
-        <div class="col-12">
-            <div class="filter-container">
-                <form action="{{ route('purchase.index') }}" method="GET">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-6 col-lg-2">
-                            <label for="start_date_filter" class="form-label">Start Date</label>
-                            <input type="date" name="start_date" id="start_date_filter" class="form-control" value="{{ request('start_date') }}">
-                        </div>
-                        <div class="col-md-6 col-lg-2">
-                            <label for="end_date_filter" class="form-label">End Date</label>
-                            <input type="date" name="end_date" id="end_date_filter" class="form-control" value="{{ request('end_date') }}">
-                        </div>
-                        <div class="col-md-6 col-lg-3">
-                            <label for="supplier_id_filter" class="form-label">Supplier</label>
-                            <select name="supplier_id_filter" id="supplier_id_filter" class="form-control select2-filter" style="width:100%;">
-                                <option value="">All Suppliers</option>
-                                @foreach($filter_suppliers as $s_item)
-                                <option value="{{ $s_item->id }}" {{ request('supplier_id_filter') == $s_item->id ? 'selected' : '' }}>{{ $s_item->supplier }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                         <div class="col-md-6 col-lg-3">
-                            <label for="product_id_filter" class="form-label">Product</label>
-                            <select name="product_id_filter" id="product_id_filter" class="form-control select2-filter" style="width:100%;">
-                                <option value="">All Products</option>
-                                @foreach($filter_products as $p_item)
-                                <option value="{{ $p_item->id }}" {{ request('product_id_filter') == $p_item->id ? 'selected' : '' }}>{{ $p_item->item_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-12 col-lg-2 text-lg-end mt-3 mt-lg-0 d-flex flex-column justify-content-end">
-                             <button type="submit" class="btn btn-primary-custom w-100 mb-1" style="height: 40px;"><i class="fas fa-filter me-1"></i>Filter</button>
-                            <a href="{{ route('purchase.index') }}" class="btn btn-secondary w-100" style="height: 40px;"><i class="fas fa-times me-1"></i>Clear</a>
-                        </div>
-                    </div>
-                </form>
+    <div class="col-12">
+     <div class="bg-white shadow-md rounded-xl p-6 mb-6">
+    <form action="{{ route('purchase.index') }}" method="GET" class="space-y-4">
+        <h6 class="text-lg font-semibold text-primary-600 mb-4 flex items-center gap-2">
+            <i class="fas fa-filter"></i> Purchase Filters
+        </h6>
+
+        <!-- Filters Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Start Date -->
+            <div>
+                <label for="start_date_filter" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                <input type="date" name="start_date" id="start_date_filter"
+                    value="{{ request('start_date') }}"
+                    class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-primary-500 focus:border-primary-500">
             </div>
+
+            <!-- End Date -->
+            <div>
+                <label for="end_date_filter" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                <input type="date" name="end_date" id="end_date_filter"
+                    value="{{ request('end_date') }}"
+                    class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-primary-500 focus:border-primary-500">
+            </div>
+
+            <!-- Supplier -->
+            <div>
+                <label for="supplier_id_filter" class="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
+                <select name="supplier_id_filter" id="supplier_id_filter"
+                    class="w-full border border-gray-300 rounded-lg p-2 text-sm select2-filter focus:ring-primary-500 focus:border-primary-500">
+                    <option value="">All Suppliers</option>
+                    @foreach($filter_suppliers as $s_item)
+                        <option value="{{ $s_item->id }}" {{ request('supplier_id_filter') == $s_item->id ? 'selected' : '' }}>
+                            {{ $s_item->supplier }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Product -->
+            <div>
+                <label for="product_id_filter" class="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                <select name="product_id_filter" id="product_id_filter"
+                    class="w-full border border-gray-300 rounded-lg p-2 text-sm select2-filter focus:ring-primary-500 focus:border-primary-500">
+                    <option value="">All Products</option>
+                    @foreach($filter_products as $p_item)
+                        <option value="{{ $p_item->id }}" {{ request('product_id_filter') == $p_item->id ? 'selected' : '' }}>
+                            {{ $p_item->item_name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-end gap-2">
+                <button type="submit"
+                    class="flex-1 bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg shadow transition duration-300">
+                    <i class="fas fa-filter mr-1"></i> Filter
+                </button>
+                <a href="{{ route('purchase.index') }}"
+                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-4 py-2 rounded-lg shadow transition duration-300">
+                    <i class="fas fa-times mr-1"></i> Clear
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
 
             <div class="card">
                 <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
@@ -89,7 +120,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table id="example1" class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -164,6 +195,26 @@
 @endsection
 
 @pushOnce('scripts')
+<script>
+       $(document).ready(function() {
+        $('#example1').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
+            ],
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            responsive: true,
+            "columnDefs": [{
+                    "orderable": false,
+                    "targets": 3
+                } // Disable sorting on 'Actions' column
+            ]
+        });
+    });
+</script>
 <script>
 $(document).ready(function() {
     $('.select2-filter').select2({

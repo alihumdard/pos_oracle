@@ -70,7 +70,7 @@
   <!-- Body -->
   <div class="p-6">
     <div class="overflow-x-auto rounded-lg">
-      <table class="min-w-full text-sm text-gray-700 border border-gray-200 rounded-lg shadow-sm">
+      <table id="example1" class="min-w-full text-sm text-gray-700 border border-gray-200 rounded-lg shadow-sm">
         <thead class="bg-blue-50 text-blue-700 text-left text-xs uppercase tracking-wider">
           <tr>
             <th class="px-4 py-3 border-b">Date</th>
@@ -108,9 +108,24 @@
 @endsection
 
 @push('scripts')
-{{-- <script>
-$(document).ready(function() {
-    $('#salesOverTimeTable').DataTable();
-});
-</script> --}}
+<script>
+     $(document).ready(function() {
+        $('#example1').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
+            ],
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            responsive: true,
+            "columnDefs": [{
+                    "orderable": false,
+                    "targets": 3
+                } // Disable sorting on 'Actions' column
+            ]
+        });
+    });
+</script>
 @endpush

@@ -46,91 +46,120 @@
     .balance-zero { color: #6c757d; }
 </style>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-10 col-md-12 mx-auto">
-            <div class="form-container">
-                <h3 class="mb-4 text-center" style="color: var(--primary-color);">Record New Purchase</h3>
-                <form id="purchaseForm">
-                    @csrf
-                    <div class="row">
-                        <div class="form-group col-md-6 mb-3">
-                            <label for="supplier_id">Supplier <span class="text-danger">*</span></label>
-                            <select name="supplier_id" id="supplier_id" class="form-control select2-single" style="width: 100%;">
-                                <option value="">Select Supplier</option>
-                                @foreach($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}" data-debit="{{ $supplier->debit }}" data-credit="{{ $supplier->credit }}">
-                                        {{ $supplier->supplier }} {{ $supplier->contact_person ? '(' . $supplier->contact_person . ')' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div id="supplier_balance_info" class="balance-info"></div>
-                            <small class="text-danger-small d-none" id="supplier_idError"></small>
-                        </div>
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-2xl p-8">
+        <!-- Heading -->
+        <h3 class="text-2xl font-bold text-center mb-6 text-primary-600">
+            Record New Purchase
+        </h3>
 
-                        <div class="form-group col-md-6 mb-3">
-                            <label for="product_id">Product <span class="text-danger">*</span></label>
-                            <select name="product_id" id="product_id" class="form-control select2-single" style="width: 100%;">
-                                <option value="">Select Product</option>
-                                @foreach($products as $product)
-                                     {{-- Removed data attributes for price/qty as they are fetched via AJAX --}}
-                                    <option value="{{ $product->id }}">
-                                        {{ $product->item_name }} {{ $product->item_code ? '(Code: ' . $product->item_code . ')' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <small class="text-danger-small d-none" id="product_idError"></small>
-                        </div>
-                    </div>
+        <form id="purchaseForm" class="space-y-6">
+            @csrf
+            <!-- Supplier & Product -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label for="supplier_id" class="block text-sm font-semibold text-gray-700 mb-1">
+                        Supplier <span class="text-red-500">*</span>
+                    </label>
+                    <select name="supplier_id" id="supplier_id"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">Select Supplier</option>
+                        @foreach($suppliers as $supplier)
+                        <option value="{{ $supplier->id }}" data-debit="{{ $supplier->debit }}" data-credit="{{ $supplier->credit }}">
+                            {{ $supplier->supplier }} {{ $supplier->contact_person ? '(' . $supplier->contact_person . ')' : '' }}
+                        </option>
+                        @endforeach
+                    </select>
+                    <p id="supplier_balance_info" class="text-sm text-gray-500 mt-1"></p>
+                    <small class="text-red-500 hidden" id="supplier_idError"></small>
+                </div>
 
-                    <div class="row">
-                        <div class="form-group col-md-4 mb-3">
-                            <label for="product_original_price_display">Product Original Price</label>
-                            <input type="text" id="product_original_price_display" class="form-control" readonly placeholder="0.00">
-                        </div>
-                        <div class="form-group col-md-4 mb-3">
-                            <label for="product_current_qty_display">Current Stock</label>
-                            <input type="text" id="product_current_qty_display" class="form-control" readonly placeholder="0">
-                        </div>
-                        <div class="form-group col-md-4 mb-3">
-                            <label for="purchase_quantity">Purchase Quantity <span class="text-danger">*</span></label>
-                            <input type="number" name="purchase_quantity" id="purchase_quantity" class="form-control" placeholder="Enter quantity" min="1">
-                            <small class="text-danger-small d-none" id="purchase_quantityError"></small>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-md-4 mb-3"> {{-- Adjusted from col-md-6 --}}
-                            <label for="total_payable_display">Total Purchase Amount</label>
-                            <input type="text" id="total_payable_display" class="form-control" readonly placeholder="0.00">
-                        </div>
-                         <div class="form-group col-md-4 mb-3"> {{-- NEW "Cash Paid" field --}}
-                            <label for="cash_paid">Cash Paid <span class="text-danger">*</span></label>
-                            <input type="number" name="cash_paid" id="cash_paid" class="form-control" placeholder="Enter cash paid" min="0" value="0">
-                            <small class="text-danger-small d-none" id="cash_paidError"></small>
-                        </div>
-                        <div class="form-group col-md-4 mb-3"> {{-- Adjusted from col-md-6 --}}
-                            <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
-                            <input type="date" name="purchase_date" id="purchase_date" class="form-control" value="{{ date('Y-m-d') }}">
-                            <small class="text-danger-small d-none" id="purchase_dateError"></small>
-                        </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label for="notes">Notes (Optional)</label>
-                        <textarea name="notes" id="notes" class="form-control" rows="3" placeholder="Any notes for this purchase..."></textarea>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary-submit px-5" id="submitPurchaseBtn">
-                            <i class="fas fa-save me-2"></i>Save Purchase
-                        </button>
-                    </div>
-                </form>
+                <div>
+                    <label for="product_id" class="block text-sm font-semibold text-gray-700 mb-1">
+                        Product <span class="text-red-500">*</span>
+                    </label>
+                    <select name="product_id" id="product_id"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">Select Product</option>
+                        @foreach($products as $product)
+                        <option value="{{ $product->id }}">
+                            {{ $product->item_name }} {{ $product->item_code ? '(Code: ' . $product->item_code . ')' : '' }}
+                        </option>
+                        @endforeach
+                    </select>
+                    <small class="text-red-500 hidden" id="product_idError"></small>
+                </div>
             </div>
-        </div>
+
+            <!-- Price, Stock & Quantity -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Product Original Price</label>
+                    <input type="text" id="product_original_price_display"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm" readonly placeholder="0.00">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Current Stock</label>
+                    <input type="text" id="product_current_qty_display"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm" readonly placeholder="0">
+                </div>
+                <div>
+                    <label for="purchase_quantity" class="block text-sm font-semibold text-gray-700 mb-1">
+                        Purchase Quantity <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" name="purchase_quantity" id="purchase_quantity" min="1"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500"
+                        placeholder="Enter quantity">
+                    <small class="text-red-500 hidden" id="purchase_quantityError"></small>
+                </div>
+            </div>
+
+            <!-- Amount, Cash & Date -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Total Purchase Amount</label>
+                    <input type="text" id="total_payable_display"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm" readonly placeholder="0.00">
+                </div>
+                <div>
+                    <label for="cash_paid" class="block text-sm font-semibold text-gray-700 mb-1">
+                        Cash Paid <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" name="cash_paid" id="cash_paid" min="0" value="0"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500"
+                        placeholder="Enter cash paid">
+                    <small class="text-red-500 hidden" id="cash_paidError"></small>
+                </div>
+                <div>
+                    <label for="purchase_date" class="block text-sm font-semibold text-gray-700 mb-1">
+                        Purchase Date <span class="text-red-500">*</span>
+                    </label>
+                    <input type="date" name="purchase_date" id="purchase_date"
+                        value="{{ date('Y-m-d') }}"
+                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500">
+                    <small class="text-red-500 hidden" id="purchase_dateError"></small>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div>
+                <label for="notes" class="block text-sm font-semibold text-gray-700 mb-1">Notes (Optional)</label>
+                <textarea name="notes" id="notes" rows="3"
+                    class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Any notes for this purchase..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center pt-4">
+                <button type="submit"
+                    class="bg-primary text-white font-semibold px-6 py-2.5 rounded-lg shadow transition duration-300">
+                    <i class="fas fa-save mr-2"></i> Save Purchase
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
 @endsection
 
 @pushOnce('scripts')
