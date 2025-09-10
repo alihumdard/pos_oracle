@@ -142,103 +142,124 @@
 
 
     {{-- Supplier Purchase Summary --}}
-   <div class="card shadow-lg border-0 rounded-3 mb-4">
-    <!-- Card Header -->
-    <div class="card-header bg-gradient-primary text-white rounded-top-3 py-3 d-flex align-items-center">
-        <i class="bi bi-truck fs-4 me-2"></i>
-        <h6 class="m-0 fw-bold">Supplier Purchase Summary</h6>
-    </div>
-
-    <!-- Card Body -->
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle" id="example1" width="100%">
-                <thead class="bg-gradient-primary">
-                    <tr>
-                        <th>Supplier Name</th>
-                        <th class="text-end">Total Purchase Value</th>
-                        <th class="text-center">Purchase Count</th>
-                        <th class="text-end">Current Overall Balance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($reports['supplierPurchaseSummary'] as $summary)
-                    <tr>
-                        <td class="fw-semibold">{{ $summary['name'] }}</td>
-                        <td class="text-end text-success fw-bold">
-                            {{ number_format($summary['total_purchase_value'], 2) }}
-                        </td>
-                        <td class="text-center text-primary fw-semibold">
-                            {{ $summary['purchase_count'] }}
-                        </td>
-                        <td class="text-end fw-bold 
-                            @if($summary['balance'] > 0.009) text-success 
-                            @elseif($summary['balance'] < -0.009) text-danger 
-                            @else text-muted @endif">
-                            {{ number_format($summary['balance'], 2) }}
-                            @if($summary['balance'] > 0.009) <span class="badge bg-success ms-2">Owes Us</span>
-                            @elseif($summary['balance'] < -0.009) <span class="badge bg-danger ms-2">We Owe</span>
-                            @else <span class="badge bg-secondary ms-2">Settled</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="text-center text-muted">No supplier summary data available.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+    <div class="card shadow-lg border-0 rounded-3 mb-4">
+        <!-- Card Header -->
+        <div class="card-header bg-gradient-primary text-white rounded-top-3 py-3 d-flex align-items-center">
+            <i class="bi bi-truck fs-4 me-2"></i>
+            <h6 class="m-0 fw-bold">Supplier Purchase Summary</h6>
         </div>
+
+        <!-- Card Body -->
+        <div class="card-body">
+            <!-- ✅ Scrollable wrapper -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-200 text-sm text-gray-700">
+                    <thead class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Supplier Name</th>
+                            <th class="px-4 py-2 text-right">Total Purchase Value</th>
+                            <th class="px-4 py-2 text-center">Purchase Count</th>
+                            <th class="px-4 py-2 text-right">Current Overall Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @forelse ($reports['supplierPurchaseSummary'] as $summary)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 font-semibold">{{ $summary['name'] }}</td>
+                            <td class="px-4 py-2 text-right text-green-600 font-bold">
+                                {{ number_format($summary['total_purchase_value'], 2) }}
+                            </td>
+                            <td class="px-4 py-2 text-center text-blue-600 font-semibold">
+                                {{ $summary['purchase_count'] }}
+                            </td>
+                                <td class="px-4 py-2 text-right font-bold 
+                                    @if($summary['balance'] > 0.009) text-green-600 
+                                    @elseif($summary['balance'] < -0.009) text-red-600 
+                                    @else text-gray-500 @endif">
+                                {{ number_format($summary['balance'], 2) }}
+
+                                @if($summary['balance'] > 0.009)
+                                <span
+                                    class="ml-2 inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">
+                                    Owes Us
+                                </span>
+                                @elseif($summary['balance'] < -0.009) <span
+                                    class="ml-2 inline-block bg-red-100 text-red-700 text-xs font-medium px-2 py-1 rounded-full">
+                                    We Owe
+                                    </span>
+                                    @else
+                                    <span
+                                        class="ml-2 inline-block bg-gray-200 text-gray-700 text-xs font-medium px-2 py-1 rounded-full">
+                                        Settled
+                                    </span>
+                                    @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="px-4 py-4 text-center text-gray-500 italic">
+                                No supplier summary data available.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
     </div>
-</div>
 
     {{-- All Purchases List --}}
-   <div class="card shadow-lg border-0 rounded-3 mb-4">
-    <!-- Card Header -->
-    <div class="card-header bg-gradient-primary text-white rounded-top-3 py-3 d-flex align-items-center">
-        <i class="bi bi-receipt fs-4 me-2"></i>
-        <h6 class="m-0 fw-bold">Detailed Purchases List</h6>
-    </div>
+    <div class="card shadow-lg border-0 rounded-3 mb-4">
+        <!-- Card Header -->
+        <div class="card-header bg-gradient-primary text-white rounded-top-3 py-3 d-flex align-items-center">
+            <i class="bi bi-receipt fs-4 me-2"></i>
+            <h6 class="m-0 fw-bold">Detailed Purchases List</h6>
+        </div>
 
-    <!-- Card Body -->
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-sm table-hover align-middle" id="example2" width="100%">
-                <thead class="table-light">
-                    <tr>
-                        <th>Date</th>
-                        <th>Supplier</th>
-                        <th>Product</th>
-                        <th class="text-end">Qty</th>
-                        <th class="text-end">Unit Price</th>
-                        <th class="text-end">Total Amount</th>
-                        <th class="text-end">Cash Paid</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($reports['allPurchases'] as $purchase)
-                    <tr>
-                        <td>{{ $purchase->purchase_date->format('d M, Y') }}</td>
-                        <td class="fw-semibold">{{ $purchase->supplier->supplier ?? 'N/A' }}</td>
-                        <td>{{ $purchase->product->item_name ?? 'N/A' }}</td>
-                        <td class="text-end text-primary fw-semibold">{{ $purchase->quantity }}</td>
-                        <td class="text-end text-info fw-semibold">{{ number_format($purchase->unit_price, 2) }}</td>
-                        <td class="text-end text-success fw-bold">{{ number_format($purchase->total_amount, 2) }}</td>
-                        <td class="text-end text-warning fw-bold">{{ number_format($purchase->cash_paid_at_purchase, 2) }}</td>
-                        <td class="notes-column text-muted fst-italic">{{ $purchase->notes ?? '-' }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">No purchases found for the selected criteria.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <!-- Card Body -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table-sm table-hover align-middle" id="example2" width="100%">
+                    <thead class="table-light bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+                        <tr>
+                            <th>Date</th>
+                            <th>Supplier</th>
+                            <th>Product</th>
+                            <th class="text-end">Qty</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Total Amount</th>
+                            <th class="text-end">Cash Paid</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($reports['allPurchases'] as $purchase)
+                        <tr>
+                            <td>{{ $purchase->purchase_date->format('d M, Y') }}</td>
+                            <td class="fw-semibold">{{ $purchase->supplier->supplier ?? 'N/A' }}</td>
+                            <td>{{ $purchase->product->item_name ?? 'N/A' }}</td>
+                            <td class="text-end text-primary fw-semibold">{{ $purchase->quantity }}</td>
+                            <td class="text-end text-info fw-semibold">{{ number_format($purchase->unit_price, 2) }}
+                            </td>
+                            <td class="text-end text-success fw-bold">{{ number_format($purchase->total_amount, 2) }}
+                            </td>
+                            <td class="text-end text-warning fw-bold">
+                                {{ number_format($purchase->cash_paid_at_purchase, 2) }}</td>
+                            <td class="notes-column text-muted fst-italic">{{ $purchase->notes ?? '-' }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">No purchases found for the selected criteria.
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 </div>
 @endsection
 
@@ -256,53 +277,45 @@ $(document).ready(function() {
 });
 </script>
 <script>
-  $(document).ready(function () {
+$(document).ready(function() {
     $('#example1').DataTable({
-        dom:
-            "<'row mb-3'<'col-md-6 d-flex align-items-center'B><'col-md-6 d-flex justify-content-end'f>>" +
+        dom: "<'row mb-3'<'col-md-6 d-flex align-items-center'B><'col-md-6 d-flex justify-content-end'f>>" +
             "<'row'<'col-sm-12'tr>>" +
             "<'row mt-3'<'col-sm-5'i><'col-sm-7'p>>",
-      buttons: [
-                'copy', 'excel', 'pdf', 'print', 'colvis'
-            ],
+        buttons: [
+            'copy', 'excel', 'pdf', 'print', 'colvis'
+        ],
         paging: true,
         searching: true,
         ordering: true,
         info: true,
         responsive: true,
-        columnDefs: [
-            {
-                orderable: false,
-                targets: 3
-            }
-        ]
+        columnDefs: [{
+            orderable: false,
+            targets: 3
+        }]
     });
 });
-
 </script>
 <script>
-  $(document).ready(function () {
+$(document).ready(function() {
     $('#example2').DataTable({
-        dom:
-            "<'row mb-3'<'col-md-6 d-flex align-items-center'B><'col-md-6 d-flex justify-content-end'f>>" +
+        dom: "<'row mb-3'<'col-md-6 d-flex align-items-center'B><'col-md-6 d-flex justify-content-end'f>>" +
             "<'row'<'col-sm-12'tr>>" +
             "<'row mt-3'<'col-sm-5'i><'col-sm-7'p>>",
-      buttons: [
-                'copy', 'excel', 'pdf', 'print', 'colvis'
-            ],
+        buttons: [
+            'copy', 'excel', 'pdf', 'print', 'colvis'
+        ],
         paging: true,
         searching: true,
         ordering: true,
         info: true,
         responsive: true,
-        columnDefs: [
-            {
-                orderable: false,
-                targets: 3
-            }
-        ]
+        columnDefs: [{
+            orderable: false,
+            targets: 3
+        }]
     });
 });
-
 </script>
 @endpush

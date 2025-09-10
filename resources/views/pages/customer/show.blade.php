@@ -15,6 +15,7 @@
     --transition: all 0.3s ease;
 }
 
+/* 🔹 Filter Bar */
 .customer-filter-container {
     border: 1px solid var(--light-gray);
     background: white;
@@ -28,101 +29,38 @@
     margin-bottom: 1.5rem;
 }
 
-.customer-filter-container select,
-.customer-filter-container input[type="checkbox"],
-.customer-filter-container button {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    transition: var(--transition);
-}
-
-.customer-filter-container select {
-    cursor: pointer;
-    min-width: 150px;
-    flex-grow: 1;
-}
-
-.customer-filter-container .checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.customer-filter-container .checkbox-group label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0;
-    font-size: 0.9rem;
-}
-
-.customer-filter-container input[type="checkbox"] {
-    transform: scale(1.0);
-    margin-right: 8px;
-    accent-color: var(--primary-color);
-}
-
-.customer-filter-container button {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-    color: white;
-    cursor: pointer;
-    border: none;
-    padding: 8px 20px;
-    font-weight: 500;
-    border-radius: var(--border-radius);
-    transition: transform 0.2s ease-in-out, background 0.3s ease-in-out;
-    text-align: center;
-    min-width: 120px;
-    flex-grow: 0;
-}
-
-.customer-filter-container button:hover {
-    background: linear-gradient(to right, var(--primary-hover), #004494);
-    transform: translateY(-2px);
-}
-
+/* 🔹 Card */
 .customer-card {
     border: none;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     overflow: hidden;
+    max-width: 1400px;
+    margin: 0 auto;
+    /* Center align on big screens */
 }
 
 .customer-card .card-header {
-    background-color: white;
+    background: linear-gradient(to right, #2563eb, #1d4ed8);
     border-bottom: 1px solid var(--light-gray);
     padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .customer-card .card-title {
     font-weight: 600;
-    color: var(--text-color);
+    color: white;
     margin-bottom: 0;
 }
 
-.customer-card .card-body {
-    padding: 0;
-}
-
-.customer-card .table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
+/* 🔹 Table */
 .customer-card .table {
     width: 100%;
     margin-bottom: 0;
-}
-
-.customer-card .table th,
-.customer-card .table td {
-    padding: 1rem;
-    vertical-align: middle;
-    border-top: 1px solid var(--light-gray);
-    white-space: nowrap;
-    min-width: 120px;
+    border-collapse: collapse;
 }
 
 .customer-card .table thead th {
@@ -130,16 +68,28 @@
     color: white;
     font-weight: 600;
     border-bottom: none;
+    padding: 1rem;
+    white-space: nowrap;
+}
+
+.customer-card .table td {
+    padding: 0.9rem;
+    vertical-align: middle;
+    border-top: 1px solid var(--light-gray);
+    min-width: 120px;
+    white-space: nowrap;
 }
 
 .customer-card .table tbody tr:hover {
     background-color: rgba(0, 123, 255, 0.05);
 }
 
+/* 🔹 Action buttons */
 .customer-card .action-buttons {
     display: flex;
     gap: 8px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .customer-card .action-buttons .btn {
@@ -147,78 +97,8 @@
     font-size: 0.85rem;
 }
 
-.customer-card td[style*="max-width"] {
-    white-space: normal !important;
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-.modal-content {
-    border-radius: var(--border-radius);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-    border-bottom: 1px solid var(--light-gray);
-    padding: 1.25rem 1.5rem;
-    background-color: var(--primary-color);
-    color: white;
-    border-top-left-radius: calc(var(--border-radius) - 1px);
-    border-top-right-radius: calc(var(--border-radius) - 1px);
-}
-
-.modal-title {
-    font-weight: 600;
-}
-
-.modal-header .close,
-.modal-header .btn-close {
-    color: white;
-    opacity: 0.9;
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.modal-body .form-group {
-    margin-bottom: 1rem;
-}
-
-.modal-body .form-control {
-    height: 45px;
-    border-radius: 6px;
-    border: 1px solid #ced4da;
-}
-
-.modal-body .form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.modal-body .text-danger {
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-    display: block;
-}
-
-.modal-footer {
-    border-top: 1px solid var(--light-gray);
-    padding: 1rem 1.5rem;
-}
-
+/* 🔹 Responsive */
 @media (max-width: 768px) {
-    .customer-card .card-header {
-        flex-direction: column;
-        align-items: flex-start !important;
-        padding: 1rem;
-    }
-
-    .customer-card .card-header .btn {
-        width: 100%;
-        margin-top: 10px;
-    }
-
     .customer-filter-container {
         flex-direction: column;
         align-items: stretch;
@@ -229,39 +109,40 @@
     .customer-filter-container select,
     .customer-filter-container button {
         width: 100%;
-        min-width: unset;
     }
 
-    .customer-filter-container .checkbox-group {
+    .customer-card .card-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 5px;
+        gap: 10px;
     }
 
-    .customer-filter-container .checkbox-group label {
+    .customer-card .card-header .btn {
         width: 100%;
     }
 }
 </style>
 
-@section('content')
-<div class="flex justify-end py-10">
-    <button onclick="history.back()"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-400 to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
+<!-- Back Button -->
+<div class="flex justify-end py-10 pr-3">
+    <button onclick="history.back()" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white 
+        bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 
+        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
             </path>
         </svg>
         Back
     </button>
 </div>
-<div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel"
+
+<!-- Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1" role="dialog" aria-labelledby="addCustomerModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addCutomerModalLabel">Add New Customer</h5>
+                <h5 class="modal-title" id="addCustomerModalLabel">Add New Customer</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -293,8 +174,9 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-center mt-3">
-                        <button type="submit" class="btn btn-primary px-4" id="submitBtn" data-action="add">Save
-                            Customer</button>
+                        <button type="submit" class="btn btn-primary px-4" id="submitBtn" data-action="add">
+                            Save Customer
+                        </button>
                     </div>
                 </form>
             </div>
@@ -302,161 +184,141 @@
     </div>
 </div>
 
-<div class="container-fluid mt-3">
-    <div class="row">
-        <div class="col-12">
-            <div class="customer-filter-container mb-4">
-                <form action="{{ route('customer.filter') }}" method="GET" class="filter-form w-100">
-                    @csrf
-                    <label class="mb-2">Sort By:</label>
-                    <select name="sort_order" class="form-control">
-                        <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
-                        <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low
-                        </option>
-                    </select>
-                    <div class="checkbox-group d-flex gap-3 my-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="filter_debit" id="filter_debit"
-                                {{ request('filter_debit') ? 'checked' : '' }}>
-                            <label class="form-check-label ml-2" for="filter_debit">
-                                Debit
-                            </label>
-                        </div>
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="filter_credit" id="filter_credit"
-                                {{ request('filter_credit') ? 'checked' : '' }}>
-                            <label class="form-check-label ml-2" for="filter_credit">
-                                Credit
-                            </label>
-                        </div>
+<div class="container-fluid">
+    <div class="customer-filter-container">
+        <form action="{{ route('customer.filter') }}" method="GET" class="w-100">
+            @csrf
+            <label class="fw-semibold">Sort By:</label>
+            <select name="sort_order" class="form-control">
+                <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
+                <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
+            </select>
 
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="hide_zero_balance"
-                                id="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}>
-                            <label class="form-check-label ml-2" for="hide_zero_balance">
-                                Hide Zero Balance
-                            </label>
-                        </div>
-                    </div>
-
-                    <a type="submit" class="ms-auto px-4 py-2 rounded-lg text-white font-medium shadow-md 
-                        bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 transition">
-                        Apply Filter
-                    </a>
-
-                </form>
+            <div class="checkbox-group d-flex gap-3 my-2">
+                <label><input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}>
+                    Debit</label>
+                <label><input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}>
+                    Credit</label>
+                <label><input type="checkbox" name="hide_zero_balance"
+                        {{ request('hide_zero_balance') ? 'checked' : '' }}> Hide Zero Balance</label>
             </div>
 
-            <div class="card customer-card shadow-lg border-0 rounded-3 overflow-hidden">
-                <!-- Header -->
-                <div class="card-header 
-                bg-gradient text-white p-3" style="background: linear-gradient(to right, #2563eb, #1d4ed8);">
+            <button type="submit" class="btn btn-primary">Apply Filter</button>
+        </form>
+    </div>
 
-                    <div class="flex justify-between flex-wrap gap-2">
+    <!-- Customer Card -->
+    <div class=" mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- Header -->
+        <div class="flex flex-wrap items-center justify-between gap-4 p-4 border-b border-gray-200">
+            <!-- Left: Title -->
+            <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <i class="fa fa-users text-blue-600"></i> Customer Detail
+            </h3>
 
-                        <h3 class="card-title mb-2 mb-md-0 fw-bold">
-                            <i class="fa fa-users me-2"></i> Customer Detail
-                        </h3>
-                        <!-- Search -->
-                        <div class="position-relative" style="max-width: 220px;">
-                            <i
-                                class="fa fa-search position-absolute top-50 start-0 translate-middle-y text-muted ms-2"></i>
-                            <input type="text" class="form-control form-control-sm pl-10"
-                                placeholder="Search customer...">
-                        </div>
-                        
-                        <!-- Add Customer -->
-                        <button type="button" class="btn btn-light d-flex align-items-center gap-2" id="addCustomerBtn">
-                            <i class="fa fa-plus"></i> Add Customer
-                        </button>
-
-                        <!-- Export Buttons -->
-                        <!-- <button type="button" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1">
-                            <i class="fa fa-file-excel"></i> Excel
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1">
-                            <i class="fa fa-file-pdf"></i> PDF
-                        </button> -->
-
-                    </div>
+            <!-- Right: Search + Add -->
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <!-- Search -->
+                <div class="relative w-full md:w-56">
+                    <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="Search customer..."
+                        class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                 </div>
 
-                <!-- Body -->
-                <div class="card-body p-0">
-                    <div class="table-responsive p-3">
-                        <table id="example1" class="table align-middle table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>#Sr.No</th>
-                                    <th>Customer Name</th>
-                                    <th>Mobile Number</th>
-                                    <th>Address</th>
-                                    <th>CNIC</th>
-                                    <th>Debit</th>
-                                    <th>Credit</th>
-                                    <th class="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableHolder">
-                                @foreach($customers as $customer)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td class="fw-semibold text-primary">{{ $customer->name ?? '' }}</td>
-                                    <td>{{ $customer->mobile_number ?? ''}}</td>
-                                    <td style="max-width: 200px; white-space: normal; word-break: break-word;">
-                                        {{ $customer->address ?? '' }}
-                                    </td>
-                                    <td>{{ $customer->cnic ?? '' }}</td>
-                                    <td class="text-danger fw-semibold">{{ $customer->debit ?? '' }}</td>
-                                    <td class="text-success fw-semibold">{{ $customer->credit ?? '' }}</td>
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <a href="{{ route('customer.view', ['id' => $customer->id]) }}"
-                                                class="btn btn-sm btn-outline-primary" title="View Details">
-                                                <i class="fa fa-eye"></i> View
-                                            </a>
-                                            <a href="" class="btn btn-sm btn-outline-warning" title="Edit">
-                                                <i class="fa fa-edit"></i> Edit
-                                            </a>
-                                            <a href="#" class="btn btn-sm btn-outline-danger" title="Delete"
-                                                onclick="return confirm('Are you sure you want to delete this customer?')">
-                                                <i class="fa fa-trash"></i> Delete
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- Add Customer -->
+                <button type="button"
+                    class="inline-flex items-center gap-2 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                    data-toggle="modal" data-target="#addCustomerModal">
+                    <i class="fa fa-plus"></i> Add Customer
+                </button>
             </div>
+        </div>
 
+        <!-- Table -->
+        <div class="p-4 overflow-x-auto">
+            <table id="example1" class="w-full text-sm text-left border-collapse">
+                <thead class="bg-blue-600 text-white">
+                    <tr>
+                        <th class="px-4 py-2">#Sr.No</th>
+                        <th class=" py-2">Customer Name</th>
+                        <th class="px-4 py-2">Mobile Number</th>
+                        <th class="px-4 py-2">Address</th>
+                        <th class="px-4 py-2">CNIC</th>
+                        <th class="px-4 py-2">Debit</th>
+                        <th class="px-4 py-2">Credit</th>
+                        <th class="px-4 py-2 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @foreach($customers as $customer)
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2 text-center">{{ $loop->iteration }}</td>
+                        <td class="px-4 py-2 font-medium text-blue-600">{{ $customer->name ?? '' }}</td>
+                        <td class="px-4 py-2">{{ $customer->mobile_number ?? '' }}</td>
+                        <td class="px-4 py-2 max-w-xs whitespace-normal break-words">
+                            {{ $customer->address ?? '' }}
+                        </td>
+                        <td class="px-4 py-2">{{ $customer->cnic ?? '' }}</td>
+                        <td class="px-4 py-2 text-red-600 font-semibold text-right">{{ $customer->debit ?? '' }}</td>
+                        <td class="px-4 py-2 text-green-600 font-semibold text-right">{{ $customer->credit ?? '' }}</td>
+                        <td class="px-4 py-2 ">
+                            <div class="flex justify-center gap-1 ">
+                                <a href="{{ route('customer.view', ['id' => $customer->id]) }}"
+                                    class="inline-flex items-center gap-1 px-3 py-1 border border-blue-500 text-blue-600 rounded-md text-xs hover:bg-blue-50">
+                                    <i class="fa fa-eye"></i>
+                                    <span>View</span>
+                                </a>
+
+                                <a href="#"
+                                    class="inline-flex items-center gap-1 px-3 py-1 border border-yellow-500 text-yellow-600 rounded-md text-xs hover:bg-yellow-50">
+                                    <i class="fa fa-edit"></i>
+                                    <span>Edit</span>
+                                </a>
+
+                                <a href="#" onclick="return confirm('Are you sure you want to delete this customer?')"
+                                    class="inline-flex items-center gap-1 px-3 py-1 border border-red-500 text-red-600 rounded-md text-xs hover:bg-red-50">
+                                    <i class="fa fa-trash"></i>
+                                    <span>Delete</span>
+                                </a>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
+
 </div>
 @stop
 
 @pushOnce('scripts')
 <script>
-    $(document).ready(function() {
-        $('#example1').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
-            ],
-            paging: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            responsive: true,
-            "columnDefs": [{
-                    "orderable": false,
-                    "targets": 3
-                } // Disable sorting on 'Actions' column
-            ]
-        });
+$(document).ready(function() {
+   $('#example1').DataTable({
+        dom: '<"dt-toolbar overflow-x-auto"Bfrtip>', // ✅ Toolbar ko scrollable banaya
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
+        ],
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        columnDefs: [{
+            orderable: false,
+            targets: 6
+        }],
+        initComplete: function() {
+            // Flex row force + spacing
+            $('.dt-buttons').addClass('flex flex-nowrap gap-2 w-[40%] ');
+            $('.dt-buttons button').addClass(
+                'bg-blue-600 text-white px-3 py-1 rounded-md shadow hover:bg-blue-700 transition'
+                );
+        }
     });
+});
 </script>
 @endPushOnce

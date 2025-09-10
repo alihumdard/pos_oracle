@@ -62,38 +62,42 @@
 <div class="bg-white shadow-lg rounded-xl overflow-hidden mb-6">
   <!-- Header -->
   <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-4 py-3">
-    <h6 class="text-white font-semibold text-lg flex items-center">
+    <h6 class="text-white font-semibold text-base sm:text-lg flex items-center">
       <i class="fas fa-chart-bar mr-2"></i> Sales Over Time (Filtered)
     </h6>
   </div>
 
   <!-- Body -->
-  <div class="p-6">
+  <div class="p-4 sm:p-6">
+    <!-- Responsive wrapper -->
     <div class="overflow-x-auto rounded-lg">
-      <table id="example1" class="min-w-full text-sm text-gray-700 border border-gray-200 rounded-lg shadow-sm">
-        <thead class="bg-blue-50 text-blue-700 text-left text-xs uppercase tracking-wider">
+      <table id="example1"
+        class="min-w-full border border-gray-200 rounded-lg shadow-sm text-xs sm:text-sm text-gray-700">
+        <thead class="bg-blue-50 text-blue-700 uppercase tracking-wider text-[10px] sm:text-xs">
           <tr>
-            <th class="px-4 py-3 border-b">Date</th>
-            <th class="px-4 py-3 border-b">Revenue</th>
-            <th class="px-4 py-3 border-b">Profit</th>
-            <th class="px-4 py-3 border-b">No. of Sales</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 border-b text-left">Date</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 border-b text-left">Revenue</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 border-b text-left">Profit</th>
+            <th class="px-2 sm:px-4 py-2 sm:py-3 border-b text-center">No. of Sales</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
           @forelse ($reports['salesOverTime'] as $saleData)
           <tr class="hover:bg-gray-50 transition">
-            <td class="px-4 py-3">{{ $saleData['date'] }}</td>
-            <td class="px-4 py-3 font-medium text-green-600">
+            <td class="px-2 sm:px-4 py-2 sm:py-3">{{ $saleData['date'] }}</td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-green-600">
               ${{ number_format($saleData['revenue'], 2) }}
             </td>
-            <td class="px-4 py-3 font-medium text-indigo-600">
+            <td class="px-2 sm:px-4 py-2 sm:py-3 font-medium text-indigo-600">
               ${{ number_format($saleData['profit'], 2) }}
             </td>
-            <td class="px-4 py-3 text-center">{{ $saleData['sales_count'] ?? 0 }}</td>
+            <td class="px-2 sm:px-4 py-2 sm:py-3 text-center">
+              {{ $saleData['sales_count'] ?? 0 }}
+            </td>
           </tr>
           @empty
           <tr>
-            <td colspan="4" class="px-4 py-6 text-center text-gray-500 italic">
+            <td colspan="4" class="px-2 sm:px-4 py-4 sm:py-6 text-center text-gray-500 italic">
               No sales data available for the selected period.
             </td>
           </tr>
@@ -103,6 +107,7 @@
     </div>
   </div>
 </div>
+
 
 </div>
 @endsection

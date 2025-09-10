@@ -54,46 +54,47 @@
                     <i class="bi bi-cash-coin fs-4 me-2"></i>
                     <h6 class="m-0 fw-bold">All Customer Balances</h6>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle" id="example1"
-                            width="100%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Customer Name</th>
-                                    <th class="text-end">Debit</th>
-                                    <th class="text-end">Credit</th>
-                                    <th class="text-end">Balance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($reports['customerBalances'] as $customer)
-                                <tr>
-                                    <td class="fw-semibold">{{ $customer['id'] }}</td>
-                                    <td>{{ $customer['name'] }}</td>
-                                    <td class="text-end text-danger fw-semibold">
-                                        {{ number_format($customer['debit'], 2) }}
-                                    </td>
-                                    <td class="text-end text-primary fw-semibold">
-                                        {{ number_format($customer['credit'], 2) }}
-                                    </td>
-                                    <td class="text-end fw-bold 
-                                {{ $customer['balance'] >= 0 ? 'text-success' : 'text-danger' }}">
-                                        {{ number_format($customer['balance'], 2) }}
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        No customer balance data available.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+              <div class="card-body">
+  <!-- ✅ Scroll wrapper yahan lagao -->
+  <div class="overflow-x-auto">
+    <table class="table table-bordered table-hover align-middle min-w-full" id="example1">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Customer Name</th>
+          <th class="text-end">Debit</th>
+          <th class="text-end">Credit</th>
+          <th class="text-end">Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+        @forelse ($reports['customerBalances'] as $customer)
+        <tr>
+          <td class="fw-semibold">{{ $customer['id'] }}</td>
+          <td>{{ $customer['name'] }}</td>
+          <td class="text-end text-danger fw-semibold">
+            {{ number_format($customer['debit'], 2) }}
+          </td>
+          <td class="text-end text-primary fw-semibold">
+            {{ number_format($customer['credit'], 2) }}
+          </td>
+          <td
+            class="text-end fw-bold {{ $customer['balance'] >= 0 ? 'text-success' : 'text-danger' }}">
+            {{ number_format($customer['balance'], 2) }}
+          </td>
+        </tr>
+        @empty
+        <tr>
+          <td colspan="5" class="text-center text-muted">
+            No customer balance data available.
+          </td>
+        </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+</div>
+
             </div>
         </div>
     </div>
@@ -112,7 +113,7 @@
             searching: true,
             ordering: true,
             info: true,
-            responsive: true,
+            responsive: false,
             "columnDefs": [{
                     "orderable": false,
                     "targets": 3

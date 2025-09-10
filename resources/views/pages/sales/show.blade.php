@@ -3,17 +3,18 @@
 @section('content')
 
 <div class="py-10">
-    <div class="flex justify-end mb-4">
-        <button onclick="history.back()"
+    <div class="flex justify-end pb-10">
+        <button onclick="if(history.length > 1){ history.back(); } else { window.location.href='/' }"
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-400 to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
-                </path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back
         </button>
     </div>
+
+
 
     @php
     $editing = isset($editTransaction);
@@ -393,7 +394,7 @@ $(document).ready(function() {
             } else {
                 console.error(
                     "Could not determine sale_id in edit mode for new transaction using #currentSaleId input."
-                    );
+                );
                 const saleFormAction = $('#saleForm').attr('action');
                 const saleIdMatch = saleFormAction.match(/\/(\d+)(?:\/?)$/);
                 if (saleIdMatch && saleIdMatch[1]) {
@@ -716,7 +717,7 @@ $(document).ready(function() {
                                 'input[name="transaction_id[]"]').val();
                             $(this).find('td:first').html(
                                 `${index + 1}<input type="hidden" value="${currentTransactionId}" name="transaction_id[]" id="transaction_id_${currentTransactionId}">`
-                                );
+                            );
                         });
                     },
                     error: function(xhr) {
@@ -764,7 +765,7 @@ $(document).ready(function() {
                 },
                 error: function() {
                     $('#customerName, #customerCNIC, #customerAddress, #customerId').val(
-                    '');
+                        '');
                     $('#customerList').empty().hide();
                 }
             });

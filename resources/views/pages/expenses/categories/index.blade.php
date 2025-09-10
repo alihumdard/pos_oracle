@@ -18,7 +18,7 @@
             <i class="fas fa-tags text-blue-600"></i> Expense Categories
         </h1>
         <a href="{{ route('expense_categories.create') }}"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition">
+            class="inline-flex items-center px-4 py-2 mt-10 sm:mt-0 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition">
             <i class="fas fa-plus mr-2"></i> Add New Category
         </a>
     </div>
