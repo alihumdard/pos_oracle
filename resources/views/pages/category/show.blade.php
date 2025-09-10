@@ -58,41 +58,43 @@
             </div>
 
             <!-- Card Body -->
-            <div class="card-body p-3">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="example1">
-                        <thead class="bg-primary text-white">
-                            <tr>
-                                <th style="width: 80px;">#Sr.No</th>
-                                <th>Category Name</th>
-                                <th class="text-center" style="width: 200px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableHolder">
-                            @foreach($categories as $category)
-                            <tr>
-                                <td class="fw-semibold">{{ $loop->iteration }}</td>
-                                <td class="text-dark fw-medium">{{ $category->name }}</td>
-                                <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <a href="javascript:void(0)" 
-                                           class="btn btn-sm btn-outline-primary edit-category d-flex align-items-center gap-1"
-                                           data-id="{{ $category->id }}">
-                                           <i class="fa fa-edit"></i> Edit
-                                        </a>
-                                        <a href="javascript:void(0)" 
-                                           class="btn btn-sm btn-outline-danger delete-category d-flex align-items-center gap-1"
-                                           data-id="{{ $category->id }}">
-                                           <i class="fa fa-trash"></i> Delete
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+     <div class="card-body p-3">
+    <!-- Responsive wrapper -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="example1">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th style="min-width: 80px;">#Sr.No</th>
+                    <th style="min-width: 150px;">Category Name</th>
+                    <th class="text-center" style="min-width: 200px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableHolder">
+                @foreach($categories as $category)
+                <tr>
+                    <td class="fw-semibold">{{ $loop->iteration }}</td>
+                    <td class="text-dark fw-medium">{{ $category->name }}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center flex-wrap gap-2">
+                            <a href="javascript:void(0)" 
+                               class="btn btn-sm btn-outline-primary edit-category d-flex align-items-center gap-1"
+                               data-id="{{ $category->id }}">
+                               <i class="fa fa-edit"></i> Edit
+                            </a>
+                            <a href="javascript:void(0)" 
+                               class="btn btn-sm btn-outline-danger delete-category d-flex align-items-center gap-1"
+                               data-id="{{ $category->id }}">
+                               <i class="fa fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
         </div>
     </div>
 </div>

@@ -15,63 +15,73 @@
 
 <div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addSupplierModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document"> {{-- Added modal-lg for a larger modal on wider screens --}}
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
-            <div class=" modal-header">
+            <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title" id="addSupplierModalLabel">Add New Supplier</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+
             <div class="modal-body">
-                <form id="supplierForm">
+                <form id="supplierForm" class="space-y-3">
                     <div class="form-group">
                         <label for="supplier">Supplier</label>
                         <input type="text" name="supplier" class="form-control" id="supplier"
                             placeholder="Enter Supplier">
                         <small class="text-danger d-none" id="supplierError">Supplier is required.</small>
                     </div>
+
                     <div class="form-group">
                         <label for="contact_person">Contact Person</label>
                         <input type="text" name="contact_person" class="form-control" id="contact_person"
                             placeholder="Enter Contact Person">
                         <small class="text-danger d-none" id="contactPersonError">Contact person is required.</small>
                     </div>
+
                     <div class="form-group">
                         <label for="address">Address</label>
-                        <input type="text" name="address" class="form-control" id="address" placeholder="Enter Address">
+                        <input type="text" name="address" class="form-control" id="address"
+                            placeholder="Enter Address">
                         <small class="text-danger d-none" id="addressError">Address is required.</small>
                     </div>
+
                     <div class="form-group">
                         <label for="contact_no">Contact No</label>
                         <input type="text" name="contact_no" class="form-control" id="contact_no"
                             placeholder="Enter Contact No">
                         <small class="text-danger d-none" id="contactNoError">Contact number is required.</small>
                     </div>
+
                     <div class="form-group">
                         <label for="note">Note</label>
                         <textarea name="note" class="form-control" id="note" placeholder="Enter Note"></textarea>
                         <small class="text-danger d-none" id="noteError">Note is required.</small>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="submitBtn" data-action="add">Save
-                        Supplier</button>
+
+                    <button type="submit" class="btn btn-primary w-100 w-md-auto" id="submitBtn" data-action="add">
+                        Save Supplier
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 <div class="row mt-5">
     <div class="col-12">
         <div class="card shadow-lg border-0 rounded-lg overflow-hidden">
 
             <!-- Card Header -->
             <div class="bg-gradient-to-r from-blue-500 to-blue-700 
-                        flex justify-between flex-wrap p-3">
+                        flex flex-col md:flex-row justify-between items-start md:items-center gap-2 p-3">
+                
                 <!-- Title -->
-                <h3 class="text-white mt-1 text-lg">All Suppliers</h3>
+                <h3 class="text-white text-lg">All Suppliers</h3>
 
                 <!-- Action Button -->
-                <button type="button" class="btn btn-light fw-semibold shadow-sm mt-2 mt-md-0" id="addSupplierBtn">
+                <button type="button" class="btn btn-light fw-semibold shadow-sm" id="addSupplierBtn">
                     <i class="fa fa-plus me-2"></i> Add Supplier
                 </button>
             </div>
@@ -95,14 +105,14 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $supplier->supplier }}</td>
                                 <td>{{ $supplier->contact_person }}</td>
-                                <td style="max-width: 200px; white-space: normal; word-break: break-word;">
+                                <td class="max-w-xs break-words">
                                     {{ $supplier->address }}
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-outline-primary me-2">
+                                    <a href="#" class="btn btn-sm btn-outline-primary me-2 mb-1">
                                         <i class="fa fa-edit me-1"></i> Edit
                                     </a>
-                                    <a href="#" class="btn btn-sm btn-outline-danger">
+                                    <a href="#" class="btn btn-sm btn-outline-danger mb-1">
                                         <i class="fa fa-trash me-1"></i> Delete
                                     </a>
                                 </td>
@@ -118,6 +128,7 @@
 </div>
 
 
+
 <script>
   $(document).ready(function() {
         $('#example1').DataTable({
@@ -129,7 +140,7 @@
             searching: true,
             ordering: true,
             info: true,
-            responsive: true,
+            responsive: false,
             "columnDefs": [{
                     "orderable": false,
                     "targets": 3
