@@ -6,165 +6,360 @@
         --primary-color: #4361ee;
         --primary-hover: #3a56d4;
         --text-color: #2b2d42;
-        --light-gray: #e9ecef;
+        --label-color: #495057;
+        --light-gray: #dee2e6;
+        --very-light-gray: #f8f9fa;
         --border-radius: 8px;
-        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+        --input-height: 48px;
     }
-    .form-container { background: white; border-radius: var(--border-radius); box-shadow: var(--box-shadow); padding: 2rem; margin-top: 2rem; border: 1px solid var(--light-gray); }
-    /* Updated select2 styling for better consistency */
+
+    body {
+        background-color: #f4f7f9; /* A slightly off-white background for the page */
+    }
+
+    .form-container {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2.5rem;
+        margin-top: 2rem;
+        border: 1px solid #e9ecef;
+    }
+
+    /* --- New: Input group styling for icons --- */
+    .input-group-with-icon {
+        position: relative;
+    }
+    .input-group-with-icon .input-icon {
+        position: absolute;
+        top: 50%;
+        left: 15px;
+        transform: translateY(-50%);
+        color: #adb5bd;
+        transition: color 0.2s ease-in-out;
+    }
+    .input-group-with-icon .form-control,
+    .input-group-with-icon .select2-container--default .select2-selection--single {
+        padding-left: 45px !important;
+    }
+    .input-group-with-icon .form-control:focus ~ .input-icon,
+    .input-group-with-icon .select2-container--open ~ .input-icon {
+        color: var(--primary-color);
+    }
+    /* --- End New --- */
+
+
+    /* Updated select2 & form-control styling */
     .form-container .form-control,
     .form-container .select2-container--default .select2-selection--single {
-        height: 45px !important;
+        height: var(--input-height) !important;
         border-radius: var(--border-radius) !important;
         border: 1px solid var(--light-gray) !important;
+        background-color: var(--very-light-gray);
         display: flex;
         align-items: center;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
+
     .form-container .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: normal !important; /* Use normal for flex alignment */
-        padding-left: .75rem !important;
-        padding-right: 20px; /* Ensure space for arrow */
+        line-height: normal !important;
+        color: var(--text-color);
     }
+
     .form-container .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: calc(100% - 2px) !important; /* Full height within border */
-        top: 1px !important; /* Center arrow */
-        right: 5px !important;
+        height: calc(100% - 2px) !important;
+        top: 1px !important;
+        right: 8px !important;
     }
+
     .form-container .form-control:focus,
     .form-container .select2-container--default.select2-container--open .select2-selection--single {
         border-color: var(--primary-color) !important;
-        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25) !important;
+        background-color: #fff;
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.2) !important;
     }
-    .form-group label { font-weight: 500; margin-bottom: 0.5rem; color: var(--text-color); }
-    .text-danger-small { font-size: 0.875em; color: #dc3545; }
-    .btn-primary-submit { background-color: var(--primary-color); border-color: var(--primary-color); height: 45px; font-weight: 500; color: white; }
-    .btn-primary-submit:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
 
-    .balance-info { font-size: 0.9em; margin-top: 5px; padding: 5px 0; }
-    .balance-positive { color: green; font-weight: bold; }
-    .balance-negative { color: red; font-weight: bold; }
+    /* Readonly input styling */
+    .form-control:read-only, .form-control[readonly] {
+        background-color: #e9ecef !important;
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--label-color);
+        font-size: 0.9rem;
+    }
+    .text-danger-small {
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+    .btn-primary-submit {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        height: 50px;
+        font-weight: 600;
+        color: white;
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+    }
+    .btn-primary-submit:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(67, 97, 238, 0.25);
+    }
+
+    .balance-info {
+        font-size: 0.9em;
+        margin-top: 8px;
+        padding: 5px 0;
+    }
+    .balance-positive { color: #198754; font-weight: bold; }
+    .balance-negative { color: #dc3545; font-weight: bold; }
     .balance-zero { color: #6c757d; }
+
+    /* Modal header styling */
+    .modal-header {
+        background-color: var(--primary-color);
+        color: white;
+        border-bottom: none;
+    }
+    .modal-header .modal-title {
+        font-weight: 600;
+    }
+    .modal-header .close {
+        color: white;
+        opacity: 0.9;
+        text-shadow: none;
+    }
+    .modal-header .close:hover {
+        opacity: 1;
+    }
+
 </style>
 
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-2xl p-8">
-        <!-- Heading -->
-        <h3 class="text-2xl font-bold text-center mb-6 text-primary-600">
-            Record New Purchase
-        </h3>
-
-        <form id="purchaseForm" class="space-y-6">
-            @csrf
-            <!-- Supplier & Product -->
-            <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                    <label for="supplier_id" class="block text-sm font-semibold text-gray-700 mb-1">
-                        Supplier <span class="text-red-500">*</span>
-                    </label>
-                    <select name="supplier_id" id="supplier_id"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500">
-                        <option value="">Select Supplier</option>
-                        @foreach($suppliers as $supplier)
-                        <option value="{{ $supplier->id }}" data-debit="{{ $supplier->debit }}" data-credit="{{ $supplier->credit }}">
-                            {{ $supplier->supplier }} {{ $supplier->contact_person ? '(' . $supplier->contact_person . ')' : '' }}
-                        </option>
-                        @endforeach
-                    </select>
-                    <p id="supplier_balance_info" class="text-sm text-gray-500 mt-1"></p>
-                    <small class="text-red-500 hidden" id="supplier_idError"></small>
-                </div>
-
-                <div>
-                    <label for="product_id" class="block text-sm font-semibold text-gray-700 mb-1">
-                        Product <span class="text-red-500">*</span>
-                    </label>
-                    <select name="product_id" id="product_id"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500">
-                        <option value="">Select Product</option>
-                        @foreach($products as $product)
-                        <option value="{{ $product->id }}">
-                            {{ $product->item_name }} {{ $product->item_code ? '(Code: ' . $product->item_code . ')' : '' }}
-                        </option>
-                        @endforeach
-                    </select>
-                    <small class="text-red-500 hidden" id="product_idError"></small>
-                </div>
-            </div>
-
-            <!-- Price, Stock & Quantity -->
-            <div class="grid md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Product Original Price</label>
-                    <input type="text" id="product_original_price_display"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm" readonly placeholder="0.00">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Current Stock</label>
-                    <input type="text" id="product_current_qty_display"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm" readonly placeholder="0">
-                </div>
-                <div>
-                    <label for="purchase_quantity" class="block text-sm font-semibold text-gray-700 mb-1">
-                        Purchase Quantity <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" name="purchase_quantity" id="purchase_quantity" min="1"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="Enter quantity">
-                    <small class="text-red-500 hidden" id="purchase_quantityError"></small>
-                </div>
-            </div>
-
-            <!-- Amount, Cash & Date -->
-            <div class="grid md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Total Purchase Amount</label>
-                    <input type="text" id="total_payable_display"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 bg-gray-100 text-sm" readonly placeholder="0.00">
-                </div>
-                <div>
-                    <label for="cash_paid" class="block text-sm font-semibold text-gray-700 mb-1">
-                        Cash Paid <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" name="cash_paid" id="cash_paid" min="0" value="0"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="Enter cash paid">
-                    <small class="text-red-500 hidden" id="cash_paidError"></small>
-                </div>
-                <div>
-                    <label for="purchase_date" class="block text-sm font-semibold text-gray-700 mb-1">
-                        Purchase Date <span class="text-red-500">*</span>
-                    </label>
-                    <input type="date" name="purchase_date" id="purchase_date"
-                        value="{{ date('Y-m-d') }}"
-                        class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500">
-                    <small class="text-red-500 hidden" id="purchase_dateError"></small>
-                </div>
-            </div>
-
-            <!-- Notes -->
-            <div>
-                <label for="notes" class="block text-sm font-semibold text-gray-700 mb-1">Notes (Optional)</label>
-                <textarea name="notes" id="notes" rows="3"
-                    class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Any notes for this purchase..."></textarea>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="text-center pt-4">
-                <button type="submit"
-                    class="bg-primary text-white font-semibold px-6 py-2.5 rounded-lg shadow transition duration-300">
-                    <i class="fas fa-save mr-2"></i> Save Purchase
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius: var(--border-radius); border: none;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-        </form>
+            <div class="modal-body" style="padding: 2rem;">
+                <form id="productForm">
+                    <div class="row">
+                        <div class="form-group col-lg-6 col-md-6 col-12 mb-3">
+                            <label for="item_code">Item Code</label>
+                            <input type="text" name="item_code" class="form-control" id="item_code"
+                                placeholder="e.g., SKU12345">
+                            <small class="text-danger-small d-none" id="itemCodeError"></small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12 mb-3">
+                            <label for="item_name">Item Name</label>
+                            <input type="text" name="item_name" class="form-control" id="item_name"
+                                placeholder="e.g., T-Shirt">
+                            <small class="text-danger-small d-none" id="itemNameError"></small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12 mb-3">
+                            <label for="category_id">Category</label>
+                            <select name="category_id" class="form-control select2" id="category_id" style="width:100%;">
+                                <option value="" disabled selected>Select Category</option>
+                                @foreach($categories ?? [] as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-danger-small d-none" id="categoryIdError"></small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12 mb-3">
+                            <label for="supplier_id_modal">Supplier</label>
+                            <select name="supplier_id" class="form-control select2" id="supplier_id_modal" style="width:100%;">
+                                <option value="" disabled selected>Select Supplier</option>
+                                @foreach($suppliers ?? [] as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-danger-small d-none" id="supplierIdError"></small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12 mb-3">
+                            <label for="selling_price">Selling Price</label>
+                            <input type="number" name="selling_price" class="form-control" id="selling_price"
+                                placeholder="0.00">
+                            <small class="text-danger-small d-none" id="sellingPriceError"></small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12 mb-3">
+                            <label for="original_price">Original Price</label>
+                            <input type="number" name="original_price" class="form-control" id="original_price"
+                                placeholder="0.00">
+                            <small class="text-danger-small d-none" id="originalPriceError"></small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12 mb-3">
+                            <label for="qty">Initial Quantity</label>
+                            <input type="number" name="qty" class="form-control" id="qty" placeholder="0">
+                            <small class="text-danger-small d-none" id="qtyError"></small>
+                        </div>
+                        <div class="col-12 text-center mt-3">
+                            <button type="submit" class="btn btn-primary-submit px-5" id="submitBtn" data-action="add">Save Product</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 col-md-12 mx-auto">
+            <div class="form-container">
+                <div class="text-center mb-4">
+                     <h2 class="mb-2" style="color: var(--primary-color); font-weight: 700;">Record New Purchase</h2>
+                     <p class="text-muted">Fill out the details below to add a new purchase record.</p>
+                </div>
+                <div class="d-flex justify-content-end mb-4">
+                    <button type="button" class="btn btn-primary-submit" id="addCategoryBtn">
+                        <i class="fa fa-plus me-2"></i>Add New Product
+                    </button>
+                </div>
+
+                <form id="purchaseForm">
+                    @csrf
+                    <div class="row">
+                        <div class="form-group col-md-6 mb-4">
+                            <label for="supplier_id">Supplier <span class="text-danger">*</span></label>
+                            <div class="input-group-with-icon">
+                                <i class="fa-solid fa-user-tie input-icon"></i>
+                                <select name="supplier_id" id="supplier_id" class="form-control select2-single" style="width: 100%;">
+                                    <option value="">Select Supplier</option>
+                                    @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}" data-debit="{{ $supplier->debit }}" data-credit="{{ $supplier->credit }}">
+                                        {{ $supplier->supplier }} {{ $supplier->contact_person ? '(' . $supplier->contact_person . ')' : '' }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div id="supplier_balance_info" class="balance-info"></div>
+                            <small class="text-danger-small d-none" id="supplier_idError"></small>
+                        </div>
+
+                        <div class="form-group col-md-6 mb-4">
+                            <label for="product_id">Product <span class="text-danger">*</span></label>
+                             <div class="input-group-with-icon">
+                                <i class="fa-solid fa-box-archive input-icon"></i>
+                                <select name="product_id" id="product_id" class="form-control select2-single" style="width: 100%;">
+                                    <option value="">Select Product</option>
+                                    @foreach($products as $product)
+                                    <option value="{{ $product->id }}">
+                                        {{ $product->item_name }} {{ $product->item_code ? '(Code: ' . $product->item_code . ')' : '' }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                             </div>
+                            <small class="text-danger-small d-none" id="product_idError"></small>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-end">
+                        <div class="form-group col-md-4 mb-4">
+                            <label for="product_original_price_display">Product Original Price</label>
+                            <div class="input-group-with-icon">
+                                <i class="fa-solid fa-tag input-icon"></i>
+                                <input type="text" id="product_original_price_display" class="form-control" placeholder="0.00" >
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4 mb-4">
+                            <label for="product_current_qty_display">Current Stock</label>
+                             <div class="input-group-with-icon">
+                                <i class="fa-solid fa-cubes input-icon"></i>
+                                <input type="text" id="product_current_qty_display" class="form-control" placeholder="0" >
+                             </div>
+                        </div>
+                        <div class="form-group col-md-4 mb-4">
+                            <label for="purchase_quantity">Purchase Quantity <span class="text-danger">*</span></label>
+                             <div class="input-group-with-icon">
+                                <i class="fa-solid fa-hashtag input-icon"></i>
+                                <input type="number" name="purchase_quantity" id="purchase_quantity" class="form-control" placeholder="Enter quantity" min="1">
+                             </div>
+                            <small class="text-danger-small d-none" id="purchase_quantityError"></small>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row">
+                        <div class="form-group col-md-4 mb-4">
+                            <label for="total_payable_display">Total Purchase Amount</label>
+                            <div class="input-group-with-icon">
+                                <i class="fa-solid fa-file-invoice-dollar input-icon"></i>
+                                <input type="text" id="total_payable_display" class="form-control" readonly placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4 mb-4">
+                            <label for="cash_paid">Cash Paid <span class="text-danger">*</span></label>
+                            <div class="input-group-with-icon">
+                                <i class="fa-solid fa-money-bill-wave input-icon"></i>
+                                <input type="number" name="cash_paid" id="cash_paid" class="form-control" placeholder="Enter cash paid" min="0" value="0">
+                            </div>
+                            <small class="text-danger-small d-none" id="cash_paidError"></small>
+                        </div>
+                        <div class="form-group col-md-4 mb-4">
+                            <label for="purchase_date">Purchase Date <span class="text-danger">*</span></label>
+                            <div class="input-group-with-icon">
+                                <i class="fa-solid fa-calendar-day input-icon"></i>
+                                <input type="date" name="purchase_date" id="purchase_date" class="form-control" value="{{ date('Y-m-d') }}">
+                            </div>
+                            <small class="text-danger-small d-none" id="purchase_dateError"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="notes">Notes (Optional)</label>
+                        <textarea name="notes" id="notes" class="form-control" rows="3" placeholder="Any notes for this purchase..."></textarea>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary-submit px-5 py-3" id="submitPurchaseBtn">
+                            <i class="fas fa-save me-2"></i>SAVE PURCHASE RECORD
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @pushOnce('scripts')
+{{-- YOUR JAVASCRIPT REMAINS EXACTLY THE SAME --}}
 <script>
 $(document).ready(function() {
+    
+    // Initialize select2 for the modal
+    $('#addProductModal .select2').select2({
+        dropdownParent: $('#addProductModal'), // Important for modals
+        placeholder: "Select an option",
+        allowClear: true,
+        width: '100%'
+    });
+
+    $('#addCategoryBtn').click(function() {
+        $('#addProductModalLabel').text('Add New Product');
+        $('#productForm')[0].reset(); 
+        $('.text-danger-small').addClass('d-none');
+        $('#category_id').val('').trigger('change');
+        $('#supplier_id_modal').val('').trigger('change'); // Target modal specific supplier id
+
+        $('#submitBtn').text('Save Product').data('action', 'add');
+        $('#addProductModal').modal('show');
+    });
+
     $('.select2-single').select2({
         placeholder: "Select an option",
         allowClear: true,
@@ -216,7 +411,6 @@ $(document).ready(function() {
 
         if (productId) {
             $('#submitPurchaseBtn').prop('disabled', true);
-            // Ensure your route is defined correctly, the one from your provided routes is 'purchase.product.details'
             let productDetailsUrl = `{{ route('purchase.product.details', ['id' => ':id']) }}`;
             productDetailsUrl = productDetailsUrl.replace(':id', productId);
 
@@ -248,9 +442,6 @@ $(document).ready(function() {
     $('#purchase_quantity').on('input change keyup', function() {
         calculateTotalPayable();
     });
-    // Also calculate if cash_paid changes, though it doesn't affect total_payable_display, it's good practice
-    // $('#cash_paid').on('input change keyup', function() { /* any logic related to cash paid display */ });
-
 
     $('#purchaseForm').submit(function(e) {
         e.preventDefault();
@@ -277,23 +468,9 @@ $(document).ready(function() {
                     $('#product_original_price_display').val('0.00');
                     $('#product_current_qty_display').val('0');
                     $('#total_payable_display').val('0.00');
-                    $('#cash_paid').val('0'); // Reset cash_paid field
+                    $('#cash_paid').val('0'); 
                     $('#purchase_date').val("{{ date('Y-m-d') }}");
                     $('#supplier_balance_info').empty();
-
-                    // For the dynamic supplier balance in the dropdown to update *without a page reload*,
-                    // you'd need to update the data attributes of the selected supplier option here.
-                    // This can be complex if the list is large. A page reload or re-fetching
-                    // the supplier list on next form open is often simpler.
-                    // Example of updating data attribute (if response.purchase.supplier contains updated debit/credit):
-                    /*
-                    if(response.purchase && response.purchase.supplier) {
-                        let updatedSupplier = response.purchase.supplier;
-                        $('#supplier_id option[value="' + updatedSupplier.id + '"]')
-                            .data('debit', updatedSupplier.debit)
-                            .data('credit', updatedSupplier.credit);
-                    }
-                    */
                 }
             },
             error: function(xhr) {
@@ -309,16 +486,15 @@ $(document).ready(function() {
                     errorMessages += '</ul>';
                     Swal.fire({ title: "Validation Error", html: errorMessages, icon: "error" });
                 } else {
-                     Swal.fire('Error', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
+                   Swal.fire('Error', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
                 }
             },
             complete: function() {
-                $('#submitPurchaseBtn').prop('disabled', false).html('<i class="fas fa-save me-2"></i>Save Purchase');
+                $('#submitPurchaseBtn').prop('disabled', false).html('<i class="fas fa-save me-2"></i>SAVE PURCHASE RECORD');
             }
         });
     });
 
-    // Initial calls
     displaySupplierBalance();
     calculateTotalPayable();
 });

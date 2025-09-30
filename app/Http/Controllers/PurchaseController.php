@@ -9,12 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Category;
 
 class PurchaseController extends Controller
 {
     public function create()
     {
         $data['suppliers'] = Supplier::orderBy('supplier', 'asc')->get();
+         $data['categories'] = Category::all();
         $data['products'] = Product::orderBy('item_name', 'asc')->get();
         return view('pages.purchase.create', $data);
     }

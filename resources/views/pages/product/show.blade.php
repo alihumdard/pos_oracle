@@ -1,524 +1,429 @@
 @extends('index')
 <style>
-:root {
-    --primary-color: #4361ee;
-    --primary-hover: #3a56d4;
-    --secondary-color: #f8f9fa;
-    --text-color: #2b2d42;
-    --light-gray: #e9ecef;
-    --border-radius: 8px;
-    --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --transition: all 0.3s ease;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f8fafc;
-    color: var(--text-color);
-    /* Ensure no global overflow-x: hidden; here or on html */
-    /* If you have it, remove it or find a more specific element to hide overflow */
-}
-
-/* Filter Form Styles */
-.filter-container {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--light-gray);
-}
-
-.filter-container .form-control,
-.filter-container .select2-selection {
-    height: 45px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--light-gray);
-    transition: var(--transition);
-}
-
-.filter-container .form-control:focus,
-.filter-container .select2-selection:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-}
-
-.filter-container .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    height: 45px;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.filter-container .btn-primary:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
-
-/* Card Styles */
-.card {
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    /* This is fine for hiding content that overflows the card itself */
-}
-
-.card-header {
-    background-color: white;
-    border-bottom: 1px solid var(--light-gray);
-    padding: 1.25rem 1.5rem;
-}
-
-.card-title {
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 0;
-}
-
-/* Table Styles */
-.table-responsive {
-    border-radius: var(--border-radius);
-    /* THIS IS THE CRITICAL LINE FOR DEBUGGING */
-    overflow-x: auto !important;
-    /* Force horizontal scrolling, use !important for debugging */
-    -webkit-overflow-scrolling: touch;
-    /* Improves scrolling performance on iOS */
-    /* End of critical line */
-    overflow-y: hidden;
-    /* Prevent vertical scrollbar if not needed, or set to auto */
-}
-
-.table {
-    margin-bottom: 0;
-    width: 100%;
-    /* Ensure table takes full width of its parent */
-    min-width: 768px;
-    /* Optional: Set a minimum width for the table if you want it to always be wide enough to scroll on small devices. Adjust as needed. */
-}
-
-.table thead th {
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: 500;
-    border: none;
-    padding: 1rem;
-    white-space: nowrap;
-    /* Keep headers on one line */
-}
-
-.table tbody tr {
-    transition: var(--transition);
-}
-
-.table tbody tr:hover {
-    background-color: rgba(67, 97, 238, 0.05);
-}
-
-.table tbody td {
-    padding: 1rem;
-    vertical-align: middle;
-    border-top: 1px solid var(--light-gray);
-    white-space: nowrap;
-    /* Keep cell content on one line to force horizontal overflow */
-}
-
-/* Button Styles */
-.btn {
-    border-radius: var(--border-radius);
-    padding: 0.5rem 1.25rem;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: translateY(-2px);
-}
-
-.btn-success {
-    background-color: #2e7d32;
-    border-color: #2e7d32;
-}
-
-.btn-success:hover {
-    background-color: #276a2b;
-    border-color: #276a2b;
-}
-
-.btn-danger {
-    background-color: #d32f2f;
-    border-color: #d32f2f;
-}
-
-.btn-danger:hover {
-    background-color: #b71c1c;
-    border-color: #b71c1c;
-}
-
-.btn-sm {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.875rem;
-}
-
-/* Modal Styles */
-.modal-content {
-    border: none;
-    border-radius: var(--border-radius);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-    border-bottom: 1px solid var(--light-gray);
-    padding: 1.25rem 1.5rem;
-}
-
-.modal-title {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.modal-body {
-    padding: 1.5rem;
-}
-
-.form-group label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.form-control {
-    height: 45px;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--light-gray);
-    transition: var(--transition);
-}
-
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-}
-
-.text-danger {
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Action Buttons */
-.action-buttons {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    /* Allow buttons to wrap on smaller screens */
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .filter-container .form-row>div {
-        margin-bottom: 1rem;
+    :root {
+        --primary-color: #4361ee;
+        --primary-hover: #3a56d4;
+        --secondary-color: #f8f9fa;
+        --text-color: #2b2d42;
+        --light-gray: #e9ecef;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
     }
 
-    .action-buttons {
-        flex-direction: column;
-        gap: 0.5rem;
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8fafc;
+        color: var(--text-color);
+        /* Ensure no global overflow-x: hidden; here or on html */
+        /* If you have it, remove it or find a more specific element to hide overflow */
     }
 
-    .btn {
-        width: 100%;
+    /* Filter Form Styles */
+    .filter-container {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--light-gray);
     }
 
-    /* Ensure select2 dropdowns are fully responsive inside modals/forms */
-    .select2-container {
-        width: 100% !important;
+    .filter-container .form-control,
+    .filter-container .select2-selection {
+        height: 45px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--light-gray);
+        transition: var(--transition);
     }
 
-    /* Make sure table is wide enough to scroll */
+    .filter-container .form-control:focus,
+    .filter-container .select2-selection:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+
+    .filter-container .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        height: 45px;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+    .filter-container .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+    }
+
+    /* Card Styles */
+    .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden; /* This is fine for hiding content that overflows the card itself */
+    }
+
+    .card-header {
+        background-color: white;
+        border-bottom: 1px solid var(--light-gray);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+        border-radius: var(--border-radius);
+        /* THIS IS THE CRITICAL LINE FOR DEBUGGING */
+        overflow-x: auto !important; /* Force horizontal scrolling, use !important for debugging */
+        -webkit-overflow-scrolling: touch; /* Improves scrolling performance on iOS */
+        /* End of critical line */
+        overflow-y: hidden; /* Prevent vertical scrollbar if not needed, or set to auto */
+    }
+
     .table {
-        min-width: 768px;
-        /* Example: Ensures table is always at least 768px wide, forcing scroll if needed */
+        margin-bottom: 0;
+        width: 100%; /* Ensure table takes full width of its parent */
+        min-width: 768px; /* Optional: Set a minimum width for the table if you want it to always be wide enough to scroll on small devices. Adjust as needed. */
     }
-}
 
-.btn-gradient-primary {
-    background: linear-gradient(90deg, #2563eb, #1d4ed8);
-    border: none;
-    color: #fff;
-    transition: all 0.3s ease;
-    border-radius: 8px;
-}
+    .table thead th {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 500;
+        border: none;
+        padding: 1rem;
+        white-space: nowrap; /* Keep headers on one line */
+    }
 
-.btn-gradient-primary:hover {
-    background: linear-gradient(90deg, #1d4ed8, #1e40af);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
-}
+    .table tbody tr {
+        transition: var(--transition);
+    }
 
-.form-select:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.2);
-}
+    .table tbody tr:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+    }
 
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-top: 1px solid var(--light-gray);
+        white-space: nowrap; /* Keep cell content on one line to force horizontal overflow */
+    }
 
-.card-header {
-    padding: 1rem 1.25rem;
-}
+    /* Button Styles */
+    .btn {
+        border-radius: var(--border-radius);
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        transition: var(--transition);
+    }
 
-.table thead th {
-    font-weight: 600;
-}
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
 
-.table tbody tr:hover {
-    background-color: #f9fafb !important;
-    transition: background-color 0.2s ease-in-out;
-}
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+    }
 
-.btn-outline-primary:hover {
-    background-color: #2563eb;
-    color: #fff;
-}
+    .btn-success {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+    }
 
-.btn-outline-danger:hover {
-    background-color: #dc2626;
-    color: #fff;
-}
+    .btn-success:hover {
+        background-color: #276a2b;
+        border-color: #276a2b;
+    }
+
+    .btn-danger {
+        background-color: #d32f2f;
+        border-color: #d32f2f;
+    }
+
+    .btn-danger:hover {
+        background-color: #b71c1c;
+        border-color: #b71c1c;
+    }
+
+    .btn-sm {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid var(--light-gray);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }
+
+    .form-control {
+        height: 45px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--light-gray);
+        transition: var(--transition);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .filter-container .form-row > div {
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            width: 100%;
+        }
+        /* Ensure select2 dropdowns are fully responsive inside modals/forms */
+        .select2-container {
+            width: 100% !important;
+        }
+        /* Make sure table is wide enough to scroll */
+        .table {
+            min-width: 768px; /* Example: Ensures table is always at least 768px wide, forcing scroll if needed */
+        }
+    }
 </style>
 @section('content')
-<div class="flex justify-end py-10">
-    <button onclick="history.back()"
-        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-400 to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
-            </path>
-        </svg>
-        Back
-    </button>
+<div class="row mt-4">
+    <div class="col-12 justify-content-end align-items-center d-flex">
+        <button class="btn btn-primary" onclick="history.back()">← Back</button>
+    </div>
 </div>
-<!-- Add Product Modal -->
-<div id="addProductModal"
-    class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 border-b">
-            <h5 class="text-lg font-semibold">Add New Product</h5>
-            <button type="button" class="text-gray-500 hover:text-red-600" onclick="closeModal()">
-                &times;
-            </button>
+
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document"> {{-- modal-lg for larger screens --}}
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="row">
+                        <div class="form-group col-lg-6 col-md-6 col-12">
+                            <label for="item_code">Item Code</label>
+                            <input type="text" name="item_code" class="form-control" id="item_code"
+                                placeholder="Enter Item Code">
+                            <small class="text-danger d-none" id="itemCodeError">Item code is required.</small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12">
+                            <label for="item_name">Item Name</label>
+                            <input type="text" name="item_name" class="form-control" id="item_name"
+                                placeholder="Enter Item Name">
+                            <small class="text-danger d-none" id="itemNameError">Item name is required.</small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12">
+                            <label for="category_id">Category</label>
+                            <select name="category_id" class="form-control select2" id="category_id" style="width:100%;">
+                                <option value="" disabled selected>Select Category</option>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-danger d-none" id="categoryIdError">Category is required.</small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12">
+                            <label for="supplier_id">Supplier</label>
+                            <select name="supplier_id" class="form-control select2" id="supplier_id" style="width:100%;">
+                                <option value="" disabled selected>Select Supplier</option>
+                                @foreach($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-danger d-none" id="supplierIdError">Supplier is required.</small>
+                        </div>
+
+                        <div class="form-group col-lg-6 col-md-6 col-12">
+                            <label for="selling_price">Selling Price</label>
+                            <input type="number" name="selling_price" class="form-control" id="selling_price"
+                                placeholder="Enter Selling Price">
+                            <small class="text-danger d-none" id="sellingPriceError">Selling price is required.</small>
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-12">
+                            <label for="original_price">Original Price</label>
+                            <input type="number" name="original_price" class="form-control" id="original_price"
+                                placeholder="Enter Original Price">
+                            <small class="text-danger d-none" id="originalPriceError">Original price is
+                                required.</small>
+                        </div>
+
+                        <div class="form-group col-lg-6 col-md-6 col-12">
+                            <label for="qty">Quantity</label>
+                            <input type="number" name="qty" class="form-control" id="qty" placeholder="Enter Quantity">
+                            <small class="text-danger d-none" id="qtyError">Quantity is required.</small>
+                        </div>
+
+                        <div class="col-12 mx-auto d-flex justify-content-center mt-3">
+                            <button type="submit" class="btn btn-primary px-4" id="submitBtn" data-action="add">Save
+                                Product</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
+    </div>
+</div>
 
-        <!-- Modal Body -->
-        <div class="p-6">
-            <form id="productForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Item Code -->
-                <div>
-                    <label for="item_code" class="block text-sm font-medium">Item Code</label>
-                    <input type="text" name="item_code" id="item_code"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Enter Item Code" />
-                    <small id="itemCodeError" class="hidden text-red-500 text-xs">Item code is required.</small>
-                </div>
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-12">
+            <form action="{{ route('supplier_category.filter') }}" method="GET" class="filter-form p-3 bg-white rounded shadow-sm">
+                <div class="row g-3 align-items-end"> {{-- Use g-3 for consistent guttering --}}
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="filter_supplier_id" class="form-label fw-medium text-secondary mb-1">Supplier</label>
+                            <select name="supplier_id"
+                                id="filter_supplier_id"
+                                class="form-control select2"
+                                style="width: 100%;">
+                                <option value="">Select Supplier</option>
+                                @foreach($suppliers ?? [] as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
-                <!-- Item Name -->
-                <div>
-                    <label for="item_name" class="block text-sm font-medium">Item Name</label>
-                    <input type="text" name="item_name" id="item_name"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Enter Item Name" />
-                    <small id="itemNameError" class="hidden text-red-500 text-xs">Item name is required.</small>
-                </div>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="form-group">
+                            <label for="filter_category_id" class="form-label fw-medium text-secondary mb-1">Category</label>
+                            <select name="category_id" class="form-control select2" id="filter_category_id" style="width: 100%;">
+                                <option value="">Select Category</option>
+                                @foreach($categories ?? [] as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
-                <!-- Category -->
-                <div>
-                    <label for="category_id" class="block text-sm font-medium">Category</label>
-                    <select id="category_id" name="category_id"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="" disabled selected>Select Category</option>
-                        @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                    <small id="categoryIdError" class="hidden text-red-500 text-xs">Category is required.</small>
-                </div>
-
-                <!-- Supplier -->
-                <div>
-                    <label for="supplier_id" class="block text-sm font-medium">Supplier</label>
-                    <select id="supplier_id" name="supplier_id"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="" disabled selected>Select Supplier</option>
-                        @foreach($suppliers as $supplier)
-                        <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
-                        @endforeach
-                    </select>
-                    <small id="supplierIdError" class="hidden text-red-500 text-xs">Supplier is required.</small>
-                </div>
-
-                <!-- Selling Price -->
-                <div>
-                    <label for="selling_price" class="block text-sm font-medium">Selling Price</label>
-                    <input type="number" name="selling_price" id="selling_price"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Enter Selling Price" />
-                    <small id="sellingPriceError" class="hidden text-red-500 text-xs">Selling price is required.</small>
-                </div>
-
-                <!-- Original Price -->
-                <div>
-                    <label for="original_price" class="block text-sm font-medium">Original Price</label>
-                    <input type="number" name="original_price" id="original_price"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Enter Original Price" />
-                    <small id="originalPriceError" class="hidden text-red-500 text-xs">Original price is
-                        required.</small>
-                </div>
-
-                <!-- Quantity -->
-                <div>
-                    <label for="qty" class="block text-sm font-medium">Quantity</label>
-                    <input type="number" name="qty" id="qty"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Enter Quantity" />
-                    <small id="qtyError" class="hidden text-red-500 text-xs">Quantity is required.</small>
-                </div>
-
-                <!-- Save Button -->
-                <div class="col-span-1 md:col-span-2 flex justify-center mt-4">
-                    <button type="submit"
-                        class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md shadow">
-                        Save Product
-                    </button>
+                    <div class="col-12 col-md-12 col-lg-4">
+                        <div class="d-grid" style="margin-bottom: 10px;">
+                            <button type="submit" class="btn btn-primary py-2">
+                                <i class="fas fa-filter me-2"></i>Apply Filter
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
-</div>
 
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                    <div class="mb-2 mb-md-0">
+                        <h3 class="card-title">All Products</h3>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{route('product_all')}}" class="btn btn-success">
+                            <i class="fa fa-box mr-2"></i>All Products
+                        </a>
+                    </div>
+                </div>
 
-<!-- Filter Section -->
-<div class="container mx-auto mt-6 px-4">
-    <form action="{{ route('supplier_category.filter') }}" method="GET"
-        class="bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        <!-- Supplier -->
-        <div>
-            <label for="filter_supplier_id" class="block font-medium mb-2">
-                <i class="fas fa-truck text-blue-600 mr-1"></i> Supplier
-            </label>
-            <select id="filter_supplier_id" name="supplier_id"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <option value="">Select Supplier</option>
-                @foreach($suppliers ?? [] as $supplier)
-                <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <!-- Category -->
-        <div>
-            <label for="filter_category_id" class="block font-medium mb-2">
-                <i class="fas fa-tags text-green-600 mr-1"></i> Category
-            </label>
-            <select id="filter_category_id" name="category_id"
-                class="w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <option value="">Select Category</option>
-                @foreach($categories ?? [] as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <!-- Button -->
-        <div class="flex items-end">
-            <button type="submit"
-                class="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-md shadow hover:opacity-90">
-                <i class="fas fa-filter mr-2"></i> Apply Filter
-            </button>
-        </div>
-    </form>
-</div>
-
-
-<!-- Products Table -->
-<div class="container mx-auto mt-6 px-4">
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-
-        <!-- Header -->
-        <div
-            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 p-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-            <h3 class="text-lg font-semibold flex items-center">
-                <i class="fa fa-box-open mr-2"></i> All Products
-            </h3>
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('product_all') }}"
-                    class="px-4 py-2 bg-white text-blue-700 rounded-md shadow hover:bg-gray-100 flex items-center">
-                    <i class="fa fa-box mr-2"></i> All Products
-                </a>
-                <button type="button" id="addCategoryBtn"
-                    class="px-4 py-2 bg-yellow-400 text-gray-900 rounded-md shadow hover:bg-yellow-500 flex items-center">
-                    <i class="fa fa-plus mr-2"></i> Add Product
-                </button>
+                <div class="card-body">
+                    <div class="table-responsive"> {{-- This is the key wrapper --}}
+                        <table class="table table-hover w-100" id="example1">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item Name</th>
+                                    <th>Item Code</th>
+                                    <th>Original Price</th>
+                                    <th>Selling Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableHolder">
+                                @foreach($products as $product)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $product->item_name ?? '' }}</td>
+                                    <td>{{ $product->item_code ?? ''}}</td>
+                                    <td>{{ $product->original_price ?? ''}}</td>
+                                    <td>{{ $product->selling_price ?? ''}}</td>
+                                    <td>{{ $product->qty ?? ''}}</td>
+                                    <td class="text-center">
+                                        <div class="action-buttons">
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-product"
+                                                data-id="{{ $product->id }}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-danger delete-product"
+                                                data-id="{{ $product->id }}">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <!-- Body -->
-        <div class="p-4 overflow-x-auto">
-            <table id="example1" class="w-full border overflow-x-auto border-gray-200 rounded-lg text-sm">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Item Name</th>
-                        <th class="px-4 py-2">Item Code</th>
-                        <th class="px-4 py-2">Original Price</th>
-                        <th class="px-4 py-2">Selling Price</th>
-                        <th class="px-4 py-2">Quantity</th>
-                        <th class="px-4 py-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($products as $product)
-                    <tr class="border-t">
-                        <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                        <td class="px-4 py-2 font-medium">{{ $product->item_name ?? '' }}</td>
-                        <td class="px-4 py-2">{{ $product->item_code ?? '' }}</td>
-                        <td class="px-4 py-2">Rs. {{ $product->original_price ?? '' }}</td>
-                        <td class="px-4 py-2 text-green-600 font-semibold">Rs. {{ $product->selling_price ?? '' }}</td>
-                        <td class="px-4 py-2">
-                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                                {{ $product->qty ?? '' }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-2">
-                            <div class="flex justify-center gap-2">
-                                <a href="javascript:void(0)"
-                                    class="p-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-50"
-                                    title="Edit">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <a href="javascript:void(0)"
-                                    class="p-2 border border-red-500 text-red-500 rounded hover:bg-red-50"
-                                    title="Delete">
-                                    <i class="fa fa-trash"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
-
 
 @stop
 
@@ -526,27 +431,14 @@ body {
 <script>
 $(document).ready(function() {
     // Initial DataTables setup
-    $('#example1').DataTable({
-    dom: '<"dt-toolbar overflow-x-auto"Bfrtip>', // ✅ Toolbar ko scrollable banaya
-    buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
-    ],
-    paging: true,
-    searching: true,
-    ordering: true,
-    info: true,
-    columnDefs: [
-        {
-            orderable: false,
-            targets: 6
-        }
-    ],
-    initComplete: function () {
-        // Flex row force + spacing
-        $('.dt-buttons').addClass('flex flex-nowrap gap-2 w-[40%]');
-        $('.dt-buttons button').addClass('bg-blue-600 text-white px-3 py-1 rounded-md shadow hover:bg-blue-700 transition');
-    }
-});
+    $("#example1").DataTable({
+        "responsive": false, // Disable DataTables' built-in responsive features
+        "lengthChange": true,
+        "autoWidth": false, // Important: allows Bootstrap's CSS to control width
+        "scrollY": false,
+        "scrollX": false, // Let Bootstrap's .table-responsive handle this
+        "buttons": ["excel", "pdf"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
     // Initialize Select2 for filter dropdowns
     $('.select2').select2({
@@ -616,9 +508,7 @@ $(document).ready(function() {
             success: function(response) {
                 Swal.fire({
                     title: "Success!",
-                    text: response.message || (actionType === 'add' ?
-                        'Product added successfully!' :
-                        'Product updated successfully!'),
+                    text: response.message || (actionType === 'add' ? 'Product added successfully!' : 'Product updated successfully!'),
                     icon: "success",
                 });
 
@@ -635,8 +525,7 @@ $(document).ready(function() {
                     const errors = xhr.responseJSON.errors;
                     Object.keys(errors).forEach(function(key) {
                         const errorElementId = getErrorElementId(key);
-                        $('#' + errorElementId).text(errors[key][0]).removeClass(
-                            'd-none');
+                        $('#' + errorElementId).text(errors[key][0]).removeClass('d-none');
                     });
                     Swal.fire({
                         icon: "error",
@@ -690,18 +579,15 @@ $(document).ready(function() {
             success: function(response) {
                 $('#addProductModalLabel').text('Edit Product');
                 $('#qty').val(response.qty);
-                $('#category_id').val(response.category_id).trigger(
-                    'change'); // Update Select2
-                $('#supplier_id').val(response.supplier_id).trigger(
-                    'change'); // Update Select2
+                $('#category_id').val(response.category_id).trigger('change'); // Update Select2
+                $('#supplier_id').val(response.supplier_id).trigger('change'); // Update Select2
                 $('#original_price').val(response.original_price);
                 $('#selling_price').val(response.selling_price);
                 $('#item_name').val(response.item_name);
                 $('#item_code').val(response.item_code);
 
                 $('.text-danger').addClass('d-none'); // Hide any previous validation errors
-                $('#submitBtn').text('Update Product').data('action', 'edit').data('id',
-                    productId);
+                $('#submitBtn').text('Update Product').data('action', 'edit').data('id', productId);
                 $('#addProductModal').modal('show');
             },
             error: function() {
@@ -741,8 +627,7 @@ $(document).ready(function() {
                             text: "Product deleted successfully!",
                             icon: "success",
                         });
-                        let refreshUrl = "{{ route('show.products') }}?t=" +
-                            new Date().getTime();
+                        let refreshUrl = "{{ route('show.products') }}?t=" + new Date().getTime();
                         refreshtble(refreshUrl);
                     },
                     error: function(xhr) {
