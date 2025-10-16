@@ -9,14 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use App\Models\Category;
 
 class PurchaseController extends Controller
 {
     public function create()
     {
         $data['suppliers'] = Supplier::orderBy('supplier', 'asc')->get();
-        $data['categories'] = Category::all();
         $data['products'] = Product::orderBy('item_name', 'asc')->get();
         return view('pages.purchase.create', $data);
     }
@@ -92,6 +90,7 @@ class PurchaseController extends Controller
                 'message' => 'Purchase recorded, stock and supplier balance updated!',
                 'purchase' => $purchase->load('product', 'supplier')
             ], 201);
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Purchase store error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
@@ -118,11 +117,11 @@ class PurchaseController extends Controller
     public function index(Request $request)
     {
         $query = Purchase::with([
-            'product:id,item_name',
-            'supplier:id,supplier,debit,credit'
-        ])
-            ->orderBy('purchase_date', 'desc')
-            ->orderBy('id', 'desc');
+                        'product:id,item_name',
+                        'supplier:id,supplier,debit,credit'
+                     ])
+                     ->orderBy('purchase_date', 'desc')
+                     ->orderBy('id', 'desc');
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('purchase_date', [$request->start_date, $request->end_date]);
@@ -139,11 +138,5 @@ class PurchaseController extends Controller
         $data['filter_products'] = Product::select('id', 'item_name')->orderBy('item_name', 'asc')->get();
 
         return view('pages.purchase.index', $data);
-    }
-
-    public function getProductsBySupplier(Supplier $supplier)
-    {
-        $products = $supplier->products()->select('id', 'item_name', 'item_code')->get();
-        return response()->json($products);
     }
 }

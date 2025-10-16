@@ -10,41 +10,35 @@
     .text-danger-small { font-size: 0.875em; color: #dc3545; }
 </style>
 
-<div class="max-w-4xl mx-auto px-4 pt-10">
-    <div class="bg-white shadow-lg rounded-2xl p-6 border border-gray-100">
-        <!-- Header -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-            <h3 class="text-xl font-semibold text-primary mb-3 sm:mb-0 flex items-center gap-2">
-                <i class="fas fa-receipt text-primary"></i> Record New Expense
-            </h3>
-            <a href="{{ route('expenses.index') }}"
-                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg shadow-sm transition">
-                <i class="fas fa-list mr-2"></i> View All Expenses
-            </a>
-        </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="form-container">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0" style="color: #007bff;">Record New Expense</h3> {{-- Changed heading --}}
+                    <a href="{{ route('expenses.index') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-list me-1"></i> View All Expenses
+                    </a>
+                </div>
 
-        <!-- Form -->
-        <form action="{{ route('expenses.store') }}" method="POST" class="space-y-6">
-            @csrf
+                {{-- The form action should point to expenses.store --}}
+                <form action="{{ route('expenses.store') }}" method="POST">
+                    @csrf
+                    {{-- $expense is NOT passed for the create form --}}
+                    {{-- The _form.blade.php partial is designed to handle $expense not being set --}}
+                    @include('pages.expenses._form', ['categories' => $categories])
 
-            {{-- Form partial --}}
-            @include('pages.expenses._form', ['categories' => $categories])
-
-            <!-- Buttons -->
-            <div class="flex justify-center gap-3 pt-4 border-t">
-                <button type="submit"
-                    class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm font-medium px-6 py-2 rounded-lg shadow-md transition">
-                    <i class="fas fa-save"></i> Save Expense
-                </button>
-                <a href="{{ route('expenses.index') }}"
-                    class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium px-5 py-2 rounded-lg shadow-md transition">
-                    <i class="fas fa-times"></i> Cancel
-                </a>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary-custom px-5">
+                            <i class="fas fa-save me-2"></i>Save Expense {{-- Changed button text --}}
+                        </button>
+                        <a href="{{ route('expenses.index') }}" class="btn btn-secondary px-4">Cancel</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
-
 @endsection
 
 @push('scripts')

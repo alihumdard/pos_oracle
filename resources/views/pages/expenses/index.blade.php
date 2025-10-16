@@ -12,7 +12,7 @@
     .filter-form .select2-container--default .select2-selection--single .select2-selection__arrow { height: calc(1.5em + .5rem) !important;}
 </style>
 
-<div class="container-fluid py-10">
+<div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Manage Expenses</h1>
         <a href="{{ route('expenses.create') }}" class="btn btn-sm btn-primary shadow-sm">
@@ -75,7 +75,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover" id="example1" width="100%" cellspacing="0">
+                <table class="table table-hover" id="expensesTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -124,26 +124,6 @@
 @endsection
 
 @push('scripts')
-<script>
-    $(document).ready(function() {
-        $('#example1').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print', 'colvis'
-            ],
-            paging: true,
-            searching: true,
-            ordering: true,
-            info: true,
-            responsive: true,
-            "columnDefs": [{
-                    "orderable": false,
-                    "targets": 3
-                } // Disable sorting on 'Actions' column
-            ]
-        });
-    });
-</script>
 <script>
 $(document).ready(function() {
     $('.select2-filter').select2({

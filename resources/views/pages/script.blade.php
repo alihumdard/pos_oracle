@@ -53,4 +53,3 @@
       <script src="{{asset('assets/dist/js/demo.js')}}"></script>
       {{-- select2 --}}
       <script src="{{asset('assets/plugins/select2/js/select2.full.min.js')}}"></script>
-      <script src="https://cdn.tailwindcss.com"></script>
