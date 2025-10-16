@@ -15,18 +15,13 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 
 Route::get('/run-commands', [DashboardController::class, 'runMigrations']);
+
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/invoice',function(){
-return view('pages.customer.invoice');
-});
-Route::get('/invoice/print',function(){
-return view('pages.customer.invoice_print');
-})->name('invoice.print');
+
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/dashboard', [LoginController::class, 'login'])->name('login.verify');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Routes
 Route::post('/category/add', [CategoryController::class, 'category_add'])->name('add.categories');
 Route::get('/category/show', [CategoryController::class, 'category_show'])->name('show.categories');
 Route::get('categories/{id}', [CategoryController::class, 'category_edit']);
@@ -53,13 +48,11 @@ Route::get('/customer/show', [CustomerController::class,'customer_show'])->name(
 Route::post('/customer/add', [CustomerController::class,'customer_add'])->name('add.customers');
 Route::get('/customer/filter', [CustomerController::class,'customer_filter'])->name('customer.filter');
 
-// Route::post('/supplier/add', [SupplierController::class, 'supplier_add'])->name('add.suppliers');
-// Route::get('suppliers/{id}', [SupplierController::class, 'supplier_edit']);
-// Route::put('/suppliers/{id}', [SupplierController::class, 'supplier_update'])->name('suppliers.update');
 Route::delete('/supplier/{id}', [SupplierController::class, 'supplier_delete'])->name('supplier.delete');
 Route::get('/customer/view/{id}', [CustomerController::class, 'view'])->name('customer.view');
 Route::get('/sales/{id}/detail', [CustomerController::class, 'detail'])->name('sales.detail');
-Route::get('/transaction/show/{id?}', [TransactionController::class,'transaction_show'])->name('show.transaction');
+
+Route::get('/sale/show/{id?}', [TransactionController::class,'transaction_show'])->name('show.transaction');
 Route::post('/store-transaction',[TransactionController::class, 'store_transaction'])->name('transaction.sales');
 Route::delete('/transaction/{id}',[TransactionController::class, 'transaction_delete'])->name('sales.delete');
 Route::post('/sale/store',[TransactionController::class, 'sale_store'])->name('sale.store');
@@ -67,13 +60,11 @@ Route::get('/search-customer', [TransactionController::class, 'search'])->name('
 
 Route::get('/customer/invoice/{id?}/{cash?}/{credit?}/{debit?}', [TransactionController::class, 'invoice'])->name('pages.customer.invoice');
 Route::get('generate-pdf/{id}', [TransactionController::class, 'generatePDF'])->name('generate-pdf');
-// Route::get('test',function()
 Route::get('/customer/{id}/sales-summary', [CustomerController::class, 'salesSummary'])->name('customer.sales.summary');
 Route::post('/sale/update/{id}', [TransactionController::class, 'update_sale'])->name('sale.update');
 Route::put('/transaction/{id}', [TransactionController::class, 'update_transaction'])->name('transaction.update');
 Route::delete('/transaction/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
-// return view('pages.customer.pdf_generate');
-// });
+
 Route::get('/sales', [SaleController::class, 'index'])->name('sale.index');
 // New Routes for Reports Module
 Route::prefix('reports')->group(function () {
@@ -92,6 +83,7 @@ Route::prefix('purchases')->name('purchase.')->group(function () {
     Route::post('/store', [PurchaseController::class, 'store'])->name('store');
     Route::get('/product-details/{id}', [PurchaseController::class, 'getProductDetails'])->name('product.details');
     Route::get('/', [PurchaseController::class, 'index'])->name('index'); // Route to list purchases
+    Route::get('/suppliers/{supplier}/products', [PurchaseController::class, 'getProductsBySupplier'])->name('products.by.supplier');
 });
 
 Route::middleware('auth')->group(function () { // Assuming expenses should be behind auth
