@@ -376,6 +376,9 @@
                         <a href="{{route('product_all')}}" class="btn btn-success">
                             <i class="fa fa-box mr-2"></i>All Products
                         </a>
+                        <button type="button" class="btn btn-primary" id="addCategoryBtn">
+                            <i class="fa fa-plus mr-2"></i>Add Product
+                        </button>
                     </div>
                 </div>
 
