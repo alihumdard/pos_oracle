@@ -34,12 +34,15 @@ class ProductController extends Controller
     $pdf = PDF::loadView('pages.product.product_pdf', $data);
     return $pdf->download('product.pdf');
   }
+
   public function product_add(Request $request)
   {
-    // Validate input fields
+    // 1. UPDATE VALIDATION
     $request->validate([
       'item_code' => 'required|string|max:255|unique:products,item_code',
       'item_name' => 'required|string|max:255',
+      'supplier_id' => 'required|exists:suppliers,id', // <-- ADD THIS
+      'category_id' => 'required|exists:categories,id', // <-- ADD THIS
       'selling_price' => 'required|numeric',
       'original_price' => 'required|numeric',
       'qty' => 'required|numeric',
@@ -53,13 +56,18 @@ class ProductController extends Controller
     $product->item_name = $request->item_name;
     $product->selling_price = $request->selling_price;
     $product->original_price = $request->original_price;
+    $product->cost_price = $request->original_price; // 2. SET THE COST PRICE
     $product->qty = $request->qty;
 
     $product->save();
 
-    // Return success response
-    return response()->json(['message' => 'Product added successfully!'], 201);
+    // 3. RETURN THE NEW PRODUCT IN THE RESPONSE
+    return response()->json([
+      'message' => 'Product added successfully!',
+      'product' => $product // <-- ADD THIS
+    ], 201);
   }
+  
   public function product_delete($id)
   {
     $product = Product::findOrFail($id);
@@ -111,8 +119,7 @@ class ProductController extends Controller
       $query->where('category_id', $request->category_id);
     }
 
-    $data['products'] =$query->orderBy('id','DESC')->get();
+    $data['products'] = $query->orderBy('id', 'DESC')->get();
     return view('pages.product.show',  $data);
-    
   }
 }

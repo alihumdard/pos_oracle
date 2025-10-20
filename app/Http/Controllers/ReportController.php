@@ -27,8 +27,12 @@ class ReportController extends Controller
         $expenseEndDate = $request->input('expense_end_date');
 
         $salesQuery = Sale::query();
-        if ($salesStartDate) { $salesQuery->whereDate('created_at', '>=', $salesStartDate); }
-        if ($salesEndDate) { $salesQuery->whereDate('created_at', '<=', $salesEndDate); }
+        if ($salesStartDate) {
+            $salesQuery->whereDate('created_at', '>=', $salesStartDate);
+        }
+        if ($salesEndDate) {
+            $salesQuery->whereDate('created_at', '<=', $salesEndDate);
+        }
         $sales = $salesQuery->get();
 
         $allTransactionIdsFromSales = [];
@@ -42,7 +46,7 @@ class ReportController extends Controller
             if (is_array($ids)) {
                 $allTransactionIdsFromSales = array_merge($allTransactionIdsFromSales, $ids);
             } elseif ($ids !== null) {
-                 Log::warning("Dashboard - Sale ID {$sale->id}: transaction_id is not array/string/null. Type: " . gettype($ids));
+                Log::warning("Dashboard - Sale ID {$sale->id}: transaction_id is not array/string/null. Type: " . gettype($ids));
             }
         }
         $allTransactionIdsFromSales = array_filter(array_unique($allTransactionIdsFromSales), 'is_numeric');
@@ -94,7 +98,7 @@ class ReportController extends Controller
                     $qty = (int) $transaction->quantity;
 
                     $lineItemRevenueForProfit = (float) $transaction->amount - (float)($transaction->discount ?? 0);
-                    $lineItemCost = (float) ($product->original_price ?? 0) * $qty;
+                    $lineItemCost = (float) ($product->cost_price ?? $product->original_price ?? 0) * $qty;
                     $transactionLineProfit = $lineItemRevenueForProfit - $lineItemCost;
 
                     $totalCalculatedSalesProfit += $transactionLineProfit;
@@ -134,8 +138,12 @@ class ReportController extends Controller
         }, array_keys($salesByDate), array_values($salesByDate));
 
         $purchasesQuery = Purchase::with(['product:id,item_name', 'supplier:id,supplier']);
-        if ($purchaseStartDate) { $purchasesQuery->whereDate('purchase_date', '>=', $purchaseStartDate); }
-        if ($purchaseEndDate) { $purchasesQuery->whereDate('purchase_date', '<=', $purchaseEndDate); }
+        if ($purchaseStartDate) {
+            $purchasesQuery->whereDate('purchase_date', '>=', $purchaseStartDate);
+        }
+        if ($purchaseEndDate) {
+            $purchasesQuery->whereDate('purchase_date', '<=', $purchaseEndDate);
+        }
         $purchases = $purchasesQuery->get();
         $suppliers = Supplier::all();
         $totalPurchaseValue = $purchases->sum('total_amount');
@@ -174,15 +182,21 @@ class ReportController extends Controller
         $totalOwedBySuppliers = collect($supplierBalancesData)->where('balance', '>', 0)->sum('balance');
 
         $expenseQuery = Expense::with('category');
-        if ($expenseStartDate) { $expenseQuery->whereDate('expense_date', '>=', $expenseStartDate); }
-        if ($expenseEndDate) { $expenseQuery->whereDate('expense_date', '<=', $expenseEndDate); }
+        if ($expenseStartDate) {
+            $expenseQuery->whereDate('expense_date', '>=', $expenseStartDate);
+        }
+        if ($expenseEndDate) {
+            $expenseQuery->whereDate('expense_date', '<=', $expenseEndDate);
+        }
         $expenses = $expenseQuery->get();
         $totalExpenses = $expenses->sum('amount');
         $expensesByCategory = $expenses->groupBy('category.name')->map(fn($group) => $group->sum('amount'))->sortDesc();
         $expensesByDateAgg = [];
         foreach ($expenses as $expense) {
             $expDate = $expense->expense_date->format('Y-m-d');
-            if(!isset($expensesByDateAgg[$expDate])) { $expensesByDateAgg[$expDate] = ['amount' => 0, 'expense_count' => 0]; }
+            if (!isset($expensesByDateAgg[$expDate])) {
+                $expensesByDateAgg[$expDate] = ['amount' => 0, 'expense_count' => 0];
+            }
             $expensesByDateAgg[$expDate]['amount'] += (float) $expense->amount;
             $expensesByDateAgg[$expDate]['expense_count']++;
         }
@@ -231,8 +245,12 @@ class ReportController extends Controller
         $endDate = $request->input('end_date');
 
         $salesQuery = Sale::query();
-        if ($startDate) { $salesQuery->whereDate('created_at', '>=', $startDate); }
-        if ($endDate) { $salesQuery->whereDate('created_at', '<=', $endDate); }
+        if ($startDate) {
+            $salesQuery->whereDate('created_at', '>=', $startDate);
+        }
+        if ($endDate) {
+            $salesQuery->whereDate('created_at', '<=', $endDate);
+        }
         $salesCollection = $salesQuery->get();
 
         $allTransactionIds = [];
@@ -247,7 +265,7 @@ class ReportController extends Controller
             }
         }
         $allTransactionIds = array_filter(array_unique($allTransactionIds), 'is_numeric');
-        
+
         $transactionsMap = collect();
         if (!empty($allTransactionIds)) {
             $transactionsMap = Transaction::with('products')->whereIn('id', $allTransactionIds)->get()->keyBy('id');
@@ -280,7 +298,7 @@ class ReportController extends Controller
                     $product = $transaction->products;
                     $qty = (int) $transaction->quantity;
                     $lineItemRevenueForProfit = (float) $transaction->amount - (float)($transaction->discount ?? 0);
-                    $lineItemCost = (float) ($product->original_price ?? 0) * $qty;
+                    $lineItemCost = (float) ($product->cost_price ?? $product->original_price ?? 0) * $qty;
                     $transactionLineProfit = $lineItemRevenueForProfit - $lineItemCost;
                     $salesByDate[$saleDate]['profit'] += $transactionLineProfit;
                 }
@@ -303,8 +321,12 @@ class ReportController extends Controller
         $endDate = $request->input('end_date');
 
         $salesQuery = Sale::query();
-        if ($startDate) { $salesQuery->whereDate('created_at', '>=', $startDate); }
-        if ($endDate) { $salesQuery->whereDate('created_at', '<=', $endDate); }
+        if ($startDate) {
+            $salesQuery->whereDate('created_at', '>=', $startDate);
+        }
+        if ($endDate) {
+            $salesQuery->whereDate('created_at', '<=', $endDate);
+        }
         $sales = $salesQuery->get();
 
         $allTransactionIds = [];
@@ -324,14 +346,14 @@ class ReportController extends Controller
         if (!empty($allTransactionIds)) {
             $transactionsMap = Transaction::with('products.category')->whereIn('id', $allTransactionIds)->get()->keyBy('id');
         }
-        
+
         $productSalesStats = [];
         $categorySalesStats = [];
 
         foreach ($sales as $sale) {
             $currentSaleTransactionIds = $sale->transaction_id;
             if (!is_array($currentSaleTransactionIds)) {
-                 if (is_string($currentSaleTransactionIds)) {
+                if (is_string($currentSaleTransactionIds)) {
                     $decodedIds = json_decode($currentSaleTransactionIds, true);
                     $currentSaleTransactionIds = (json_last_error() === JSON_ERROR_NONE && is_array($decodedIds)) ? $decodedIds : [];
                 } else {
@@ -348,9 +370,9 @@ class ReportController extends Controller
                     $qty = (int) $transaction->quantity;
 
                     $lineItemRevenueForProfit = (float) $transaction->amount - (float)($transaction->discount ?? 0);
-                    $lineItemCost = (float) ($product->original_price ?? 0) * $qty;
+                    $lineItemCost = (float) ($product->cost_price ?? $product->original_price ?? 0) * $qty;
                     $transactionLineProfit = $lineItemRevenueForProfit - $lineItemCost;
-                    
+
                     $transactionNetRevenueForStat = (float) $transaction->total_amount;
 
                     if (!isset($productSalesStats[$product->id])) {
@@ -380,7 +402,7 @@ class ReportController extends Controller
         ];
         return view('pages.reports.products', compact('reports'));
     }
-    
+
     public function customers(Request $request)
     {
         $startDate = $request->input('start_date');
@@ -388,8 +410,12 @@ class ReportController extends Controller
         $customers = Customer::all();
 
         $salesQuery = Sale::query();
-        if ($startDate) { $salesQuery->whereDate('created_at', '>=', $startDate); }
-        if ($endDate) { $salesQuery->whereDate('created_at', '<=', $endDate); }
+        if ($startDate) {
+            $salesQuery->whereDate('created_at', '>=', $startDate);
+        }
+        if ($endDate) {
+            $salesQuery->whereDate('created_at', '<=', $endDate);
+        }
         $sales = $salesQuery->get();
 
         $customerSpending = [];
@@ -428,25 +454,41 @@ class ReportController extends Controller
         $purchaseProductId = $request->input('purchase_product_id');
 
         $purchasesQuery = Purchase::with(['product:id,item_name', 'supplier:id,supplier,debit,credit'])
-                            ->orderBy('purchase_date', 'desc')->orderBy('id', 'desc');
-        if ($purchaseStartDate) { $purchasesQuery->whereDate('purchase_date', '>=', $purchaseStartDate); }
-        if ($purchaseEndDate) { $purchasesQuery->whereDate('purchase_date', '<=', $purchaseEndDate); }
-        if ($purchaseSupplierId) { $purchasesQuery->where('supplier_id', $purchaseSupplierId); }
-        if ($purchaseProductId) { $purchasesQuery->where('product_id', $purchaseProductId); }
+            ->orderBy('purchase_date', 'desc')->orderBy('id', 'desc');
+        if ($purchaseStartDate) {
+            $purchasesQuery->whereDate('purchase_date', '>=', $purchaseStartDate);
+        }
+        if ($purchaseEndDate) {
+            $purchasesQuery->whereDate('purchase_date', '<=', $purchaseEndDate);
+        }
+        if ($purchaseSupplierId) {
+            $purchasesQuery->where('supplier_id', $purchaseSupplierId);
+        }
+        if ($purchaseProductId) {
+            $purchasesQuery->where('product_id', $purchaseProductId);
+        }
         $allPurchases = $purchasesQuery->get();
 
-        $suppliers = Supplier::all(); 
+        $suppliers = Supplier::all();
         $supplierPurchaseSummary = $suppliers->map(function ($supplier) use ($purchaseStartDate, $purchaseEndDate, $purchaseSupplierId, $purchaseProductId) {
             $suppPurchasesQuery = $supplier->purchases();
-            
-            if ($purchaseStartDate) { $suppPurchasesQuery->where('purchase_date', '>=', $purchaseStartDate); }
-            if ($purchaseEndDate) { $suppPurchasesQuery->where('purchase_date', '<=', $purchaseEndDate); }
-            if ($purchaseProductId) { $suppPurchasesQuery->where('product_id', $purchaseProductId); }
+
+            if ($purchaseStartDate) {
+                $suppPurchasesQuery->where('purchase_date', '>=', $purchaseStartDate);
+            }
+            if ($purchaseEndDate) {
+                $suppPurchasesQuery->where('purchase_date', '<=', $purchaseEndDate);
+            }
+            if ($purchaseProductId) {
+                $suppPurchasesQuery->where('product_id', $purchaseProductId);
+            }
 
             if ($purchaseSupplierId && $purchaseSupplierId != $supplier->id) {
-                 return [
-                    'id' => $supplier->id, 'name' => $supplier->supplier,
-                    'total_purchase_value' => 0, 'purchase_count' => 0,
+                return [
+                    'id' => $supplier->id,
+                    'name' => $supplier->supplier,
+                    'total_purchase_value' => 0,
+                    'purchase_count' => 0,
                     'balance' => (float) $supplier->debit - (float) $supplier->credit,
                 ];
             }
@@ -477,7 +519,7 @@ class ReportController extends Controller
         return view('pages.reports.purchases_suppliers', compact('reports'));
     }
 
-     public function expensesReport(Request $request)
+    public function expensesReport(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -485,19 +527,25 @@ class ReportController extends Controller
         $searchTerm = $request->input('search_term');
 
         $query = Expense::with('category', 'user')->orderBy('expense_date', 'desc');
-        if ($startDate) { $query->whereDate('expense_date', '>=', $startDate); }
-        if ($endDate) { $query->whereDate('expense_date', '<=', $endDate); }
-        if ($categoryId) { $query->where('expense_category_id', $categoryId); }
+        if ($startDate) {
+            $query->whereDate('expense_date', '>=', $startDate);
+        }
+        if ($endDate) {
+            $query->whereDate('expense_date', '<=', $endDate);
+        }
+        if ($categoryId) {
+            $query->where('expense_category_id', $categoryId);
+        }
         if ($searchTerm) {
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('description', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('paid_to', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('reference_number', 'like', '%' . $searchTerm . '%');
+                    ->orWhere('paid_to', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('reference_number', 'like', '%' . $searchTerm . '%');
             });
         }
         $expenses = $query->paginate(20);
         $expenseCategories = ExpenseCategory::orderBy('name')->get();
-        
+
         $totalExpensesForPeriod = (clone $query)->sum('amount');
 
         return view('pages.reports.expenses', compact('expenses', 'expenseCategories', 'totalExpensesForPeriod', 'startDate', 'endDate', 'categoryId', 'searchTerm'));
