@@ -23,7 +23,7 @@ Route::get('/invoice/print',function(){
 return view('pages.customer.invoice_print');
 })->name('invoice.print');
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/dashboard', [LoginController::class, 'login'])->name('login.verify');
+Route::post('/dashboard', [LoginController::class, 'login'])->name('login');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Routes
@@ -92,6 +92,7 @@ Route::prefix('purchases')->name('purchase.')->group(function () {
     Route::post('/store', [PurchaseController::class, 'store'])->name('store');
     Route::get('/product-details/{id}', [PurchaseController::class, 'getProductDetails'])->name('product.details');
     Route::get('/', [PurchaseController::class, 'index'])->name('index'); // Route to list purchases
+    Route::get('/get-products-by-supplier/{id}', [PurchaseController::class, 'getProductsBySupplier'])->name('products-by-supplier');    
 });
 
 Route::middleware('auth')->group(function () { // Assuming expenses should be behind auth
