@@ -93,6 +93,10 @@ Route::prefix('purchases')->name('purchase.')->group(function () {
     Route::get('/product-details/{id}', [PurchaseController::class, 'getProductDetails'])->name('product.details');
     Route::get('/', [PurchaseController::class, 'index'])->name('index'); // Route to list purchases
     Route::get('/get-products-by-supplier/{id}', [PurchaseController::class, 'getProductsBySupplier'])->name('products-by-supplier');    
+    
+    // <-- ADD THESE TWO LINES FOR EDIT FUNCTIONALITY -->
+    Route::get('/{purchase}/edit', [PurchaseController::class, 'edit'])->name('edit');
+    Route::put('/{purchase}', [PurchaseController::class, 'update'])->name('update');
 });
 
 Route::middleware('auth')->group(function () { // Assuming expenses should be behind auth

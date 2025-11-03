@@ -171,7 +171,7 @@
         <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Sales Over Time (Filtered)</h6></div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+                <table id="schedulesTable" class="table table-bordered table-striped" width="100%" cellspacing="0">
                     <thead><tr><th>Date</th><th>Revenue</th><th>Profit</th><th>No. of Sales</th></tr></thead>
                     <tbody>
                         @forelse ($reports['salesOverTime'] as $saleData)
@@ -485,5 +485,26 @@
 @endsection
 
 @push('scripts')
-{{-- Add any specific JS for this page, e.g., for DataTables or charts --}}
+<script>
+$(document).ready(function() {
+    var table = $('#schedulesTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: false,
+        info: true,
+        responsive: true,
+        dom: '<"top d-flex justify-content-between align-items-center mb-3"Bf>rt<"bottom d-flex justify-content-between align-items-center"lip>', 
+        buttons: [
+            { extend: 'copyHtml5', text: ' Copy', className: 'btn btn-secondary' },
+            { extend: 'csvHtml5', text: ' CSV', className: 'btn btn-info' },
+            { extend: 'excelHtml5', text: ' Excel', className: 'btn btn-success' },
+            { extend: 'pdfHtml5', text: ' PDF', className: 'btn btn-danger' },
+            { extend: 'print', text: ' Print', className: 'btn btn-primary' }
+        ]
+    });
+
+    // Move buttons container to top left
+    table.buttons().container().appendTo('#schedulesTable_wrapper .top');
+});
+</script>
 @endpush

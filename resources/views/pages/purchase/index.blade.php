@@ -96,12 +96,14 @@
                                     <th>Date</th>
                                     <th>Supplier</th>
                                     <th>Product</th>
+                                    <th>Model</th>
                                     <th class="text-end">Qty</th>
                                     <th class="text-end">Unit Price</th>
                                     <th class="text-end">Total Amount</th>
                                     <th class="text-end">Cash Paid (This Purchase)</th>
                                     <th>Supplier Overall Status</th>
                                     <th>Notes</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,6 +138,7 @@
                                         {{ $purchase->supplier->supplier ?? 'N/A' }}
                                     </td>
                                     <td>{{ $purchase->product->item_name ?? 'N/A' }}</td>
+                                    <td>{{ $purchase->product->item_code ?? 'N/A' }}</td>
                                     <td class="text-end">{{ $purchase->quantity }}</td>
                                     <td class="text-end">{{ number_format($purchase->unit_price, 2) }}</td>
                                     <td class="text-end">{{ number_format($purchase->total_amount, 2) }}</td>
@@ -144,10 +147,16 @@
                                         {{ $overall_status_text }}
                                     </td>
                                     <td class="notes-column">{{ $purchase->notes ?? '-' }}</td>
+                                    <td> {{-- <-- Action Cell --}}
+                                        <a href="{{ route('purchase.edit', $purchase->id) }}" class="btn btn-sm btn-info" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="10" class="text-center">No purchases found.</td>
+                                    {{-- <-- THIS IS THE ONLY CHANGE --> --}}
+                                    <td colspan="11" class="text-center">No purchases found.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

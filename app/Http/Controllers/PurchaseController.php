@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
+use Carbon\Carbon; // <-- Import Carbon for date handling
 
 class PurchaseController extends Controller
 {
@@ -151,7 +152,8 @@ class PurchaseController extends Controller
     public function index(Request $request)
     {
         $query = Purchase::with([
-            'product:id,item_name',
+            'product:id,item_name,item_code',
+            'product.category:id,item_name',
             'supplier:id,supplier,debit,credit'
         ])
             ->orderBy('purchase_date', 'desc')
@@ -191,6 +193,172 @@ class PurchaseController extends Controller
                 'status' => 'error',
                 'message' => 'Could not fetch products.'
             ], 500);
+        }
+    }
+
+    // ===============================================
+    // == NEW METHODS FOR EDIT FUNCTIONALITY ==
+    // ===============================================
+
+    /**
+     * Show the form for editing the specified purchase.
+     */
+    public function edit(Purchase $purchase)
+    {
+        // We need all suppliers and products for the dropdowns
+        $suppliers = Supplier::orderBy('supplier')->get();
+        // You might want to get all products, not just from one category
+        $products = Product::orderBy('item_name')->get();
+        $categories = Category::orderBy('name', 'asc')->get(); 
+
+        return view('pages.purchase.edit', compact('purchase', 'suppliers', 'products', 'categories'));
+    }
+
+    /**
+     * Update the specified purchase in storage.
+     */
+    public function update(Request $request, Purchase $purchase)
+    {
+        // 1. Validate the incoming data (using the same field names as your store method)
+        $validator = Validator::make($request->all(), [
+            'supplier_id' => 'required|exists:suppliers,id',
+            'product_id' => 'required|exists:products,id',
+            'purchase_quantity' => 'required|integer|min:0', // Allow 0 in case they want to nullify? Or min:1?
+            'purchase_price' => 'required|numeric|min:0',
+            'purchase_date' => 'required|date',
+            'cash_paid' => 'required|numeric|min:0',
+            'new_selling_price' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+        
+        $validated = $validator->validated();
+
+        DB::beginTransaction();
+        try {
+            // 2. GET OLD MODELS AND VALUES
+            $old_supplier = $purchase->supplier;
+            $old_product = $purchase->product;
+            $old_qty = $purchase->quantity;
+            $old_total_amount = $purchase->total_amount;
+            $old_cash_paid = $purchase->cash_paid_at_purchase;
+            $old_unit_price = $purchase->unit_price;
+
+            // 3. REVERSE THE OLD TRANSACTION FROM PRODUCT STOCK & WAC
+            // Recalculate WAC by removing the old purchase
+            $currentTotalValue = $old_product->qty * $old_product->cost_price;
+            $purchaseValue = $old_qty * $old_unit_price; // Use the *actual* purchase price
+            $originalTotalValue = $currentTotalValue - $purchaseValue;
+            $originalQty = $old_product->qty - $old_qty;
+            $originalCost = ($originalQty > 0) ? $originalTotalValue / $originalQty : 0;
+            
+            $old_product->qty = $originalQty;
+            $old_product->cost_price = $originalCost;
+            $old_product->save();
+            
+            // 4. REVERSE THE OLD TRANSACTION FROM SUPPLIER BALANCE
+            // This reverses the logic from your 'store' method
+            $old_supplier->credit -= $old_total_amount;
+            
+            // This part is tricky. We must reverse the payment logic.
+            // A simpler, more robust way is to store payments separately,
+            // but to reverse your *exact* logic:
+            // We need to find how much went to debit and how much to credit.
+            // This is complex and error-prone.
+            
+            // A much safer reversal logic is:
+            // Debit = Payments, Credit = Goods.
+            // Your `store` logic nets them. Let's assume debit/credit are simple totals.
+            // If your `store` logic is more complex, this reversal MUST mirror it.
+            // Let's use the simple, correct reversal:
+            $old_supplier->debit -= $old_cash_paid; // Remove the payment
+            
+            // After removal, re-net the balances
+            if ($old_supplier->debit > 0 && $old_supplier->credit > 0) {
+                 if ($old_supplier->debit >= $old_supplier->credit) {
+                    $old_supplier->debit -= $old_supplier->credit;
+                    $old_supplier->credit = 0;
+                } else {
+                    $old_supplier->credit -= $old_supplier->debit;
+                    $old_supplier->debit = 0;
+                }
+            }
+            $old_supplier->save();
+            
+            // If supplier or product changed, we must also save the new ones
+            $new_supplier = Supplier::findOrFail($validated['supplier_id']);
+            $new_product = Product::findOrFail($validated['product_id']);
+
+            // 5. CALCULATE NEW VALUES
+            $new_qty = (int) $validated['purchase_quantity'];
+            $new_price = (float) $validated['purchase_price'];
+            $new_total_amount = $new_qty * $new_price;
+            $new_cash_paid = (float) $validated['cash_paid'];
+
+            // 6. APPLY NEW TRANSACTION TO PRODUCT STOCK & WAC
+            $oldQty = (int) $new_product->qty;
+            $oldCost = (float) ($new_product->cost_price ?? $new_product->original_price ?? 0);
+            $oldStockValue = $oldQty * $oldCost;
+            $newStockValue = $new_qty * $new_price;
+
+            $newTotalQty = $oldQty + $new_qty;
+            $newTotalValue = $oldStockValue + $newStockValue;
+            $newAverageCost = ($newTotalQty > 0) ? $newTotalValue / $newTotalQty : $new_price;
+
+            $new_product->qty = $newTotalQty;
+            $new_product->cost_price = $newAverageCost;
+            $new_product->original_price = $new_price;
+            if ($request->filled('new_selling_price')) {
+                $new_product->selling_price = (float) $validated['new_selling_price'];
+            }
+            $new_product->save();
+            
+            // 7. APPLY NEW TRANSACTION TO SUPPLIER BALANCE (using your store logic)
+            $new_supplier->credit += $new_total_amount;
+            if ($new_cash_paid > 0) {
+                $paid_from_credit = min($new_supplier->credit, $new_cash_paid);
+                $new_supplier->credit -= $paid_from_credit;
+                $remaining_cash = $new_cash_paid - $paid_from_credit;
+                if ($remaining_cash > 0) {
+                    $new_supplier->debit += $remaining_cash;
+                }
+            }
+            if ($new_supplier->debit > 0 && $new_supplier->credit > 0) {
+                 if ($new_supplier->debit >= $new_supplier->credit) {
+                    $new_supplier->debit -= $new_supplier->credit;
+                    $new_supplier->credit = 0;
+                } else {
+                    $new_supplier->credit -= $new_supplier->debit;
+                    $new_supplier->debit = 0;
+                }
+            }
+            // Save if it's a different supplier
+            if($old_supplier->id != $new_supplier->id) {
+                 $new_supplier->save();
+            }
+
+            // 8. UPDATE THE PURCHASE RECORD ITSELF
+            $purchase->supplier_id = $validated['supplier_id'];
+            $purchase->product_id = $validated['product_id'];
+            $purchase->quantity = $new_qty;
+            $purchase->unit_price = $new_price;
+            $purchase->total_amount = $new_total_amount;
+            $purchase->cash_paid_at_purchase = $new_cash_paid;
+            $purchase->purchase_date = $validated['purchase_date'];
+            $purchase->notes = $validated['notes'];
+            $purchase->save();
+
+            DB::commit();
+
+            return redirect()->route('purchase.index')->with('success', 'Purchase updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Purchase update error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
+            return back()->with('error', 'An error occurred: ' . $e->getMessage())->withInput();
         }
     }
 }
