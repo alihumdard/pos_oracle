@@ -86,6 +86,9 @@ Route::prefix('reports')->group(function () {
 });
 // ... other routes
 
+// <-- NEW ROUTE FOR MODAL -->
+Route::get('/supplier/{supplier}/purchase-summary', [PurchaseController::class, 'getSupplierPurchaseSummary'])->name('supplier.purchase.summary');
+
 // Purchase Routes
 Route::prefix('purchases')->name('purchase.')->group(function () {
     Route::get('/create', [PurchaseController::class, 'create'])->name('create');
