@@ -5,19 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // <-- Request ko import karein
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
-use Carbon\Carbon; // <-- Import Carbon for date handling
+use Carbon\Carbon;
 
 class PurchaseController extends Controller
 {
     public function create()
     {
         $data['suppliers'] = Supplier::orderBy('supplier', 'asc')->get();
-        $data['categories'] = Category::orderBy('name', 'asc')->get(); // <-- ADD THIS LINE
+        $data['categories'] = Category::orderBy('name', 'asc')->get();
         return view('pages.purchase.create', $data);
     }
     
@@ -78,18 +78,14 @@ class PurchaseController extends Controller
             // 3. Update the Product
             $product->qty = $newTotalQty;
             $product->cost_price = $newAverageCost;
-            $product->original_price = $newPurchasePrice; // Update original_price to last purchase price
+            $product->original_price = $newPurchasePrice; 
 
-            // <-- 2. ADD THIS LOGIC -->
-            // Update selling price ONLY if a new one was provided
             if ($request->filled('new_selling_price')) {
                 $product->selling_price = (float) $request->new_selling_price;
             }
-            // <-- END NEW LOGIC -->
+            $product->save();
 
-            $product->save(); // Save all product changes
-
-            // 4. Update Supplier Balance (Your existing logic)
+            // 4. Update Supplier Balance
             $supplier->credit += $totalPurchaseAmount;
 
             if ($cashPaidForThisPurchase > 0) {
@@ -117,7 +113,7 @@ class PurchaseController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Purchase recorded, stock and product prices updated!', // Updated message
+                'message' => 'Purchase recorded, stock and product prices updated!',
                 'purchase' => $purchase->load('product', 'supplier')
             ], 201);
         } catch (\Exception $e) {
@@ -132,17 +128,14 @@ class PurchaseController extends Controller
 
     public function getProductDetails($id)
     {
-        // <-- 3. UPDATE THIS METHOD -->
         $product = Product::select('id', 'cost_price', 'original_price', 'selling_price', 'qty')->find($id);
 
         if ($product) {
-            // Determine the cost price (use new cost_price, fallback to old original_price)
             $costPrice = $product->cost_price ?? $product->original_price ?? 0;
-
             return response()->json([
                 'status' => 'success',
-                'cost_price' => $costPrice, // Use this for 'Last Cost Price'
-                'selling_price' => $product->selling_price ?? 0, // <-- Send current selling price
+                'cost_price' => $costPrice,
+                'selling_price' => $product->selling_price ?? 0,
                 'current_qty' => $product->qty,
             ]);
         }
@@ -153,7 +146,6 @@ class PurchaseController extends Controller
     {
         $query = Purchase::with([
             'product:id,item_name,item_code',
-            'product.category:id,item_name',
             'supplier:id,supplier,debit,credit'
         ])
             ->orderBy('purchase_date', 'desc')
@@ -196,34 +188,21 @@ class PurchaseController extends Controller
         }
     }
 
-    // ===============================================
-    // == NEW METHODS FOR EDIT FUNCTIONALITY ==
-    // ===============================================
-
-    /**
-     * Show the form for editing the specified purchase.
-     */
     public function edit(Purchase $purchase)
     {
-        // We need all suppliers and products for the dropdowns
         $suppliers = Supplier::orderBy('supplier')->get();
-        // You might want to get all products, not just from one category
         $products = Product::orderBy('item_name')->get();
         $categories = Category::orderBy('name', 'asc')->get(); 
 
         return view('pages.purchase.edit', compact('purchase', 'suppliers', 'products', 'categories'));
     }
 
-    /**
-     * Update the specified purchase in storage.
-     */
     public function update(Request $request, Purchase $purchase)
     {
-        // 1. Validate the incoming data (using the same field names as your store method)
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,id',
             'product_id' => 'required|exists:products,id',
-            'purchase_quantity' => 'required|integer|min:0', // Allow 0 in case they want to nullify? Or min:1?
+            'purchase_quantity' => 'required|integer|min:0',
             'purchase_price' => 'required|numeric|min:0',
             'purchase_date' => 'required|date',
             'cash_paid' => 'required|numeric|min:0',
@@ -239,6 +218,9 @@ class PurchaseController extends Controller
 
         DB::beginTransaction();
         try {
+            // ... (Aapka poora update logic jaisa pehle tha) ...
+            // (Reversing stock, supplier balance, applying new values, etc.)
+            
             // 2. GET OLD MODELS AND VALUES
             $old_supplier = $purchase->supplier;
             $old_product = $purchase->product;
@@ -248,9 +230,8 @@ class PurchaseController extends Controller
             $old_unit_price = $purchase->unit_price;
 
             // 3. REVERSE THE OLD TRANSACTION FROM PRODUCT STOCK & WAC
-            // Recalculate WAC by removing the old purchase
             $currentTotalValue = $old_product->qty * $old_product->cost_price;
-            $purchaseValue = $old_qty * $old_unit_price; // Use the *actual* purchase price
+            $purchaseValue = $old_qty * $old_unit_price; 
             $originalTotalValue = $currentTotalValue - $purchaseValue;
             $originalQty = $old_product->qty - $old_qty;
             $originalCost = ($originalQty > 0) ? $originalTotalValue / $originalQty : 0;
@@ -260,23 +241,9 @@ class PurchaseController extends Controller
             $old_product->save();
             
             // 4. REVERSE THE OLD TRANSACTION FROM SUPPLIER BALANCE
-            // This reverses the logic from your 'store' method
             $old_supplier->credit -= $old_total_amount;
+            $old_supplier->debit -= $old_cash_paid; 
             
-            // This part is tricky. We must reverse the payment logic.
-            // A simpler, more robust way is to store payments separately,
-            // but to reverse your *exact* logic:
-            // We need to find how much went to debit and how much to credit.
-            // This is complex and error-prone.
-            
-            // A much safer reversal logic is:
-            // Debit = Payments, Credit = Goods.
-            // Your `store` logic nets them. Let's assume debit/credit are simple totals.
-            // If your `store` logic is more complex, this reversal MUST mirror it.
-            // Let's use the simple, correct reversal:
-            $old_supplier->debit -= $old_cash_paid; // Remove the payment
-            
-            // After removal, re-net the balances
             if ($old_supplier->debit > 0 && $old_supplier->credit > 0) {
                  if ($old_supplier->debit >= $old_supplier->credit) {
                     $old_supplier->debit -= $old_supplier->credit;
@@ -288,7 +255,6 @@ class PurchaseController extends Controller
             }
             $old_supplier->save();
             
-            // If supplier or product changed, we must also save the new ones
             $new_supplier = Supplier::findOrFail($validated['supplier_id']);
             $new_product = Product::findOrFail($validated['product_id']);
 
@@ -316,7 +282,7 @@ class PurchaseController extends Controller
             }
             $new_product->save();
             
-            // 7. APPLY NEW TRANSACTION TO SUPPLIER BALANCE (using your store logic)
+            // 7. APPLY NEW TRANSACTION TO SUPPLIER BALANCE
             $new_supplier->credit += $new_total_amount;
             if ($new_cash_paid > 0) {
                 $paid_from_credit = min($new_supplier->credit, $new_cash_paid);
@@ -335,7 +301,6 @@ class PurchaseController extends Controller
                     $new_supplier->debit = 0;
                 }
             }
-            // Save if it's a different supplier
             if($old_supplier->id != $new_supplier->id) {
                  $new_supplier->save();
             }
@@ -359,6 +324,48 @@ class PurchaseController extends Controller
             DB::rollBack();
             Log::error('Purchase update error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
             return back()->with('error', 'An error occurred: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    // ===============================================
+    // == YEH METHOD UPDATE HUA HAI ==
+    // ===============================================
+
+    /**
+     * Get a summary of purchases from a supplier, filtered by date.
+     */
+    public function getSupplierPurchaseSummary(Supplier $supplier, Request $request)
+    {
+        try {
+            // Click ki gayi row ki date hasil karein. Agar nahi mili to aaj ki date.
+            $endDate = $request->query('date', now()->format('Y-m-d'));
+
+            // Uss supplier ki tamam purchases hasil karein,
+            // jo ya to uss date par huin ya uss se pehle.
+            $purchases = Purchase::where('supplier_id', $supplier->id)
+                ->whereDate('purchase_date', '<=', $endDate)
+                ->with('product:id,item_name,item_code') // Product info
+                ->orderBy('purchase_date', 'desc') // Sab se nayi (newest) pehle
+                ->orderBy('id', 'desc')
+                ->get();
+
+            // Filter ki gayi purchases ka grand total calculate karein
+            $grandTotal = $purchases->sum('total_amount');
+
+            return response()->json([
+                'status' => 'success',
+                'supplier_name' => $supplier->supplier,
+                'purchases' => $purchases, // Grouped products ke bajaye ab purchases bhej rahe hain
+                'grand_total' => $grandTotal
+            ]);
+
+        } catch (\Exception $e) {
+            // Yeh 'Error: ' wali ghalti theek kar di hai
+            Log::error('Supplier Summary Error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Could not fetch supplier summary.'
+            ], 500);
         }
     }
 }

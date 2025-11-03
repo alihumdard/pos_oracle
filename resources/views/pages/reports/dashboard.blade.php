@@ -485,6 +485,15 @@
 @endsection
 
 @push('scripts')
+
+
+    <script src="{{asset('assets/plugins/sparklines/sparkline.js')}}"></script>
+    <script src="{{asset('assets/plugins/jqvmap/jquery.vmap.min.js')}}"></script>
+    <script src="{{asset('assets/plugins/jqvmap/maps/jquery.vmap.usa.js')}}"></script>
+    <script src="{{asset('assets/plugins/jquery-knob/jquery.knob.min.js')}}"></script>
+    <script src="{{asset('assets/dist/js/demo.js')}}"></script>
+    <script src="{{asset('assets/dist/js/pages/dashboard.js')}}"></script>
+
 <script>
 $(document).ready(function() {
     var table = $('#schedulesTable').DataTable({
