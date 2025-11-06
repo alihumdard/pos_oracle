@@ -3,7 +3,7 @@
 @section('title', 'Sales Reports')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid pt-16 sm:pt-6">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Sales Reports</h1>
     </div>

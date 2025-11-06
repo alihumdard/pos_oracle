@@ -11,7 +11,7 @@
     .text-danger-small { font-size: 0.875em; color: #dc3545; }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid pt-16 sm:pt-6">
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
             <div class="form-container">

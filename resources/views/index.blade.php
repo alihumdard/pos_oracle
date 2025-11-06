@@ -10,27 +10,11 @@
    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-   <style>
-@media (max-width: 990px) {
-  .sidebars {
-    display: none;
-  }
-}
-</style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
    <div class="wrapper">
-      <aside class="sidebars  main-sidebar sidebar-dark-primary elevation-4">
-         <!-- Brand Logo -->
-         <a href="{{route('dashboard')}}" class="brand-link">
-            <img src="{{ asset('assets/logo/logo.jpg') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-            <span class="brand-text font-weight-light">Rana Electronics</span>
-         </a>
-         <!-- Sidebar -->
-         @include('pages.sidebar')
-         <!-- /.sidebar -->
-      </aside>
+     @include('pages.sidebar')
       <div class="content-wrapper">
 
 

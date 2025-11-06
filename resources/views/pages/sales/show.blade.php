@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="row mt-4">
+<div class="row pt-16 sm:pt-6">
     <div class="col-12 justify-content-end align-items-center d-flex">
         <button class="btn btn-primary" onclick="history.back()">← Back</button>
     </div>

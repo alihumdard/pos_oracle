@@ -84,19 +84,19 @@
             height: calc(40px - 2px) !important;
         }
 
-        /* UPDATED CSS for overall supplier balance status */
+        /* UPDATED CSS for balance status */
         .overall-status-supplier-owes-us {
             color: green;
             font-weight: bold;
         }
 
-        /* GREEN: Supplier owes us */
+        /* GREEN: Supplier owes us (We overpaid) */
         .overall-status-we-owe-supplier {
             color: red;
             font-weight: bold;
         }
 
-        /* RED: We owe supplier */
+        /* RED: We owe supplier (Underpaid) */
         .overall-status-settled {
             color: #6c757d;
             font-weight: normal;
@@ -117,7 +117,7 @@
         }
     </style>
 
-    <div class="container-fluid mt-3">
+    <div class="container-fluid pt-16 sm:pt-6">
         <div class="row">
             <div class="col-12">
                 <div class="filter-container">
@@ -183,30 +183,32 @@
                                         <th class="text-end">Qty</th>
                                         <th class="text-end">Unit Price</th>
                                         <th class="text-end">Total Amount</th>
-                                        <th class="text-end">Cash Paid (This Purchase)</th>
-                                        <th>Supplier Overall Status</th>
-                                        <th>Actions</th>
+                                        <th class="text-end">Cash Paid</th>
+                                        <th>Grand Total</th> <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($purchases as $index => $purchase)
                                         @php
                                             $overall_status_text = 'N/A';
-                                            $overall_status_class = 'overall-status-settled'; // Default to settled
+                                            $overall_status_class = 'overall-status-settled';
 
-                                            if ($purchase->supplier) {
-                                                $net_overall_supplier_balance = $purchase->supplier->debit - $purchase->supplier->credit;
-                                                $epsilon = 0.009;
+                                            // Calculate balance for THIS purchase only: Total - Paid
+                                            $current_purchase_balance = $purchase->total_amount - $purchase->cash_paid_at_purchase;
+                                            $epsilon = 0.009;
 
-                                                if ($net_overall_supplier_balance > $epsilon) {
-                                                    $overall_status_text = 'Supplier Owes You: ' . number_format($net_overall_supplier_balance, 2);
-                                                    $overall_status_class = 'overall-status-supplier-owes-us';
-                                                } elseif ($net_overall_supplier_balance < -$epsilon) {
-                                                    $overall_status_text = 'You Owe Supplier: ' . number_format(abs($net_overall_supplier_balance), 2);
-                                                    $overall_status_class = 'overall-status-we-owe-supplier';
-                                                } else {
-                                                    $overall_status_text = 'Overall Settled';
-                                                }
+                                            if ($current_purchase_balance > $epsilon) {
+                                                // Positive balance means we still owe money for this purchase
+                                                $overall_status_text = '' . number_format($current_purchase_balance, 2);
+                                                $overall_status_class = 'overall-status-we-owe-supplier';
+                                            } elseif ($current_purchase_balance < -$epsilon) {
+                                                // Negative balance means we overpaid (unlikely but possible)
+                                                $overall_status_text = 'Supplier Owes You: ' . number_format(abs($current_purchase_balance), 2);
+                                                $overall_status_class = 'overall-status-supplier-owes-us';
+                                            } else {
+                                                // Balance is effectively zero
+                                                $overall_status_text = 'No Balence';
+                                                $overall_status_class = 'overall-status-settled';
                                             }
                                         @endphp
                                         <tr>
@@ -225,7 +227,6 @@
                                                 {{ $overall_status_text }}
                                             </td>
                                             <td>
-                                                {{-- ===== 'data-purchase-date' Add Hua Hai ===== --}}
                                                 @if ($purchase->supplier)
                                                     <button type="button" class="btn btn-sm btn-success btn-view-supplier"
                                                         title="View Supplier Summary" data-toggle="modal"
@@ -260,7 +261,7 @@
     </div>
 
 
-    {{-- ===== MODAL KA HTML ===== --}}
+    {{-- ===== MODAL HTML ===== --}}
     <div class="modal fade" id="supplierSummaryModal" tabindex="-1" aria-labelledby="supplierSummaryModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -315,7 +316,6 @@
 @endsection
 
 @pushOnce('scripts')
-{{-- ===== JAVASCRIPT (formatDate function tabdeel hua hai) ===== --}}
 <script>
     $(document).ready(function () {
         // Select2 for filters
@@ -333,43 +333,27 @@
             }).format(number);
         }
 
-        // ===== YEH FUNCTION UPDATE HUA HAI =====
-        // Function to format date as "d M, Y" (e.g., "03 Nov, 2025")
+        // Function to format date as "d M, Y"
         function formatDate(dateString) {
-             // Mahinon (Months) ke naam
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            
-            // ===== YEH LINE TABDEEL HUI HAI =====
-            // Date object (Yeh Laravel ke full timestamp '2025-11-03T...Z' ko bhi handle kar lega)
             const date = new Date(dateString); 
-            
-            // Din (Day) hasil karein aur '0' add karein agar zaroorat ho (03)
             const day = String(date.getDate()).padStart(2, '0');
-            
-            // Mahinay (Month) ka naam array se hasil karein (Nov)
             const month = months[date.getMonth()];
-            
-            // Saal (Year) hasil karein (2025)
             const year = date.getFullYear();
-            
-            // Format mein jor dein
             return `${day} ${month}, ${year}`;
         }
 
-        // Event delegation (Double click se bachne ke liye .off() ke sath)
+        // Event delegation for supplier view button
         $(document).off('click', '.btn-view-supplier').on('click', '.btn-view-supplier', function () {
-            
-            // Data button se hasil karein
             var supplierId = $(this).data('supplier-id');
             var supplierName = $(this).data('supplier-name');
             var purchaseDate = $(this).data('purchase-date'); 
 
-            // URL banayein
             var url = "{{ route('supplier.purchase.summary', ['supplier' => ':id']) }}";
             url = url.replace(':id', supplierId);
 
-            // 1. Modal ko reset karein
+            // Reset modal
             $('#supplierSummaryModalLabel').text('Purchase Summary: ' + supplierName);
             $('#modal-loader').show();
             $('#modal-supplier-content').hide();
@@ -377,24 +361,21 @@
             $('#supplier-products-tbody').empty();
             $('#supplier-grand-total').text('');
 
-            // 2. AJAX request (Date ko data mein bhej rahe hain)
+            // AJAX request
             $.ajax({
                 url: url,
                 type: 'GET',
                 dataType: 'json',
                 data: {
-                    date: purchaseDate // <-- Date ko query parameter ke tor par bhejein
+                    date: purchaseDate
                 },
                 success: function (response) {
                     if (response.status === 'success') {
-                        // 3. Modal ko naye data se populate karein
                         var productsTbody = $('#supplier-products-tbody');
                         var counter = 1;
 
                         if (response.purchases.length > 0) {
                             response.purchases.forEach(function (item) {
-                                
-                                // Naya row structure
                                 var row = `<tr>
                                     <td>${counter}</td>
                                     <td>${formatDate(item.purchase_date)}</td>
@@ -411,10 +392,7 @@
                             productsTbody.append(row);
                         }
 
-                        // Grand total set karein
                         $('#supplier-grand-total').text(formatCurrency(response.grand_total));
-
-                        // 4. Content show karein
                         $('#modal-loader').hide();
                         $('#modal-supplier-content').show();
                     } else {
@@ -429,7 +407,6 @@
                 }
             });
         });
-
     });
 </script>
 @endpushOnce

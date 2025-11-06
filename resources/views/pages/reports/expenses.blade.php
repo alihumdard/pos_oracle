@@ -12,7 +12,7 @@
     .filter-form .select2-container--default .select2-selection--single .select2-selection__arrow { height: calc(1.5em + .5rem) !important;}
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid pt-16 sm:pt-6">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Detailed Expense Report</h1>
         <a href="{{ route('expenses.create') }}" class="btn btn-sm btn-danger shadow-sm">
