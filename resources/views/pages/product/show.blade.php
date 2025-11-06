@@ -238,7 +238,7 @@
     }
 </style>
 @section('content')
-<div class="row mt-4">
+<div class="row pt-16 sm:pt-6">
     <div class="col-12 justify-content-end align-items-center d-flex">
         <button class="btn btn-primary" onclick="history.back()">← Back</button>
     </div>
@@ -384,7 +384,7 @@
 
                 <div class="card-body">
                     <div class="table-responsive"> {{-- This is the key wrapper --}}
-                        <table class="table table-hover w-100" id="example1">
+                        <table class="table table-hover" id="example1">
                             <thead>
                                 <tr>
                                     <th>#</th>

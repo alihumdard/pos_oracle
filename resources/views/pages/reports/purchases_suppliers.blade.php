@@ -23,7 +23,7 @@
     .balance-zero { color: #6c757d; }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid pt-16 sm:pt-6">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Purchases and Suppliers Report</h1>
     </div>

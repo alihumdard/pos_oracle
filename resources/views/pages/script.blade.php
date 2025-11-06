@@ -32,4 +32,4 @@
       {{-- select2 (Forms ke liye) --}}
       <script src="{{asset('assets/plugins/select2/js/select2.full.min.js')}}"></script>
 
-      @stack('scripts')
+      {{-- @stack('scripts') --}}

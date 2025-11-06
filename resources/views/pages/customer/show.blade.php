@@ -19,7 +19,7 @@
         background-color: #f4f7fc;
         /* Removed: display: flex; justify-content: center; align-items: center; height: 100vh; */
         margin: 0;
-        padding-top: 20px; /* Add some top padding if needed */
+
         padding-bottom: 20px; /* Add some bottom padding if needed */
         /* Ensure no overflow-x: hidden here */
         overflow-x: auto; /* Allow body to scroll if content somehow pushes it */
@@ -267,10 +267,15 @@
             width: 100%;
         }
     }
+    @media (max-width: 768px) {
+        .table-responsive thead th {
+            white-space: nowrap;
+        }
+    }
 </style>
 
 @section('content')
-<div class="row mt-4">
+<div class="row pt-16 sm:pt-6">
     <div class="col-12 justify-content-end align-items-center d-flex">
         <button class="btn btn-primary" onclick="history.back()">← Back</button>
     </div>

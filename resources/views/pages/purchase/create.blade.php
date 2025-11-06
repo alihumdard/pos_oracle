@@ -108,7 +108,7 @@
     }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid pt-8">
     <div class="row">
         <div class="col-lg-10 col-md-12 mx-auto">
             <div class="form-container">

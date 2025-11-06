@@ -3,7 +3,7 @@
 @section('title', 'Dashboard Reports')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid pt-16 sm:pt-6">
     <div class="row mb-3 align-items-center">
         <div class="col-md-8">
             <h1 class="h3 mb-0">Dashboard Overview</h1>
@@ -501,19 +501,24 @@ $(document).ready(function() {
         searching: true,
         ordering: false,
         info: true,
-        responsive: true,
-        dom: '<"top d-flex justify-content-between align-items-center mb-3"Bf>rt<"bottom d-flex justify-content-between align-items-center"lip>', 
+        // 1. Disable built-in responsive (prevents column hiding)
+        responsive: false,
+        // 2. Enable horizontal scrolling
+        scrollX: true,
+        // 3. Updated DOM with 'flex-wrap' for better mobile button/search stacking
+        dom: '<"top d-flex flex-wrap justify-content-between align-items-center mb-3"Bf>rt<"bottom d-flex flex-wrap justify-content-between align-items-center"lip>',
         buttons: [
-            { extend: 'copyHtml5', text: ' Copy', className: 'btn btn-secondary' },
-            { extend: 'csvHtml5', text: ' CSV', className: 'btn btn-info' },
-            { extend: 'excelHtml5', text: ' Excel', className: 'btn btn-success' },
-            { extend: 'pdfHtml5', text: ' PDF', className: 'btn btn-danger' },
-            { extend: 'print', text: ' Print', className: 'btn btn-primary' }
+            { extend: 'copyHtml5', text: ' Copy', className: 'btn btn-secondary btn-sm' },
+            { extend: 'csvHtml5', text: ' CSV', className: 'btn btn-info btn-sm' },
+            { extend: 'excelHtml5', text: ' Excel', className: 'btn btn-success btn-sm' },
+            { extend: 'pdfHtml5', text: ' PDF', className: 'btn btn-danger btn-sm' },
+            { extend: 'print', text: ' Print', className: 'btn btn-primary btn-sm' }
         ]
     });
 
-    // Move buttons container to top left
-    table.buttons().container().appendTo('#schedulesTable_wrapper .top');
+    // If standard movement isn't working due to complex DOM, try this explicitly if needed:
+    // table.buttons().container().appendTo('#schedulesTable_wrapper .top'); 
+    // (Your custom DOM might already handle this automatically depending on DT version)
 });
 </script>
 @endpush
