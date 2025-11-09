@@ -11,15 +11,25 @@
    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
    <style>
-      body{
-         zoom: 80fr;
+
+      /* Your global zoom */
+      body {
+         zoom: 80%;
+      }
+
+      .modal {
+         transform: scale(1.05);
+      }
+
+      .modal-backdrop {
+         zoom: 125%;
       }
    </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
    <div class="wrapper">
-     @include('pages.sidebar')
+      @include('pages.sidebar')
       <div class="content-wrapper">
 
 
@@ -36,11 +46,11 @@
    @include('pages.script')
    @stack('scripts')
 
-<script>
-  window.onload = function() {
-    document.body.style.zoom = "80%";
-  };
-</script>
+   <script>
+      window.onload = function() {
+         document.body.style.zoom = "80%";
+      };
+   </script>
 </body>
 
 </html>
