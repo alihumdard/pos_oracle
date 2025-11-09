@@ -7,6 +7,13 @@
     <title>Tailwind Sidebar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .sidebars {
+  height: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+    </style>
 </head>
 
 <body class="bg-gray-100">
@@ -21,7 +28,7 @@
     </div>
 
     <aside id="main-sidebar"
-        class="fixed top-0 left-0 h-screen w-[250px] bg-[#343a40] text-[#c2c7d0] z-50 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-xl lg:shadow-none flex flex-col">
+        class="fixed top-0 left-0 sidebars w-[250px] bg-[#343a40] text-[#c2c7d0] z-50 transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 shadow-xl lg:shadow-none flex flex-col">
 
         <div class="flex items-center justify-between p-4 border-b border-[#4b545c]">
             <a href="{{route('dashboard')}}" class="flex items-center hover:text-white transition-colors">

@@ -10,6 +10,11 @@
    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   <style>
+      body{
+         zoom: 80fr;
+      }
+   </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -31,7 +36,11 @@
    @include('pages.script')
    @stack('scripts')
 
-
+<script>
+  window.onload = function() {
+    document.body.style.zoom = "80%";
+  };
+</script>
 </body>
 
 </html>
