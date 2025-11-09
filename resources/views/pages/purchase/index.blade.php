@@ -421,10 +421,18 @@
             $('#modal-loader').show();
             $('#modal-supplier-content').hide();
             $('#modal-error-message').hide();
+            // Clear table body completely
             $('#supplier-products-tbody').empty();
+            // Reset footer values
             $('#supplier-grand-total').text('');
             $('#supplier-grand-cash').text('');
             $('#supplier-grand-blance').text('');
+            // Ensure DataTable is destroyed if it exists
+            if ($.fn.DataTable.isDataTable('#supplier-summary-table')) {
+                $('#supplier-summary-table').DataTable().destroy();
+            }
+            // Clear any lingering rows that DataTable might have cached
+            $('#supplier-summary-table tbody').empty();
 
             // AJAX request
             $.ajax({
@@ -445,6 +453,8 @@
                             // Also compute aggregate sums for footer
                             var sumTotalAmount = 0;
                             var sumCashPaid = 0;
+                            // Clear any existing rows first
+                            productsTbody.empty();
 
                             response.purchases.forEach(function (item) {
                                 // Safely parse numeric values and fallback to 0 when missing
@@ -472,11 +482,6 @@
                                 productsTbody.append(row);
                                 counter++;
                             });
-
-                            // Initialize or reinitialize DataTable for modal table with PDF export
-                            if ($.fn.DataTable.isDataTable('#supplier-summary-table')) {
-                                $('#supplier-summary-table').DataTable().clear().destroy();
-                            }
 
                             // Slight delay to ensure DOM has updated
                             setTimeout(function() {
