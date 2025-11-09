@@ -115,35 +115,84 @@
             background-color: var(--light-gray);
             color: var(--text-color);
         }
+        
+        /* ===== NEW CSS FOR SUPPLIER CARDS ===== */
+        .supplier-card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; /* Spacing between cards */
+            margin-bottom: 1.5rem;
+        }
+        .supplier-card {
+            flex: 1;
+            min-width: 180px; /* Minimum width for cards */
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background: #f8f9fa;
+            border: 1px solid var(--light-gray);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .supplier-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
+        }
+        .supplier-card.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
+        }
+        .supplier-card strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+        .supplier-card span {
+            font-size: 0.85rem;
+        }
+        /* ===== END OF NEW CSS ===== */
+
     </style>
 
     <div class="container-fluid pt-16 sm:pt-6">
         <div class="row">
             <div class="col-12">
+
+                <div class="supplier-card-container">
+                    <div class="supplier-card {{ request('supplier_id_filter') == '' ? 'active' : '' }}" data-supplier-id="">
+                        <strong>All Suppliers</strong>
+                        <span>View All Purchases</span>
+                    </div>
+                    
+                    @foreach($filter_suppliers as $s_item)
+                        <div class="supplier-card {{ request('supplier_id_filter') == $s_item->id ? 'active' : '' }}" data-supplier-id="{{ $s_item->id }}">
+                            <strong>{{ $s_item->supplier }}</strong>
+                            <span>View Purchases</span>
+                        </div>
+                    @endforeach
+                </div>
                 <div class="filter-container">
-                    <form action="{{ route('purchase.index') }}" method="GET">
+                    <form action="{{ route('purchase.index') }}" method="GET" id="filterForm">
+                        <input type="hidden" name="supplier_id_filter" id="supplier_id_filter_hidden" value="{{ request('supplier_id_filter') }}">
+
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-6 col-lg-2">
+                            <div class="col-md-6 col-lg-3">
                                 <label for="start_date_filter" class="form-label">Start Date</label>
                                 <input type="date" name="start_date" id="start_date_filter" class="form-control"
                                     value="{{ request('start_date') }}">
                             </div>
-                            <div class="col-md-6 col-lg-2">
+                            <div class="col-md-6 col-lg-3">
                                 <label for="end_date_filter" class="form-label">End Date</label>
                                 <input type="date" name="end_date" id="end_date_filter" class="form-control"
                                     value="{{ request('end_date') }}">
                             </div>
-                            <div class="col-md-6 col-lg-3">
-                                <label for="supplier_id_filter" class="form-label">Supplier</label>
-                                <select name="supplier_id_filter" id="supplier_id_filter"
-                                    class="form-control select2-filter" style="width:100%;">
-                                    <option value="">All Suppliers</option>
-                                    @foreach($filter_suppliers as $s_item)
-                                        <option value="{{ $s_item->id }}" {{ request('supplier_id_filter') == $s_item->id ? 'selected' : '' }}>{{ $s_item->supplier }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-6 col-lg-3">
+
+                            <div class="col-md-6 col-lg-4">
                                 <label for="product_id_filter" class="form-label">Product</label>
                                 <select name="product_id_filter" id="product_id_filter" class="form-control select2-filter"
                                     style="width:100%;">
@@ -153,6 +202,7 @@
                                     @endforeach
                                 </select>
                             </div>
+
                             <div class="col-md-12 col-lg-2 text-lg-end mt-3 mt-lg-0 d-flex flex-column justify-content-end">
                                 <button type="submit" class="btn btn-primary-custom w-100 mb-1" style="height: 40px;"><i
                                         class="fas fa-filter me-1"></i>Filter</button>
@@ -184,7 +234,7 @@
                                         <th class="text-end">Unit Price</th>
                                         <th class="text-end">Total Amount</th>
                                         <th class="text-end">Cash Paid</th>
-                                        <th>Grand Total</th> <th>Actions</th>
+                                        <th>Remaining Amount</th> <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -199,15 +249,15 @@
 
                                             if ($current_purchase_balance > $epsilon) {
                                                 // Positive balance means we still owe money for this purchase
-                                                $overall_status_text = '' . number_format($current_purchase_balance, 2);
+                                                $overall_status_text = ' ' . number_format($current_purchase_balance, 2);
                                                 $overall_status_class = 'overall-status-we-owe-supplier';
                                             } elseif ($current_purchase_balance < -$epsilon) {
                                                 // Negative balance means we overpaid (unlikely but possible)
-                                                $overall_status_text = 'Supplier Owes You: ' . number_format(abs($current_purchase_balance), 2);
+                                                $overall_status_text = '+' . number_format(abs($current_purchase_balance), 2);
                                                 $overall_status_class = 'overall-status-supplier-owes-us';
                                             } else {
                                                 // Balance is effectively zero
-                                                $overall_status_text = 'No Balence';
+                                                $overall_status_text = 'No Balance'; // Corrected spelling
                                                 $overall_status_class = 'overall-status-settled';
                                             }
                                         @endphp
@@ -223,8 +273,7 @@
                                             <td class="text-end">{{ number_format($purchase->unit_price, 2) }}</td>
                                             <td class="text-end">{{ number_format($purchase->total_amount, 2) }}</td>
                                             <td class="text-end">{{ number_format($purchase->cash_paid_at_purchase, 2) }}</td>
-                                            <td class="{{ $overall_status_class }}">
-                                                {{ $overall_status_text }}
+                                            <td class="{{ $overall_status_class }}"> {{ $overall_status_text }}
                                             </td>
                                             <td>
                                                 @if ($purchase->supplier)
@@ -261,11 +310,10 @@
     </div>
 
 
-    {{-- ===== MODAL HTML ===== --}}
+    {{-- ===== MODAL HTML (NOW modal-xl) ===== --}}
     <div class="modal fade" id="supplierSummaryModal" tabindex="-1" aria-labelledby="supplierSummaryModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
+        <div class="modal-dialog modal-xl modal-dialog-centered"> <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="supplierSummaryModalLabel">Supplier Summary</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -280,7 +328,7 @@
                     </div>
                     <div id="modal-supplier-content" style="display: none;">
                         <div class="table-responsive">
-                            <table class="table">
+                            <table id="supplier-summary-table" class="table">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -289,7 +337,8 @@
                                         <th>Model</th>
                                         <th class="text-end">Qty</th>
                                         <th class="text-end">Total Amount</th>
-                                    </tr>
+                                        <th class="text-end">Cash Paid</th>
+                                        <th class="text-end">Total Balance</th> </tr>
                                 </thead>
                                 <tbody id="supplier-products-tbody">
                                 </tbody>
@@ -297,6 +346,8 @@
                                     <tr>
                                         <th colspan="5" class="text-end">Grand Total:</th>
                                         <th class="text-end" id="supplier-grand-total"></th>
+                                        <th class="text-end" id="supplier-grand-cash"></th>
+                                        <th class="text-end" id="supplier-grand-blance"></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -318,12 +369,24 @@
 @pushOnce('scripts')
 <script>
     $(document).ready(function () {
-        // Select2 for filters
-        $('.select2-filter').select2({
+        // Select2 for product filter ONLY
+        $('#product_id_filter').select2({
             placeholder: "Select an option",
             allowClear: true,
             width: '100%'
         });
+
+        // ===== NEW JS FOR SUPPLIER CARD CLICK =====
+        $(document).on('click', '.supplier-card', function() {
+            var supplierId = $(this).data('supplier-id');
+            
+            // Set the hidden input's value
+            $('#supplier_id_filter_hidden').val(supplierId);
+            
+            // Submit the main filter form
+            $('#filterForm').submit();
+        });
+        // ===== END OF NEW JS =====
 
         // Function to format numbers as currency
         function formatCurrency(number) {
@@ -360,6 +423,8 @@
             $('#modal-error-message').hide();
             $('#supplier-products-tbody').empty();
             $('#supplier-grand-total').text('');
+            $('#supplier-grand-cash').text('');
+            $('#supplier-grand-blance').text('');
 
             // AJAX request
             $.ajax({
@@ -375,24 +440,86 @@
                         var counter = 1;
 
                         if (response.purchases.length > 0) {
+                            // Use a numeric cumulative balance so each row shows the running total
+                            var cumulativeBalance = 0;
+                            // Also compute aggregate sums for footer
+                            var sumTotalAmount = 0;
+                            var sumCashPaid = 0;
+
                             response.purchases.forEach(function (item) {
+                                // Safely parse numeric values and fallback to 0 when missing
+                                var totalAmount = parseFloat(item.total_amount) || 0;
+                                var cashPaid = parseFloat(item.cash_paid_at_purchase) || 0;
+                                var remaining = totalAmount - cashPaid; // remaining for this purchase
+
+                                // Accumulate aggregates
+                                sumTotalAmount += totalAmount;
+                                sumCashPaid += cashPaid;
+
+                                // Add this purchase's remaining to the running cumulative balance
+                                cumulativeBalance += remaining;
+
                                 var row = `<tr>
                                     <td>${counter}</td>
                                     <td>${formatDate(item.purchase_date)}</td>
                                     <td>${item.product ? item.product.item_name : 'N/A'}</td>
                                     <td>${item.product ? item.product.item_code : 'N/A'}</td>
                                     <td class="text-end">${item.quantity}</td>
-                                    <td class="text-end">${formatCurrency(item.total_amount)}</td>
+                                    <td class="text-end">${formatCurrency(totalAmount)}</td>
+                                    <td class="text-end">${formatCurrency(cashPaid)}</td>
+                                    <td class="text-end">${formatCurrency(cumulativeBalance)}</td>
                                 </tr>`;
                                 productsTbody.append(row);
                                 counter++;
                             });
-                        } else {
-                            var row = `<tr><td colspan="6" class="text-center">No purchases found on or before this date.</td></tr>`;
-                            productsTbody.append(row);
-                        }
 
-                        $('#supplier-grand-total').text(formatCurrency(response.grand_total));
+                            // Initialize or reinitialize DataTable for modal table with PDF export
+                            if ($.fn.DataTable.isDataTable('#supplier-summary-table')) {
+                                $('#supplier-summary-table').DataTable().clear().destroy();
+                            }
+
+                            // Slight delay to ensure DOM has updated
+                            setTimeout(function() {
+                                $('#supplier-summary-table').DataTable({
+                                    dom: 'Bfrtip',
+                                    buttons: [
+                                        {
+                                            extend: 'pdfHtml5',
+                                            text: 'Download PDF',
+                                            title: 'Supplier Purchases - ' + supplierName,
+                                            filename: function() {
+                                                // sanitize filename
+                                                var name = supplierName ? supplierName.replace(/[^a-z0-9_-]/gi, '_') : 'supplier';
+                                                return 'supplier_purchases_' + name + '_' + (purchaseDate || new Date().toISOString().slice(0,10));
+                                            },
+                                            orientation: 'landscape',
+                                            pageSize: 'A4',
+                                            exportOptions: {
+                                                columns: ':visible'
+                                            }
+                                        }
+                                    ],
+                                    paging: false,
+                                    searching: false,
+                                    info: false,
+                                    ordering: false
+                                });
+                            }, 50);
+
+                            // Populate footer aggregates
+                            $('#supplier-grand-total').text(formatCurrency(sumTotalAmount));
+                            $('#supplier-grand-cash').text(formatCurrency(sumCashPaid));
+                            $('#supplier-grand-blance').text(formatCurrency(sumTotalAmount - sumCashPaid));
+                        } else {
+                            // The modal table has 8 columns, so use colspan=8 for the empty message
+                            var row = `<tr><td colspan="8" class="text-center">No purchases found on or before this date.</td></tr>`;
+                            productsTbody.append(row);
+
+                            // Clear footer aggregates when no data
+                            $('#supplier-grand-total').text(formatCurrency(0));
+                            $('#supplier-grand-cash').text(formatCurrency(0));
+                            $('#supplier-grand-blance').text(formatCurrency(0));
+                        }
                         $('#modal-loader').hide();
                         $('#modal-supplier-content').show();
                     } else {

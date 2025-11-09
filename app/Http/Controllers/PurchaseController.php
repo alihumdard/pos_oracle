@@ -345,8 +345,8 @@ class PurchaseController extends Controller
             $purchases = Purchase::where('supplier_id', $supplier->id)
                 ->whereDate('purchase_date', '<=', $endDate)
                 ->with('product:id,item_name,item_code') // Product info
-                ->orderBy('purchase_date', 'desc') // Sab se nayi (newest) pehle
-                ->orderBy('id', 'desc')
+                ->orderBy('purchase_date', 'ASC') // Sab se nayi (newest) pehle
+                ->orderBy('id', 'ASC')
                 ->get();
 
             // Filter ki gayi purchases ka grand total calculate karein

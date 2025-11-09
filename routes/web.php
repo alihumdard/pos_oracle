@@ -91,10 +91,10 @@ Route::get('/supplier/{supplier}/purchase-summary', [PurchaseController::class, 
 
 // Purchase Routes
 Route::prefix('purchases')->name('purchase.')->group(function () {
+    Route::get('/', [PurchaseController::class, 'index'])->name('index'); // Route to list purchases
     Route::get('/create', [PurchaseController::class, 'create'])->name('create');
     Route::post('/store', [PurchaseController::class, 'store'])->name('store');
     Route::get('/product-details/{id}', [PurchaseController::class, 'getProductDetails'])->name('product.details');
-    Route::get('/', [PurchaseController::class, 'index'])->name('index'); // Route to list purchases
     Route::get('/get-products-by-supplier/{id}', [PurchaseController::class, 'getProductsBySupplier'])->name('products-by-supplier');    
     
     // <-- ADD THESE TWO LINES FOR EDIT FUNCTIONALITY -->
