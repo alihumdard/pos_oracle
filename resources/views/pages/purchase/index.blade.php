@@ -115,17 +115,20 @@
             background-color: var(--light-gray);
             color: var(--text-color);
         }
-        
+
         /* ===== NEW CSS FOR SUPPLIER CARDS ===== */
         .supplier-card-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px; /* Spacing between cards */
+            gap: 15px;
+            /* Spacing between cards */
             margin-bottom: 1.5rem;
         }
+
         .supplier-card {
             flex: 1;
-            min-width: 180px; /* Minimum width for cards */
+            min-width: 180px;
+            /* Minimum width for cards */
             padding: 1rem;
             border-radius: var(--border-radius);
             background: #f8f9fa;
@@ -133,12 +136,14 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
+
         .supplier-card:hover {
             transform: translateY(-3px);
             box-shadow: var(--box-shadow);
         }
+
         .supplier-card.active {
             background-color: var(--primary-color);
             color: white;
@@ -146,17 +151,19 @@
             transform: translateY(-3px);
             box-shadow: var(--box-shadow);
         }
+
         .supplier-card strong {
             display: block;
             font-size: 1.1rem;
             margin-bottom: 0.25rem;
             font-weight: 600;
         }
+
         .supplier-card span {
             font-size: 0.85rem;
         }
-        /* ===== END OF NEW CSS ===== */
 
+        /* ===== END OF NEW CSS ===== */
     </style>
 
     <div class="container-fluid pt-16 sm:pt-6">
@@ -164,13 +171,15 @@
             <div class="col-12">
 
                 <div class="supplier-card-container">
-                    <div class="supplier-card {{ request('supplier_id_filter') == '' ? 'active' : '' }}" data-supplier-id="">
+                    <div class="supplier-card {{ request('supplier_id_filter') == '' ? 'active' : '' }}"
+                        data-supplier-id="">
                         <strong>All Suppliers</strong>
                         <span>View All Purchases</span>
                     </div>
-                    
+
                     @foreach($filter_suppliers as $s_item)
-                        <div class="supplier-card {{ request('supplier_id_filter') == $s_item->id ? 'active' : '' }}" data-supplier-id="{{ $s_item->id }}">
+                        <div class="supplier-card {{ request('supplier_id_filter') == $s_item->id ? 'active' : '' }}"
+                            data-supplier-id="{{ $s_item->id }}">
                             <strong>{{ $s_item->supplier }}</strong>
                             <span>View Purchases</span>
                         </div>
@@ -178,7 +187,8 @@
                 </div>
                 <div class="filter-container">
                     <form action="{{ route('purchase.index') }}" method="GET" id="filterForm">
-                        <input type="hidden" name="supplier_id_filter" id="supplier_id_filter_hidden" value="{{ request('supplier_id_filter') }}">
+                        <input type="hidden" name="supplier_id_filter" id="supplier_id_filter_hidden"
+                            value="{{ request('supplier_id_filter') }}">
 
                         <div class="row g-3 align-items-end">
                             <div class="col-md-6 col-lg-3">
@@ -214,12 +224,21 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                        <h3 class="card-title mb-2 mb-md-0">Purchase History</h3>
-                        <a href="{{ route('purchase.create') }}" class="btn btn-primary-custom">
-                            <i class="fas fa-plus me-2"></i>Add New Purchase
-                        </a>
-                    </div>
+                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 gap-md-0">
+  <!-- Left: Title -->
+  <h3 class="card-title mb-0">Purchase History</h3>
+
+  <!-- Right: Buttons Group -->
+  <div class="d-flex flex-wrap justify-content-md-end gap-2">
+    <a href="{{ route('purchase.create') }}" class="btn btn-primary-custom">
+      <i class="fas fa-plus me-2"></i>Add New Purchase
+    </a>
+    <a href="{{ route('payment.create') }}" class="btn btn-info">
+      <i class="fas fa-dollar-sign me-2"></i>Add Payment
+    </a>
+  </div>
+</div>
+
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover">
@@ -234,7 +253,8 @@
                                         <th class="text-end">Unit Price</th>
                                         <th class="text-end">Total Amount</th>
                                         <th class="text-end">Cash Paid</th>
-                                        <th>Remaining Amount</th> <th>Actions</th>
+                                        <th>Remaining Amount</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -313,7 +333,8 @@
     {{-- ===== MODAL HTML (NOW modal-xl) ===== --}}
     <div class="modal fade" id="supplierSummaryModal" tabindex="-1" aria-labelledby="supplierSummaryModalLabel"
         aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered"> <div class="modal-content">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="supplierSummaryModalLabel">Supplier Summary</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -338,7 +359,8 @@
                                         <th class="text-end">Qty</th>
                                         <th class="text-end">Total Amount</th>
                                         <th class="text-end">Cash Paid</th>
-                                        <th class="text-end">Total Balance</th> </tr>
+                                        <th class="text-end">Total Balance</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="supplier-products-tbody">
                                 </tbody>
@@ -365,10 +387,9 @@
     </div>
 
 @endsection
-
 @pushOnce('scripts')
 <script>
-    $(document).ready(function () {
+    $(document).ready(function () { // <-- FIX 1: Syntax theek kar di
         // Select2 for product filter ONLY
         $('#product_id_filter').select2({
             placeholder: "Select an option",
@@ -377,13 +398,9 @@
         });
 
         // ===== NEW JS FOR SUPPLIER CARD CLICK =====
-        $(document).on('click', '.supplier-card', function() {
-            var supplierId = $(this).data('supplier-id');
-            
-            // Set the hidden input's value
+        $(document).on('click', '.supplier-card', function () {
+            var supplierId = $(this).data('supplier-id'); // <-- FIX 2: Syntax theek kar di
             $('#supplier_id_filter_hidden').val(supplierId);
-            
-            // Submit the main filter form
             $('#filterForm').submit();
         });
         // ===== END OF NEW JS =====
@@ -398,9 +415,9 @@
 
         // Function to format date as "d M, Y"
         function formatDate(dateString) {
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const date = new Date(dateString); 
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const date = new Date(dateString);
             const day = String(date.getDate()).padStart(2, '0');
             const month = months[date.getMonth()];
             const year = date.getFullYear();
@@ -409,30 +426,29 @@
 
         // Event delegation for supplier view button
         $(document).off('click', '.btn-view-supplier').on('click', '.btn-view-supplier', function () {
-            var supplierId = $(this).data('supplier-id');
-            var supplierName = $(this).data('supplier-name');
-            var purchaseDate = $(this).data('purchase-date'); 
+            var supplierId = $(this).data('supplier-id'); // <-- FIX 3: Syntax theek kar di
+            var supplierName = $(this).data('supplier-name'); // <-- FIX 4: Syntax theek kar di
+            var purchaseDate = $(this).data('purchase-date'); // <-- FIX 5: Syntax theek kar di
 
             var url = "{{ route('supplier.purchase.summary', ['supplier' => ':id']) }}";
             url = url.replace(':id', supplierId);
 
             // Reset modal
-            $('#supplierSummaryModalLabel').text('Purchase Summary: ' + supplierName);
+            $('#supplierSummaryModalLabel').text('Ledger Summary: ' + supplierName);
             $('#modal-loader').show();
             $('#modal-supplier-content').hide();
             $('#modal-error-message').hide();
-            // Clear table body completely
-            $('#supplier-products-tbody').empty();
-            // Reset footer values
-            $('#supplier-grand-total').text('');
-            $('#supplier-grand-cash').text('');
-            $('#supplier-grand-blance').text('');
+            
             // Ensure DataTable is destroyed if it exists
             if ($.fn.DataTable.isDataTable('#supplier-summary-table')) {
                 $('#supplier-summary-table').DataTable().destroy();
             }
-            // Clear any lingering rows that DataTable might have cached
-            $('#supplier-summary-table tbody').empty();
+
+            // Clear table body and footer
+            $('#supplier-products-tbody').empty();
+            $('#supplier-grand-total').text('');
+            $('#supplier-grand-cash').text('');
+            $('#supplier-grand-blance').text('');
 
             // AJAX request
             $.ajax({
@@ -446,87 +462,88 @@
                     if (response.status === 'success') {
                         var productsTbody = $('#supplier-products-tbody');
                         var counter = 1;
+                        var cumulativeBalance = 0;
+                        var sumTotalDebit = 0;  // Total of all purchases
+                        var sumTotalCredit = 0; // Total of all payments
 
-                        if (response.purchases.length > 0) {
-                            // Use a numeric cumulative balance so each row shows the running total
-                            var cumulativeBalance = 0;
-                            // Also compute aggregate sums for footer
-                            var sumTotalAmount = 0;
-                            var sumCashPaid = 0;
-                            // Clear any existing rows first
-                            productsTbody.empty();
+                        productsTbody.empty();
 
-                            response.purchases.forEach(function (item) {
-                                // Safely parse numeric values and fallback to 0 when missing
-                                var totalAmount = parseFloat(item.total_amount) || 0;
-                                var cashPaid = parseFloat(item.cash_paid_at_purchase) || 0;
-                                var remaining = totalAmount - cashPaid; // remaining for this purchase
+                        if (response.transactions && response.transactions.length > 0) {
+                            response.transactions.forEach(function (item) {
+                                
+                                var debit_amount = parseFloat(item.debit) || 0;
+                                var credit_amount = parseFloat(item.credit) || 0;
+                                
+                                cumulativeBalance += (debit_amount - credit_amount);
 
-                                // Accumulate aggregates
-                                sumTotalAmount += totalAmount;
-                                sumCashPaid += cashPaid;
+                                sumTotalDebit += debit_amount;
+                                sumTotalCredit += credit_amount;
 
-                                // Add this purchase's remaining to the running cumulative balance
-                                cumulativeBalance += remaining;
-
-                                var row = `<tr>
-                                    <td>${counter}</td>
-                                    <td>${formatDate(item.purchase_date)}</td>
-                                    <td>${item.product ? item.product.item_name : 'N/A'}</td>
-                                    <td>${item.product ? item.product.item_code : 'N/A'}</td>
-                                    <td class="text-end">${item.quantity}</td>
-                                    <td class="text-end">${formatCurrency(totalAmount)}</td>
-                                    <td class="text-end">${formatCurrency(cashPaid)}</td>
-                                    <td class="text-end">${formatCurrency(cumulativeBalance)}</td>
-                                </tr>`;
+                                var row;
+                                
+                                if (item.type === 'Purchase') {
+                                    row = `<tr>
+                                        <td>${counter}</td>
+                                        <td>${formatDate(item.purchase_date)}</td>
+                                        <td>${item.product ? item.product.item_name : 'N/A'}</td>
+                                        <td>${item.product ? item.product.item_code : 'N/A'}</td>
+                                        <td class="text-end">${item.quantity || ''}</td>
+                                        <td class="text-end">${formatCurrency(debit_amount)}</td>
+                                        <td class="text-end">${formatCurrency(credit_amount)}</td>
+                                        <td class="text-end" style="font-weight: bold;">${formatCurrency(cumulativeBalance)}</td>
+                                    </tr>`;
+                                } else {
+                                    // 'Payment' row
+                                    row = `<tr style="background-color: #f0fdf4;">
+                                        <td>${counter}</td>
+                                        <td>${formatDate(item.purchase_date)}</td>
+                                        <td colspan="3" style="color: #15803d;"><strong>Payment</strong> <em>(${item.notes || 'N/A'})</em></td>
+                                        <td class="text-end"></td>` + `<td class="text-end" style="color: #15803d;">${formatCurrency(credit_amount)}</td>` + `<td class="text-end" style="font-weight: bold;">${formatCurrency(cumulativeBalance)}</td>` + `</tr>`;
+                                }
+                                
                                 productsTbody.append(row);
                                 counter++;
                             });
 
-                            // Slight delay to ensure DOM has updated
-                            setTimeout(function() {
+                            // DataTable initialize karein
+                            setTimeout(function () {
                                 $('#supplier-summary-table').DataTable({
                                     dom: 'Bfrtip',
                                     buttons: [
                                         {
                                             extend: 'pdfHtml5',
                                             text: 'Download PDF',
-                                            title: 'Supplier Purchases - ' + supplierName,
-                                            filename: function() {
-                                                // sanitize filename
-                                                var name = supplierName ? supplierName.replace(/[^a-z0-9_-]/gi, '_') : 'supplier';
-                                                return 'supplier_purchases_' + name + '_' + (purchaseDate || new Date().toISOString().slice(0,10));
+                                            title: 'Supplier Ledger - ' + (response.supplier_name || supplierName),
+                                            filename: function () {
+                                                var name = (response.supplier_name || supplierName).replace(/[^a-z0-N9_-]/gi, '_');
+                                                return 'supplier_ledger_' + name + '_' + (purchaseDate || new Date().toISOString().slice(0, 10));
                                             },
                                             orientation: 'landscape',
                                             pageSize: 'A4',
-                                            exportOptions: {
-                                                columns: ':visible'
-                                            }
+                                            exportOptions: { columns: ':visible' }
                                         }
                                     ],
-                                    paging: false,
-                                    searching: false,
-                                    info: false,
-                                    ordering: false
+                                    paging: false, searching: false, info: false, ordering: false
                                 });
                             }, 50);
 
-                            // Populate footer aggregates
-                            $('#supplier-grand-total').text(formatCurrency(sumTotalAmount));
-                            $('#supplier-grand-cash').text(formatCurrency(sumCashPaid));
-                            $('#supplier-grand-blance').text(formatCurrency(sumTotalAmount - sumCashPaid));
-                        } else {
-                            // The modal table has 8 columns, so use colspan=8 for the empty message
-                            var row = `<tr><td colspan="8" class="text-center">No purchases found on or before this date.</td></tr>`;
-                            productsTbody.append(row);
+                            // Footer update karein
+                            $('#supplier-grand-total').text(formatCurrency(sumTotalDebit));
+                            $('#supplier-grand-cash').text(formatCurrency(sumTotalCredit));
+                            $('#supplier-grand-blance').text(formatCurrency(cumulativeBalance));
 
-                            // Clear footer aggregates when no data
+                        } else {
+                            // Empty state
+                            var row = `<tr><td colspan="8" class="text-center">No transactions found on or before this date.</td></tr>`;
+                            productsTbody.append(row);
                             $('#supplier-grand-total').text(formatCurrency(0));
                             $('#supplier-grand-cash').text(formatCurrency(0));
                             $('#supplier-grand-blance').text(formatCurrency(0));
                         }
+                        
                         $('#modal-loader').hide();
                         $('#modal-supplier-content').show();
+                        
                     } else {
                         $('#modal-loader').hide();
                         $('#modal-error-message').text(response.message || 'An error occurred.').show();

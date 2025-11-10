@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +12,7 @@ class Supplier extends Model
     protected $guarded = []; // Or specify $fillable
 
     protected $casts = [
-        'debit' => 'decimal:2',
+        'debit'  => 'decimal:2',
         'credit' => 'decimal:2',
     ];
 
@@ -31,5 +30,10 @@ class Supplier extends Model
     public function purchases()
     {
         return $this->hasMany(Purchase::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(SupplierPayment::class);
     }
 }
