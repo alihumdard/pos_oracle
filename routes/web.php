@@ -106,3 +106,7 @@ Route::middleware('auth')->group(function () { // Assuming expenses should be be
     Route::resource('expense_categories', ExpenseCategoryController::class);
     Route::resource('expenses', ExpenseController::class);
 });
+
+// In routes/web.php
+Route::get('/payments/create', [App\Http\Controllers\SupplierPaymentController::class, 'create'])->name('payment.create');
+Route::post('/payments/store', [App\Http\Controllers\SupplierPaymentController::class, 'store'])->name('payment.store');

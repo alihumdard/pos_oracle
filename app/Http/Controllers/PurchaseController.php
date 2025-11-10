@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Category;
+use App\Models\SupplierPayment;
 use Carbon\Carbon;
 
 class PurchaseController extends Controller
@@ -335,37 +336,56 @@ class PurchaseController extends Controller
      * Get a summary of purchases from a supplier, filtered by date.
      */
     public function getSupplierPurchaseSummary(Supplier $supplier, Request $request)
-    {
-        try {
-            // Click ki gayi row ki date hasil karein. Agar nahi mili to aaj ki date.
-            $endDate = $request->query('date', now()->format('Y-m-d'));
+{
+    try {
+        // Click ki gayi row ki date hasil karein.
+        $endDate = $request->query('date', now()->format('Y-m-d'));
 
-            // Uss supplier ki tamam purchases hasil karein,
-            // jo ya to uss date par huin ya uss se pehle.
-            $purchases = Purchase::where('supplier_id', $supplier->id)
-                ->whereDate('purchase_date', '<=', $endDate)
-                ->with('product:id,item_name,item_code') // Product info
-                ->orderBy('purchase_date', 'ASC') // Sab se nayi (newest) pehle
-                ->orderBy('id', 'ASC')
-                ->get();
+        // === STEP 1: Tamam Purchases Fetch Karein ===
+        // Yeh supplier ka balance barhati hain (Debit)
+        $purchases = Purchase::where('supplier_id', $supplier->id)
+            ->whereDate('purchase_date', '<=', $endDate)
+            ->with('product:id,item_name,item_code')
+            ->select('id', 'purchase_date', 'product_id', 'quantity', 'total_amount', 'cash_paid_at_purchase')
+            ->get()
+            ->map(function($p) {
+                $p->type = 'Purchase';
+                $p->debit = $p->total_amount; // Hamare 'liabilities' (total)
+                $p->credit = $p->cash_paid_at_purchase; // Jo hum ne pay kiya (liability kam hui)
+                return $p;
+            });
 
-            // Filter ki gayi purchases ka grand total calculate karein
-            $grandTotal = $purchases->sum('total_amount');
+        // === STEP 2: Tamam Payments Fetch Karein ===
+        // Yeh supplier ka balance kam karti hain (Credit)
+        $payments = SupplierPayment::where('supplier_id', $supplier->id)
+            ->whereDate('payment_date', '<=', $endDate)
+            ->select('id', 'payment_date', 'amount', 'notes')
+            ->get()
+            ->map(function($p) {
+                $p->type = 'Payment';
+                $p->purchase_date = $p->payment_date; // Sorting ke liye common 'date' key
+                $p->debit = 0; // Payment se liability barhti nahi
+                $p->credit = $p->amount; // Jo hum ne pay kiya (liability kam hui)
+                $p->product = "Cash Paid"; // Taake structure same rahe
+                return $p;
+            });
 
-            return response()->json([
-                'status' => 'success',
-                'supplier_name' => $supplier->supplier,
-                'purchases' => $purchases, // Grouped products ke bajaye ab purchases bhej rahe hain
-                'grand_total' => $grandTotal
-            ]);
+        // === STEP 3: Dono ko Merge karke Date se Sort Karein ===
+        $transactions = $purchases->merge($payments)
+                            ->sortBy('purchase_date'); // ASC (purane se naya)
 
-        } catch (\Exception $e) {
-            // Yeh 'Error: ' wali ghalti theek kar di hai
-            Log::error('Supplier Summary Error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Could not fetch supplier summary.'
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'success',
+            'supplier_name' => $supplier->supplier,
+            'transactions' => $transactions->values()->all() // .values() keys ko reset karta hai
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Supplier Summary Error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Could not fetch supplier summary.'
+        ], 500);
     }
+}
 }

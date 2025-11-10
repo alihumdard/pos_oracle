@@ -19,7 +19,7 @@
 <body class="bg-gray-100">
 
     <button id="mobile-toggle-btn"
-        class="fixed top-4 left-4 z-50 p-2 rounded bg-[#343a40] text-white border border-[#4b545c] shadow-sm lg:hidden hover:bg-gray-700 transition-colors">
+        class="fixed top-4 left-4 z-50 py-2 px-3 rounded bg-[#343a40] text-white border border-[#4b545c] shadow-sm lg:hidden hover:bg-gray-700 transition-colors">
         <i class="fas fa-bars"></i>
     </button>
 
