@@ -386,7 +386,6 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="table-responsive"> {{-- This is the key wrapper --}}
                         <table class="table table-hover" id="example1">
                             <thead>
                                 <tr>
@@ -424,7 +423,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
                 </div>
             </div>
         </div>
@@ -442,7 +440,7 @@ $(document).ready(function() {
         "lengthChange": true,
         "autoWidth": false, // Important: allows Bootstrap's CSS to control width
         "scrollY": false,
-        "scrollX": false, // Let Bootstrap's .table-responsive handle this
+        "scrollX": true, // Let Bootstrap's .table-responsive handle this
         "buttons": ["excel", "pdf"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 

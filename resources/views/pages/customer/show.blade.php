@@ -359,7 +359,6 @@
                     </div>
 
                     {{-- DataTables Table --}}
-                    <div class="table-responsive" > {{-- IMPORTANT: This div handles horizontal scrolling --}}
                         <table class="table table-hover w-100" id="example1">
                             <thead class="bg-primary text-white" >
                                 <tr>
@@ -398,7 +397,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
             </div>
         </div>
     </div>
@@ -531,7 +529,7 @@ $(document).ready(function() {
                 lengthChange: true,
                 autoWidth: false, // <--- IMPORTANT: Changed to false
                 scrollY: false,
-                scrollX: false,   // <--- IMPORTANT: Changed to false
+                scrollX: true,   // <--- IMPORTANT: Changed to false
                 buttons: ["excel", "pdf"]
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         } else {
