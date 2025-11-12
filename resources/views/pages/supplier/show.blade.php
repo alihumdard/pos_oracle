@@ -7,7 +7,8 @@
     </div>
 </div>
 
-<div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addSupplierModalLabel" aria-hidden="true">
+<div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addSupplierModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document"> {{-- Added modal-lg for a larger modal on wider screens --}}
         <div class="modal-content">
             <div class="modal-header">
@@ -20,12 +21,14 @@
                 <form id="supplierForm">
                     <div class="form-group">
                         <label for="supplier">Supplier</label>
-                        <input type="text" name="supplier" class="form-control" id="supplier" placeholder="Enter Supplier">
+                        <input type="text" name="supplier" class="form-control" id="supplier"
+                            placeholder="Enter Supplier">
                         <small class="text-danger d-none" id="supplierError">Supplier is required.</small>
                     </div>
                     <div class="form-group">
                         <label for="contact_person">Contact Person</label>
-                        <input type="text" name="contact_person" class="form-control" id="contact_person" placeholder="Enter Contact Person">
+                        <input type="text" name="contact_person" class="form-control" id="contact_person"
+                            placeholder="Enter Contact Person">
                         <small class="text-danger d-none" id="contactPersonError">Contact person is required.</small>
                     </div>
                     <div class="form-group">
@@ -35,7 +38,8 @@
                     </div>
                     <div class="form-group">
                         <label for="contact_no">Contact No</label>
-                        <input type="text" name="contact_no" class="form-control" id="contact_no" placeholder="Enter Contact No">
+                        <input type="text" name="contact_no" class="form-control" id="contact_no"
+                            placeholder="Enter Contact No">
                         <small class="text-danger d-none" id="contactNoError">Contact number is required.</small>
                     </div>
                     <div class="form-group">
@@ -43,7 +47,8 @@
                         <textarea name="note" class="form-control" id="note" placeholder="Enter Note"></textarea>
                         <small class="text-danger d-none" id="noteError">Note is required.</small>
                     </div>
-                    <button type="submit" class="btn btn-primary" id="submitBtn" data-action="add">Save Supplier</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn" data-action="add">Save
+                        Supplier</button>
                 </form>
             </div>
         </div>
@@ -53,11 +58,14 @@
 <div class="row mt-5">
     <div class="col-12">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center flex-wrap"> {{-- Added flex-wrap for smaller screens --}}
-                <div class="d-flex col-md-6 col-12 justify-content-start"> {{-- Added col-12 for full width on small screens --}}
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap"> {{-- Added flex-wrap
+                for smaller screens --}}
+                <div class="d-flex col-md-6 col-12 justify-content-start"> {{-- Added col-12 for full width on small
+                    screens --}}
                     <h3 class="card-title">All Suppliers</h3>
                 </div>
-                <div class="d-flex col-md-6 col-12 justify-content-end mt-2 mt-md-0"> {{-- Added col-12 and margin for smaller screens --}}
+                <div class="d-flex col-md-6 col-12 justify-content-end mt-2 mt-md-0"> {{-- Added col-12 and margin for
+                    smaller screens --}}
                     <button type="button" class="btn btn-primary" id="addSupplierBtn">
                         Add Supplier
                     </button>
@@ -65,36 +73,38 @@
             </div>
 
             <div class="card-body">
-                <div class="table-responsive"> {{-- Essential for horizontal scrolling on small devices --}}
-                    <table class="table table-hover w-100" id="example1">
-                        <thead>
-                            <tr>
-                                <th>#Sr.No</th>
-                                <th>Supplier Name</th>
-                                <th>Contact Person</th>
-                                <th>Address</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableHolder">
-                            @foreach($suppliers as $supplier)
+                <table class="table table-hover w-100" id="example1">
+                    <thead>
+                        <tr>
+                            <th>#Sr.No</th>
+                            <th>Supplier Name</th>
+                            <th>Contact Person</th>
+                            <th>Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableHolder">
+                        @foreach($suppliers as $supplier)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $supplier->supplier }}</td>
                                 <td>{{ $supplier->contact_person }}</td>
-                                <td style="max-width: 150px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">{{ $supplier->address }}</td>
+                                <td
+                                    style="max-width: 150px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">
+                                    {{ $supplier->address }}</td>
                                 <td>
-                                    <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-supplier" data-id="{{ $supplier->id }}">Edit</a>
-                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger delete-supplier" data-id="{{ $supplier->id }}">Delete</a>
+                                    <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-supplier"
+                                        data-id="{{ $supplier->id }}">Edit</a>
+                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger delete-supplier"
+                                        data-id="{{ $supplier->id }}">Delete</a>
                                 </td>
                             </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
 </div>
 
 <script>
@@ -105,7 +115,7 @@
             "lengthChange": true,
             "autoWidth": false, // Prevents DataTables from setting fixed widths, allows Bootstrap to manage
             "scrollY": false,    // Let CSS/Bootstrap handle vertical scrolling if needed
-            "scrollX": false,    // Let Bootstrap's .table-responsive handle horizontal scrolling
+            "scrollX": true,    // Let Bootstrap's .table-responsive handle horizontal scrolling
             "buttons": ["excel", "pdf"]
         }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
@@ -191,10 +201,10 @@
         });
 
         // Function to refresh the table content and reinitialize DataTables
-        function refreshtble(url){
+        function refreshtble(url) {
             // Use a temporary element to load the new table content
             $('body').append('<div id="tempTableContent" style="display:none;"></div>');
-            $('#tempTableContent').load(url + " #tableHolder > *", function() {
+            $('#tempTableContent').load(url + " #tableHolder > *", function () {
                 // Destroy the old DataTable instance if it exists
                 if ($.fn.DataTable.isDataTable('#example1')) {
                     $('#example1').DataTable().destroy();

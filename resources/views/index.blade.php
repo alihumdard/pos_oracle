@@ -25,6 +25,11 @@
       .modal-backdrop {
          zoom: 125%;
       }
+      @media(max-width: 500px) {
+         body {
+            padding-bottom: 90px;
+         }
+      }
    </style>
 </head>
 
@@ -41,7 +46,7 @@
             </div>
          </section>
       </div>
-      {{-- @include('pages.footer') --}}
+      @include('pages.footer')
    </div>
 
    @include('pages.script')
