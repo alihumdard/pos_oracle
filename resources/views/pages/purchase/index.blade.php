@@ -225,19 +225,19 @@
 
                 <div class="card">
                     <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 gap-md-0">
-  <!-- Left: Title -->
-  <h3 class="card-title mb-0">Purchase History</h3>
+                    <!-- Left: Title -->
+                    <h3 class="card-title mb-0">Purchase History</h3>
 
-  <!-- Right: Buttons Group -->
-  <div class="d-flex flex-wrap justify-content-md-end gap-2">
-    <a href="{{ route('purchase.create') }}" class="btn btn-primary-custom">
-      <i class="fas fa-plus me-2"></i>Add New Purchase
-    </a>
-    <a href="{{ route('payment.create') }}" class="btn btn-info">
-      <i class="fas fa-dollar-sign me-2"></i>Add Payment
-    </a>
-  </div>
-</div>
+                        <!-- Right: Buttons Group -->
+                        <div class="d-flex flex-wrap justify-content-md-end gap-2">
+                            <a href="{{ route('purchase.create') }}" class="btn btn-primary-custom">
+                            <i class="fas fa-plus me-2"></i>Add New Purchase
+                            </a>
+                            <a href="{{ route('payment.create') }}" class="btn btn-info">
+                            <i class="fas fa-dollar-sign me-2"></i>Add Payment
+                            </a>
+                        </div>
+                    </div>
 
                     <div class="card-body">
                         <div class="table-responsive">
@@ -389,7 +389,7 @@
 @endsection
 @pushOnce('scripts')
 <script>
-    $(document).ready(function () { // <-- FIX 1: Syntax theek kar di
+    $(document).ready(function () {
         // Select2 for product filter ONLY
         $('#product_id_filter').select2({
             placeholder: "Select an option",
@@ -399,7 +399,7 @@
 
         // ===== NEW JS FOR SUPPLIER CARD CLICK =====
         $(document).on('click', '.supplier-card', function () {
-            var supplierId = $(this).data('supplier-id'); // <-- FIX 2: Syntax theek kar di
+            var supplierId = $(this).data('supplier-id');
             $('#supplier_id_filter_hidden').val(supplierId);
             $('#filterForm').submit();
         });
@@ -426,9 +426,9 @@
 
         // Event delegation for supplier view button
         $(document).off('click', '.btn-view-supplier').on('click', '.btn-view-supplier', function () {
-            var supplierId = $(this).data('supplier-id'); // <-- FIX 3: Syntax theek kar di
-            var supplierName = $(this).data('supplier-name'); // <-- FIX 4: Syntax theek kar di
-            var purchaseDate = $(this).data('purchase-date'); // <-- FIX 5: Syntax theek kar di
+            var supplierId = $(this).data('supplier-id');
+            var supplierName = $(this).data('supplier-name');
+            var purchaseDate = $(this).data('purchase-date'); // For PDF filename
 
             var url = "{{ route('supplier.purchase.summary', ['supplier' => ':id']) }}";
             url = url.replace(':id', supplierId);
@@ -455,9 +455,7 @@
                 url: url,
                 type: 'GET',
                 dataType: 'json',
-                data: {
-                    date: purchaseDate
-                },
+                // We send no data, so the controller uses today's date
                 success: function (response) {
                     if (response.status === 'success') {
                         var productsTbody = $('#supplier-products-tbody');
@@ -497,8 +495,10 @@
                                     row = `<tr style="background-color: #f0fdf4;">
                                         <td>${counter}</td>
                                         <td>${formatDate(item.purchase_date)}</td>
-                                        <td colspan="3" style="color: #15803d;"><strong>Payment</strong> <em>(${item.notes || 'N/A'})</em></td>
-                                        <td class="text-end"></td>` + `<td class="text-end" style="color: #15803d;">${formatCurrency(credit_amount)}</td>` + `<td class="text-end" style="font-weight: bold;">${formatCurrency(cumulativeBalance)}</td>` + `</tr>`;
+                                        <td colspan="4" style="color: #15803d;"><strong>Payment</strong> <em>(${item.notes || 'N/A'})</em></td>
+                                        <td class="text-end" style="color: #15803d;">${formatCurrency(credit_amount)}</td>
+                                        <td class="text-end" style="font-weight: bold;">${formatCurrency(cumulativeBalance)}</td>
+                                    </tr>`;
                                 }
                                 
                                 productsTbody.append(row);
@@ -513,10 +513,14 @@
                                         {
                                             extend: 'pdfHtml5',
                                             text: 'Download PDF',
+                                            // ===================================
+                                            // == FIX: Added the missing '+' sign ==
+                                            // ===================================
                                             title: 'Supplier Ledger - ' + (response.supplier_name || supplierName),
                                             filename: function () {
                                                 var name = (response.supplier_name || supplierName).replace(/[^a-z0-N9_-]/gi, '_');
-                                                return 'supplier_ledger_' + name + '_' + (purchaseDate || new Date().toISOString().slice(0, 10));
+                                                var today = new Date().toISOString().slice(0, 10);
+                                                return 'supplier_ledger_' + name + '_' + today;
                                             },
                                             orientation: 'landscape',
                                             pageSize: 'A4',
@@ -534,7 +538,7 @@
 
                         } else {
                             // Empty state
-                            var row = `<tr><td colspan="8" class="text-center">No transactions found on or before this date.</td></tr>`;
+                            var row = `<tr><td colspan="8" class="text-center">No transactions found.</td></tr>`;
                             productsTbody.append(row);
                             $('#supplier-grand-total').text(formatCurrency(0));
                             $('#supplier-grand-cash').text(formatCurrency(0));
