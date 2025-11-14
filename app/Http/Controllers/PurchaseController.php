@@ -336,56 +336,58 @@ class PurchaseController extends Controller
      * Get a summary of purchases from a supplier, filtered by date.
      */
     public function getSupplierPurchaseSummary(Supplier $supplier, Request $request)
-{
-    try {
-        // Click ki gayi row ki date hasil karein.
-        $endDate = $request->query('date', now()->format('Y-m-d'));
-
-        // === STEP 1: Tamam Purchases Fetch Karein ===
-        // Yeh supplier ka balance barhati hain (Debit)
-        $purchases = Purchase::where('supplier_id', $supplier->id)
-            ->whereDate('purchase_date', '<=', $endDate)
-            ->with('product:id,item_name,item_code')
-            ->select('id', 'purchase_date', 'product_id', 'quantity', 'total_amount', 'cash_paid_at_purchase')
-            ->get()
-            ->map(function($p) {
-                $p->type = 'Purchase';
-                $p->debit = $p->total_amount; // Hamare 'liabilities' (total)
-                $p->credit = $p->cash_paid_at_purchase; // Jo hum ne pay kiya (liability kam hui)
-                return $p;
-            });
-
-        // === STEP 2: Tamam Payments Fetch Karein ===
-        // Yeh supplier ka balance kam karti hain (Credit)
-        $payments = SupplierPayment::where('supplier_id', $supplier->id)
-            ->whereDate('payment_date', '<=', $endDate)
-            ->select('id', 'payment_date', 'amount', 'notes')
-            ->get()
-            ->map(function($p) {
-                $p->type = 'Payment';
-                $p->purchase_date = $p->payment_date; // Sorting ke liye common 'date' key
-                $p->debit = 0; // Payment se liability barhti nahi
-                $p->credit = $p->amount; // Jo hum ne pay kiya (liability kam hui)
-                $p->product = "Cash Paid"; // Taake structure same rahe
-                return $p;
-            });
-
-        // === STEP 3: Dono ko Merge karke Date se Sort Karein ===
-        $transactions = $purchases->merge($payments)
-                            ->sortBy('purchase_date'); // ASC (purane se naya)
-
-        return response()->json([
-            'status' => 'success',
-            'supplier_name' => $supplier->supplier,
-            'transactions' => $transactions->values()->all() // .values() keys ko reset karta hai
-        ]);
-
-    } catch (\Exception $e) {
-        Log::error('Supplier Summary Error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Could not fetch supplier summary.'
-        ], 500);
+    {
+        try {
+            // Click ki gayi row ki date hasil karein.
+            $endDate = $request->query('date', now()->format('Y-m-d'));
+    
+            // === STEP 1: Purchases ===
+            $purchases = Purchase::where('supplier_id', $supplier->id)
+                ->whereDate('purchase_date', '<=', $endDate)
+                ->with('product:id,item_name,item_code')
+                ->select('id', 'purchase_date', 'product_id', 'quantity', 'total_amount', 'cash_paid_at_purchase', 'created_at')
+                ->get()
+                ->map(function($p) {
+                    $p->type = 'Purchase';
+                    $p->date_time = $p->created_at; // Accurate Date + Time
+                    $p->debit = $p->total_amount;
+                    $p->credit = $p->cash_paid_at_purchase;
+                    return $p;
+                });
+    
+            // === STEP 2: Payments ===
+            $payments = SupplierPayment::where('supplier_id', $supplier->id)
+                ->whereDate('payment_date', '<=', $endDate)
+                ->select('id', 'payment_date', 'amount', 'notes', 'created_at')
+                ->get()
+                ->map(function($p) {
+                    $p->type = 'Payment';
+                    $p->purchase_date = $p->payment_date;
+                    $p->date_time = $p->created_at; // Accurate Date + Time
+                    $p->debit = 0;
+                    $p->credit = $p->amount;
+                    $p->product = "Cash Paid";
+                    return $p;
+                });
+    
+            // === STEP 3: Merge + Sort By Date-Time ASC ===
+            $transactions = $purchases->merge($payments)
+                ->sortBy('date_time') // Accurate sorting
+                ->values();
+    
+            return response()->json([
+                'status' => 'success',
+                'supplier_name' => $supplier->supplier,
+                'transactions' => $transactions
+            ]);
+    
+        } catch (\Exception $e) {
+            Log::error('Supplier Summary Error: ' . $e->getMessage() . ' File: ' . $e->getFile() . ' Line: ' . $e->getLine());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Could not fetch supplier summary.'
+            ], 500);
+        }
     }
-}
+    
 }
