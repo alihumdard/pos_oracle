@@ -110,3 +110,8 @@ Route::middleware('auth')->group(function () { // Assuming expenses should be be
 // In routes/web.php
 Route::get('/payments/create', [App\Http\Controllers\SupplierPaymentController::class, 'create'])->name('payment.create');
 Route::post('/payments/store', [App\Http\Controllers\SupplierPaymentController::class, 'store'])->name('payment.store');
+
+
+Route::post('/customer/recovery/add', [CustomerController::class, 'addRecoveryDate']);
+Route::post('/customer/recovery/delete', [CustomerController::class, 'deleteRecoveryDate']);
+Route::post('/customer/recovery/reminder', [CustomerController::class, 'sendRecoveryReminder']);
