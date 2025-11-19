@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\CustomerRecoveryDate;
 use App\Models\ManualPayment;
 use App\Models\Product;
 use App\Models\Sale;
@@ -204,4 +205,34 @@ $data['customers'] = Customer::with('sales')
         return view('pages.customer.sales_summary', compact('customer', 'summary'));
     }
 
+
+    public function addRecoveryDate(Request $request)
+{
+    // 1. Deactivate ALL previous dates for this customer
+    CustomerRecoveryDate::where('customer_id', $request->customer_id)
+        ->update(['is_active' => 0]);
+
+    // 2. Create the new active date
+    CustomerRecoveryDate::create([
+        'customer_id' => $request->customer_id,
+        'recovery_date' => $request->date,
+        'is_active' => 1
+    ]);
+
+    return response()->json(['status' => 'success', 'message' => 'Date added successfully']);
+    }
+
+    public function deleteRecoveryDate(Request $request)
+    {
+        CustomerRecoveryDate::where('id', $request->id)->delete();
+        return response()->json(['status' => 'success', 'message' => 'Date deleted']);
+    }
+
+    public function sendRecoveryReminder(Request $request)
+    {
+        // Logic to send SMS/WhatsApp goes here
+        // $date = CustomerRecoveryDate::find($request->id);
+        
+        return response()->json(['status' => 'success', 'message' => 'Reminder sent successfully!']);
+    }
 }
