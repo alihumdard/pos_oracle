@@ -14,27 +14,37 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
-    public function customer_show()
+  public function customer_show()
     {
-$data['customers'] = Customer::with('sales')
-    ->whereHas('sales')
-    ->withMax('sales as last_sale_at', 'created_at')
-    ->orderByDesc('last_sale_at')
-    ->get();
+        $data['customers'] = Customer::with(['sales', 'activeRecoveryDate'])
+            ->where(function ($query) {
+                $query->where('debit', '>', 0)
+                      ->orWhere('credit', '>', 0);
+            })
+            ->whereHas('sales')
+            ->withMax('sales as last_sale_at', 'created_at')
+            ->orderByDesc('last_sale_at')
+            ->get();
 
         return view('pages.customer.show', $data);
     }
     
-    public function view($id)
-    {
-        $data['manual_customers'] = Customer::with(['manualPayments' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        }])->findOrFail($id);
-        $data['customer'] = Customer::with('sales')->findOrFail($id);
-        $data['sales'] = Sale::where('customer_id', $id)->orderBy('created_at', 'desc')->get();
-        return view('pages.customer.view', $data);
-    }
+  public function view($id)
+{
+    $data['manual_customers'] = Customer::with(['manualPayments' => function ($query) {
+        $query->orderBy('created_at', 'desc');
+    }])->findOrFail($id);
 
+    // UPDATE THIS SECTION
+    // Eager load recoveryDates ordered by latest created first
+    $data['customer'] = Customer::with(['sales', 'recoveryDates' => function($q) {
+        $q->orderBy('id', 'desc'); 
+    }])->findOrFail($id);
+
+    $data['sales'] = Sale::where('customer_id', $id)->orderBy('created_at', 'desc')->get();
+    
+    return view('pages.customer.view', $data);
+}
     public function detail($id)
     {
         $sale = Sale::findOrFail($id);
@@ -188,6 +198,23 @@ $data['customers'] = Customer::with('sales')
         return view('pages.customer.show', $data);
     } 
 
+    public function markRecoveryReceived(Request $request)
+    {
+        $recovery = CustomerRecoveryDate::find($request->id);
+        
+        if ($recovery) {
+            $recovery->is_received = 1;
+            $recovery->save();
+            
+            return response()->json([
+                'status' => 'success', 
+                'message' => 'Payment marked as Received!',
+                'id' => $recovery->id
+            ]);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Date not found'], 404);
+    }
     public function salesSummary($id)
     {
         

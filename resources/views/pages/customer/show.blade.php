@@ -409,7 +409,7 @@
 
                         {{-- DataTables Table --}}
                         <table class="table table-hover w-100" id="example1">
-                            <thead class="bg-primary text-white">
+                           <thead class="bg-primary text-white">
                                 <tr>
                                     <th>#Sr.No</th>
                                     <th>Customer Name</th>
@@ -418,6 +418,7 @@
                                     <th>CNIC</th>
                                     <th>Debit</th>
                                     <th>Credit</th>
+                                    <th>Recovery Date</th> {{-- NEW COLUMN ADDED HERE --}}
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -434,6 +435,15 @@
                                         <td>{{ $customer->cnic ?? '' }}</td>
                                         <td>{{ $customer->debit ?? '' }}</td>
                                         <td>{{ $customer->credit ?? '' }}</td>
+                                        <td>
+                                            @if($customer->activeRecoveryDate)
+                                                <span class="badge bg-warning text-dark" style="font-size: 0.9em;">
+                                                    {{ \Carbon\Carbon::parse($customer->activeRecoveryDate->recovery_date)->format('d M, Y') }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <div class="action-buttons">
                                                 <a href="{{ route('customer.view', ['id' => $customer->id]) }}"
