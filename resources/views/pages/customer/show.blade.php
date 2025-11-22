@@ -450,7 +450,7 @@
                                                     class="btn btn-sm btn-info" title="View Details">
                                                     <i class="fa fa-eye"></i> View
                                                 </a>
-
+                                                
                                             </div>
                                         </td>
                                     </tr>

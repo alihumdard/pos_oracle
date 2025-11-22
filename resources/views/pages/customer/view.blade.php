@@ -57,7 +57,7 @@
 
                         <h6 class="mt-3 text-warning"><i class="fa fa-calendar"></i> Recovery Payment Dates</h6>
 
-                        {{-- INPUT FORM (Always Visible) --}}
+                        {{-- INPUT FORM (Visible only if Credit exists) --}}
                         @if($customer->credit > 0)
                             <div class="mt-3 mb-4">
                                 <label class="mb-2" style="font-size: 0.9em; color: #ccc;">Add New/Update Date:</label>
@@ -70,6 +70,7 @@
                                 </div>
                             </div>
                         @endif
+
                         {{-- ACTIVE DATE DISPLAY --}}
                         @if($activeRecovery)
                             @php
@@ -111,6 +112,7 @@
 
                                     {{-- ACTION BUTTONS (Hidden if Received) --}}
                                     @if(!$isReceived)
+                                        {{-- Reminder logic is handled by JS below --}}
                                         <button class="btn btn-sm btn-warning send-reminder"
                                             data-id="{{ $activeRecovery->id }}">
                                             <i class="fa fa-bell"></i> Reminder
@@ -141,7 +143,6 @@
                                             <tr>
                                                 <td>{{ \Carbon\Carbon::parse($date->recovery_date)->format('d M, Y') }}</td>
                                                 <td>
-                                                    {{-- Check if it was marked received previously --}}
                                                     @if($date->is_received)
                                                         <span class="badge bg-success">Received</span>
                                                     @else
@@ -149,7 +150,6 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    {{-- Only showing DELETE button here, Received button is removed --}}
                                                     <button class="btn btn-xs btn-danger delete-recovery"
                                                         style="padding: 2px 5px;" data-id="{{ $date->id }}">
                                                         <i class="fa fa-trash"></i>
@@ -164,43 +164,42 @@
                     </div>
                 </div>
 
-                <div class="col-6 mb-3 mt-4 p-4"> {{-- Changed mt-5 to mt-4 to match left column --}}
-    <form id="paymentForm">
-        <div class="form-group">
-            <label for="dropdownAction">Select Payment Method</label>
-            <select id="dropdownAction" class="form-control">
-                <option value="">-- Select --</option>
-                <option value="youGot">You Got</option>
-                <option value="youGive">You Give</option>
-            </select>
-        </div>
+                <div class="col-6 mb-3 mt-4 p-4">
+                    <form id="paymentForm">
+                        <div class="form-group">
+                            <label for="dropdownAction">Select Payment Method</label>
+                            <select id="dropdownAction" class="form-control">
+                                <option value="">-- Select --</option>
+                                <option value="youGot">You Got</option>
+                                <option value="youGive">You Give</option>
+                            </select>
+                        </div>
 
-        <input type="hidden" id="customerId" value="{{ $customer->id }}" class="form-control">
+                        <input type="hidden" id="customerId" value="{{ $customer->id }}" class="form-control">
 
-        <div id="youGiveForm" class="mt-3" style="display: none;">
-            <div class="form-group">
-                <label for="paymentInputYouGive">Enter Payment</label>
-                <input type="number" id="paymentInputYouGive" class="form-control" placeholder="Enter amount">
-            </div>
-            <button type="button" id="addPaymentYouGive" class="btn btn-primary btn-block">Add Payment</button>
-        </div>
+                        <div id="youGiveForm" class="mt-3" style="display: none;">
+                            <div class="form-group">
+                                <label for="paymentInputYouGive">Enter Payment</label>
+                                <input type="number" id="paymentInputYouGive" class="form-control" placeholder="Enter amount">
+                            </div>
+                            <button type="button" id="addPaymentYouGive" class="btn btn-primary btn-block">Add Payment</button>
+                        </div>
 
-        <div id="youGotForm" class="mt-3" style="display: none;">
-            <div class="form-group">
-                <label for="paymentInputYouGot">Enter Payment</label>
-                <input type="number" id="paymentInputYouGot" class="form-control" placeholder="Enter amount">
-            </div>
-            <button type="button" id="addPaymentYouGot" class="btn btn-primary btn-block">Add Payment</button>
-        </div>
-    </form>
+                        <div id="youGotForm" class="mt-3" style="display: none;">
+                            <div class="form-group">
+                                <label for="paymentInputYouGot">Enter Payment</label>
+                                <input type="number" id="paymentInputYouGot" class="form-control" placeholder="Enter amount">
+                            </div>
+                            <button type="button" id="addPaymentYouGot" class="btn btn-primary btn-block">Add Payment</button>
+                        </div>
+                    </form>
 
-    {{-- Sales Summary Button Aligned to Bottom/Center --}}
-    <div class="d-flex justify-content-center mt-4">
-        <a href="{{ route('customer.sales.summary', $customer->id) }}" class="btn btn-info" style="width: 100%;">
-            <i class="fa fa-list-alt"></i> View Sales Summary
-        </a>
-    </div>
-</div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <a href="{{ route('customer.sales.summary', $customer->id) }}" class="btn btn-info" style="width: 100%;">
+                            <i class="fa fa-list-alt"></i> View Sales Summary
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -284,36 +283,89 @@
 
 @pushOnce('scripts')
     <script>
-        // 4. MARK AS RECEIVED (New Logic)
-        $(document).on('click', '.mark-received', function () {
-            var id = $(this).data('id');
-            var btn = $(this);
-
-            if (confirm('Are you sure you want to mark this payment as Received?')) {
-                btn.prop('disabled', true); // Prevent double clicks
-
-                $.ajax({
-                    url: '/customer/recovery/received', // The new route we will create
-                    type: 'POST',
-                    data: {
-                        id: id,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function (response) {
-                        if (response.status === 'success') {
-                            location.reload(); // Reload page to update UI
-                        }
-                    },
-                    error: function () {
-                        alert('Error updating status.');
-                        btn.prop('disabled', false);
-                    }
-                });
-            }
-        });
         $(document).ready(function () {
 
-            // --- VIEW DETAILS MODAL ---
+            // ============================================================
+            //  1. WHATSAPP REMINDER LOGIC (For Active Recovery Date)
+            // ============================================================
+            $(document).on('click', '.send-reminder', function () {
+                var btn = $(this);
+                var recoveryId = btn.data('id'); // Gets ID from the button
+
+                Swal.fire({
+                    title: "Send Payment Reminder?",
+                    text: "Send WhatsApp reminder for this specific due date?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#25D366", // WhatsApp Green
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, Send it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // UI: Loading State
+                        var originalText = btn.html();
+                        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Sending...');
+
+                        // AJAX Call to Laravel
+                        $.ajax({
+                            url: '/customer/recovery/reminder', // Ensure this route exists in web.php
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                id: recoveryId
+                            },
+                            success: function (response) {
+                                Swal.fire("Sent!", response.message, "success");
+                            },
+                            error: function (xhr) {
+                                var msg = "Failed to send message.";
+                                if(xhr.responseJSON && xhr.responseJSON.message) {
+                                    msg = xhr.responseJSON.message;
+                                }
+                                Swal.fire("Error", msg, "error");
+                            },
+                            complete: function() {
+                                // UI: Reset Button
+                                btn.prop('disabled', false).html(originalText);
+                            }
+                        });
+                    }
+                });
+            });
+
+            // ============================================================
+            //  2. MARK AS RECEIVED
+            // ============================================================
+            $(document).on('click', '.mark-received', function () {
+                var id = $(this).data('id');
+                var btn = $(this);
+
+                if (confirm('Are you sure you want to mark this payment as Received?')) {
+                    btn.prop('disabled', true);
+
+                    $.ajax({
+                        url: '/customer/recovery/received',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                location.reload();
+                            }
+                        },
+                        error: function () {
+                            alert('Error updating status.');
+                            btn.prop('disabled', false);
+                        }
+                    });
+                }
+            });
+
+            // ============================================================
+            //  3. VIEW DETAILS MODAL
+            // ============================================================
             $(document).on('click', '.view-detail', function () {
                 var saleId = $(this).data('id');
                 $.ajax({
@@ -332,22 +384,23 @@
                 });
             });
 
-            // --- TOGGLE PAYMENT FORMS ---
+            // ============================================================
+            //  4. PAYMENT FORM TOGGLE & SUBMISSION
+            // ============================================================
+            
+            // Toggle Forms
             $('#dropdownAction').on('change', function () {
                 var action = $(this).val();
+                $('#youGiveForm, #youGotForm').hide();
+                
                 if (action === 'youGive') {
                     $('#youGiveForm').fadeIn();
-                    $('#youGotForm').fadeOut();
                 } else if (action === 'youGot') {
-                    $('#youGiveForm').fadeOut();
                     $('#youGotForm').fadeIn();
-                } else {
-                    $('#youGiveForm').fadeOut();
-                    $('#youGotForm').fadeOut();
                 }
             });
 
-            // --- ADD PAYMENT (YOU GIVE) ---
+            // Add Payment (You Give)
             $('#addPaymentYouGive').on('click', function () {
                 var credit = $('#paymentInputYouGive').val();
                 var customerId = $('#customerId').val();
@@ -356,7 +409,7 @@
                 }
             });
 
-            // --- ADD PAYMENT (YOU GOT) ---
+            // Add Payment (You Got)
             $('#addPaymentYouGot').on('click', function () {
                 var debit = $('#paymentInputYouGot').val();
                 var customerId = $('#customerId').val();
@@ -365,7 +418,7 @@
                 }
             });
 
-            // --- HELPER: SEND PAYMENT DATA ---
+            // Helper: Send Payment Data
             function sendPaymentData(action, amount, customerId) {
                 var data = {
                     action: action,
@@ -390,10 +443,10 @@
             }
 
             // ============================================================
-            // NEW: RECOVERY DATE JS LOGIC
+            //  5. RECOVERY DATE MANAGEMENT (Add / Delete)
             // ============================================================
 
-            // 1. ADD RECOVERY DATE
+            // Add Recovery Date
             $('#addRecoveryBtn').on('click', function () {
                 var date = $('#recoveryDateInput').val();
                 var customerId = $('#customerId').val();
@@ -404,7 +457,7 @@
                 }
 
                 $.ajax({
-                    url: '/customer/recovery/add', // Ensure route exists
+                    url: '/customer/recovery/add',
                     type: 'POST',
                     data: {
                         date: date,
@@ -420,12 +473,12 @@
                 });
             });
 
-            // 2. DELETE RECOVERY DATE
+            // Delete Recovery Date
             $('.delete-recovery').on('click', function () {
                 var id = $(this).data('id');
                 if (confirm('Are you sure you want to delete this recovery date?')) {
                     $.ajax({
-                        url: '/customer/recovery/delete', // Ensure route exists
+                        url: '/customer/recovery/delete',
                         type: 'POST',
                         data: {
                             id: id,
@@ -439,38 +492,6 @@
                         }
                     });
                 }
-            });
-
-            // 3. SEND REMINDER
-            $('.send-reminder').on('click', function () {
-                var id = $(this).data('id');
-                var btn = $(this);
-
-                // Visual feedback
-                btn.html('<i class="fa fa-spinner fa-spin"></i> Sending...');
-                btn.prop('disabled', true);
-
-                $.ajax({
-                    url: '/customer/recovery/reminder', // Ensure route exists
-                    type: 'POST',
-                    data: {
-                        id: id,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function (response) {
-                        alert('Reminder sent successfully!');
-                        btn.html('<i class="fa fa-check"></i> Sent');
-                        setTimeout(function () {
-                            btn.html('<i class="fa fa-bell"></i> Reminder');
-                            btn.prop('disabled', false);
-                        }, 2000);
-                    },
-                    error: function () {
-                        alert('Error sending reminder.');
-                        btn.html('<i class="fa fa-bell"></i> Reminder');
-                        btn.prop('disabled', false);
-                    }
-                });
             });
 
         });

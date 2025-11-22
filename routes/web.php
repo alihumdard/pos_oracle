@@ -116,3 +116,5 @@ Route::post('/customer/recovery/add', [CustomerController::class, 'addRecoveryDa
 Route::post('/customer/recovery/delete', [CustomerController::class, 'deleteRecoveryDate']);
 Route::post('/customer/recovery/reminder', [CustomerController::class, 'sendRecoveryReminder']);
 Route::post('/customer/recovery/received', [CustomerController::class, 'markRecoveryReceived']);
+
+Route::post('/customer/send-reminder', [CustomerController::class, 'sendRecoveryReminder'])->name('customer.send_reminder');
