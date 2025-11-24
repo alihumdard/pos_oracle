@@ -28,7 +28,7 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            flex-direction: column; 
+            flex-direction: column;
             gap: 15px;
         }
 
@@ -124,7 +124,8 @@
             margin-bottom: 0;
         }
 
-        .table th, .table td {
+        .table th,
+        .table td {
             padding: 1rem;
             vertical-align: middle;
             border-top: 1px solid var(--light-gray);
@@ -161,10 +162,12 @@
                 flex-direction: column;
                 align-items: flex-start !important;
             }
+
             form.filter-form {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .checkbox-group {
                 flex-direction: column;
                 align-items: flex-start;
@@ -179,7 +182,8 @@
     </div>
 
     {{-- ADD CUSTOMER MODAL --}}
-    <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -203,17 +207,20 @@
                             </div>
                             <div class="form-group col-md-6 col-12">
                                 <label for="mobile_no">Mobile No</label>
-                                <input type="text" name="mobile_no" class="form-control" id="mobile_no" placeholder="Enter Mobile No">
+                                <input type="text" name="mobile_no" class="form-control" id="mobile_no"
+                                    placeholder="Enter Mobile No">
                                 <small class="text-danger d-none" id="mobileNoError">Mobile number is required.</small>
                             </div>
                             <div class="form-group col-md-6 col-12">
                                 <label for="address">Address</label>
-                                <input type="text" name="address" class="form-control" id="address" placeholder="Enter Address">
+                                <input type="text" name="address" class="form-control" id="address"
+                                    placeholder="Enter Address">
                                 <small class="text-danger d-none" id="addressError">Address is required.</small>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
-                            <button type="submit" class="btn btn-primary px-4" id="submitBtn" data-action="add">Save Customer</button>
+                            <button type="submit" class="btn btn-primary px-4" id="submitBtn" data-action="add">Save
+                                Customer</button>
                         </div>
                     </form>
                 </div>
@@ -239,7 +246,7 @@
                     <div class="card-body">
                         {{-- FILTERS WRAPPER --}}
                         <div class="filter-container-wrapper mb-4">
-                            
+
                             {{-- FILTER FORM --}}
                             <form action="{{ route('customer.filter') }}" method="GET" class="filter-form">
                                 @csrf
@@ -250,24 +257,30 @@
 
                                 <label class="mb-0">Sort By:</label>
                                 <select name="sort_order" class="form-control">
-                                    <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
-                                    <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
+                                    <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High
+                                    </option>
+                                    <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low
+                                    </option>
                                 </select>
-                                
-                                <div class="checkbox-group flex flex-col md:flex-row md:flex-wrap md:items-center md:gap-4 gap-2">
-                                    <label class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
+
+                                <div
+                                    class="checkbox-group flex flex-col md:flex-row md:flex-wrap md:items-center md:gap-4 gap-2">
+                                    <label
+                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
                                         <span>Debit</span>
                                         <input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
                                     </label>
 
-                                    <label class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
+                                    <label
+                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
                                         <span>Credit</span>
                                         <input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
                                     </label>
 
-                                    <label class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
+                                    <label
+                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
                                         <span>Hide Zero Balance</span>
                                         <input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
@@ -275,28 +288,33 @@
                                 </div>
 
                                 <button type="submit">Apply Filter</button>
-                                
+
                                 {{-- Reset Button (Fixed Route) --}}
-                                <a href="{{ route('show.customers') }}" class="btn btn-secondary" style="background: #6c757d; border:none; padding: 10px 20px; color:white; text-decoration:none; border-radius:8px;">
+                                <a href="{{ route('show.customers') }}" class="btn btn-secondary"
+                                    style="background: #6c757d; border:none; padding: 10px 20px; color:white; text-decoration:none; border-radius:8px;">
                                     Reset
                                 </a>
                             </form>
 
                             {{-- NEW RECOVERY STATUS BUTTONS (PENDING, TODAY, UPCOMING) --}}
                             <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'pending'])) }}" 
-                                   class="btn {{ request('recovery_status') == 'pending' ? 'btn-danger' : 'btn-outline-danger' }}">
+                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'pending'])) }}"
+                                    class="btn {{ request('recovery_status') == 'pending' ? 'btn-danger' : 'btn-outline-danger' }}">
                                     <i class="fa fa-clock"></i> Pending (Past Due)
                                 </a>
 
-                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'today'])) }}" 
-                                   class="btn {{ request('recovery_status') == 'today' ? 'btn-warning' : 'btn-outline-warning' }}">
+                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'today'])) }}"
+                                    class="btn {{ request('recovery_status') == 'today' ? 'btn-warning' : 'btn-outline-warning' }}">
                                     <i class="fa fa-calendar-day"></i> Today
                                 </a>
 
-                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'upcoming'])) }}" 
-                                   class="btn {{ request('recovery_status') == 'upcoming' ? 'btn-success' : 'btn-outline-success' }}">
+                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'upcoming'])) }}"
+                                    class="btn {{ request('recovery_status') == 'upcoming' ? 'btn-success' : 'btn-outline-success' }}">
                                     <i class="fa fa-calendar-check"></i> Upcoming
+                                </a>
+                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'no_date'])) }}"
+                                    class="btn {{ request('recovery_status') == 'no_date' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+                                    <i class="fa fa-calendar-times"></i> No Date
                                 </a>
                             </div>
                         </div>
@@ -335,8 +353,9 @@
                                                     $isPast = $rDate->isPast() && !$rDate->isToday();
                                                     $isToday = $rDate->isToday();
                                                 @endphp
-                                                <span class="badge {{ $isPast ? 'bg-danger' : ($isToday ? 'bg-warning text-dark' : 'bg-success') }}" 
-                                                      style="font-size: 0.9em;">
+                                                <span
+                                                    class="badge {{ $isPast ? 'bg-danger' : ($isToday ? 'bg-warning text-dark' : 'bg-success') }}"
+                                                    style="font-size: 0.9em;">
                                                     {{ $rDate->format('d M, Y') }}
                                                 </span>
                                             @else
@@ -355,12 +374,11 @@
                                                     $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
                                                     $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
                                                 @endphp
-                                                <button class="btn btn-sm btn-success open-whatsapp-btn" 
-                                                        data-name="{{ $customer->name }}"
-                                                        data-mobile="{{ $customer->mobile_number }}"
-                                                        data-balance="{{ $balance }} ({{ $balanceType }})"
-                                                        title="Open WhatsApp">
-                                                    <i class="fa-brands fa-whatsapp"></i> Remind
+                                                <button class="btn btn-sm btn-success open-whatsapp-btn"
+                                                    data-name="{{ $customer->name }}"
+                                                    data-mobile="{{ $customer->mobile_number }}"
+                                                    data-balance="{{ $balance }} ({{ $balanceType }})" title="Open WhatsApp">
+                                                    <i class="fab fa-whatsapp"></i> Reminder
                                                 </button>
                                             </div>
                                         </td>
@@ -387,48 +405,59 @@
                 var name = $(this).data('name');
                 var rawMobile = $(this).data('mobile');
                 var balance = $(this).data('balance');
-                
+
                 // 1. Check if number exists
                 if (!rawMobile) {
                     Swal.fire("Error", "No mobile number found for this customer.", "warning");
                     return;
                 }
 
-                // 2. Handle Multiple Numbers (Split by comma)
-                // Convert to string to be safe, then split
-                var phones = rawMobile.toString().split(',').map(function(num) {
+                // 2. Handle Multiple Numbers
+                var phones = rawMobile.toString().split(',').map(function (num) {
                     return num.trim();
                 });
 
-                // 3. Prepare Message
-                var text = `Hello ${name}, friendly reminder from Electronics Shop. Your outstanding balance is ${balance}. Please pay your dues.`;
+                // 3. Prepare Message (Added space after balance)
+                var text = `Dear ${name},
+                    This is a formal reminder from RANA ELECTRONICS KM. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience. Thank you.
+
+                    -------------------------
+
+                    محترم ${name}،
+                    رانا الیکٹرانکس کے ایم کی جانب سے یہ ایک یاد دہانی ہے۔ آپ کے کھاتے میں ${balance} کا بقایا موجود ہے۔ براہ کرم اپنی سہولت کے مطابق جلد از جلد یہ واجبات ادا کریں۔ شکریہ۔
+
+                    For further details contact us:
+                    RANA ELECTRONICS KM
+                    03007667440`;
                 var encodedText = encodeURIComponent(text);
 
-                // 4. Helper to Format Number (PK specific +923...)
+                // 4. Helper to Format Number
                 function getWaLink(number) {
                     // Remove all non-digits
                     var clean = number.replace(/\D/g, '');
-                    
-                    // If it starts with '03' (PK local), replace '0' with '92'
+
+                    // Logic for Pakistan numbers
                     if (clean.startsWith('03')) {
-                        clean = '92' + clean.substring(1);
+                        clean = '92' + clean.substring(1); // 0300 -> 92300
                     }
-                    // If it's missing 92 but is 10 digits (3001234567), add 92
                     else if (clean.length === 10 && clean.startsWith('3')) {
-                        clean = '92' + clean;
+                        clean = '92' + clean; // 300 -> 92300
+                    }
+                    else if (clean.startsWith('00')) {
+                        clean = clean.substring(2); // Remove leading 00 if present
                     }
 
-                    return `https://wa.me/${clean}?text=${encodedText}`;
+                    // CHANGE HERE: Use api.whatsapp.com/send 
+                    // Yeh format unsaved numbers ke liye best kaam karta hai
+                    return `https://api.whatsapp.com/send?phone=${clean}&text=${encodedText}`;
                 }
 
                 // 5. Logic: One number vs Multiple
                 if (phones.length === 1) {
-                    // Open directly
                     window.open(getWaLink(phones[0]), '_blank');
                 } else {
-                    // Show Popup to choose number
                     var inputOptions = {};
-                    phones.forEach(function(phone) {
+                    phones.forEach(function (phone) {
                         inputOptions[phone] = phone;
                     });
 
@@ -437,7 +466,7 @@
                         text: `${name} has multiple numbers. Which one to message?`,
                         input: 'radio',
                         inputOptions: inputOptions,
-                        inputValue: phones[0], // Select first by default
+                        inputValue: phones[0],
                         showCancelButton: true,
                         confirmButtonText: 'Open WhatsApp <i class="fa fa-external-link"></i>',
                         confirmButtonColor: '#25D366',
@@ -448,9 +477,7 @@
                         }
                     });
                 }
-            });
-
-            // -----------------------------------------------------------
+            });// -----------------------------------------------------------
             // EXISTING CUSTOMER ADD/EDIT/DELETE LOGIC
             // -----------------------------------------------------------
 
@@ -486,10 +513,12 @@
                     return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) + 'Error';
                 }
 
-                Object.keys(formData).forEach(function (key) {
+             Object.keys(formData).forEach(function (key) {
                     const value = formData[key];
                     const errorElement = $('#' + getErrorElementId(key));
-                    if (!value && key !== '_token') {
+                    
+                    // CHANGE HERE: Humne check lagaya ke agar key 'cnic' hai to error na dikhaye
+                    if (!value && key !== '_token' && key !== 'cnic') { 
                         errorElement.removeClass('d-none');
                         hasError = true;
                     }

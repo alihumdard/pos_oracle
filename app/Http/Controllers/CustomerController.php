@@ -1,19 +1,16 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerRecoveryDate;
 use App\Models\ManualPayment;
-use App\Models\Product;
 use App\Models\Sale;
 use App\Models\Transaction;
-use Illuminate\Foundation\Console\MailMakeCommand;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-// --- IMPORTS ADDED FOR WHATSAPP & LOGGING ---
 use Illuminate\Support\Facades\Http;
+// --- IMPORTS ADDED FOR WHATSAPP & LOGGING ---
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
@@ -22,7 +19,7 @@ class CustomerController extends Controller
         $data['customers'] = Customer::with(['sales', 'activeRecoveryDate'])
             ->where(function ($query) {
                 $query->where('debit', '>', 0)
-                      ->orWhere('credit', '>', 0);
+                    ->orWhere('credit', '>', 0);
             })
             ->whereHas('sales')
             ->withMax('sales as last_sale_at', 'created_at')
@@ -31,17 +28,17 @@ class CustomerController extends Controller
 
         return view('pages.customer.show', $data);
     }
-    
+
     public function view($id)
     {
         $data['manual_customers'] = Customer::with(['manualPayments' => function ($query) {
             $query->orderBy('created_at', 'desc');
         }])->findOrFail($id);
-        
+
         // Fixed: Eager load recoveryDates ordered by latest created first
         // This ensures the active date logic in the view works correctly
-        $data['customer'] = Customer::with(['sales', 'recoveryDates' => function($q) {
-            $q->orderBy('id', 'desc'); 
+        $data['customer'] = Customer::with(['sales', 'recoveryDates' => function ($q) {
+            $q->orderBy('id', 'desc');
         }])->findOrFail($id);
 
         $data['sales'] = Sale::where('customer_id', $id)->orderBy('created_at', 'desc')->get();
@@ -53,7 +50,7 @@ class CustomerController extends Controller
         $sale = Sale::findOrFail($id);
 
         $transaction_id_from_sale = $sale->transaction_id;
-        $transactionIds = [];
+        $transactionIds           = [];
 
         if (is_array($transaction_id_from_sale)) {
             $transactionIds = $transaction_id_from_sale;
@@ -73,9 +70,9 @@ class CustomerController extends Controller
     {
         if ($request->action != 'youGot' && $request->action != 'youGive') {
             $validator = Validator::make($request->all(), [
-                'cnic' => 'required|string|max:15|unique:customers,cnic',
-                'address' => 'required|string|max:255',
-                'name' => 'required|string|max:100',
+                'cnic'      => 'nullable|string|max:20',
+                'address'   => 'required|string|max:255',
+                'name'      => 'required|string|max:100',
                 'mobile_no' => 'required',
             ]);
 
@@ -86,25 +83,25 @@ class CustomerController extends Controller
                 ], 422);
             }
 
-            $customer = new Customer();
-            $customer->cnic = $request->cnic;
-            $customer->address = $request->address;
-            $customer->name = $request->name;
+            $customer                = new Customer();
+            $customer->cnic          = empty($request->cnic) ? null : $request->cnic;
+            $customer->address       = $request->address;
+            $customer->name          = $request->name;
             $customer->mobile_number = $request->mobile_no;
-            $customer->credit = $customer->credit ?? 0;
-            $customer->debit = $customer->debit ?? 0;
+            $customer->credit        = $customer->credit ?? 0;
+            $customer->debit         = $customer->debit ?? 0;
             $customer->save();
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Customer created successfully',
-                'data' => [
-                    'id' => $customer->id,
+                'data'    => [
+                    'id'   => $customer->id,
                     'name' => $customer->name,
                 ],
             ], 201);
         } else {
             $customer = Customer::findorfail($request->customer_id);
-            $payment = $request->payment;
+            $payment  = $request->payment;
             if ($request->action == 'youGive') {
                 if ($customer->debit > 0) {
                     if ($payment >= $customer->debit) {
@@ -118,9 +115,9 @@ class CustomerController extends Controller
                     $customer->credit += $payment;
                 }
                 $customer->save();
-                $manual_payment = new ManualPayment();
+                $manual_payment               = new ManualPayment();
                 $manual_payment->payment_type = 'You Give';
-                $manual_payment->payment = $payment;
+                $manual_payment->payment      = $payment;
                 $customer->manualPayments()->save($manual_payment);
 
                 return response()->json([
@@ -129,7 +126,7 @@ class CustomerController extends Controller
             } elseif ($request->action == 'youGot') {
                 if ($customer->credit > 0) {
                     if ($payment >= $customer->credit) {
-                        $remainingDebit = $payment - $customer->credit;
+                        $remainingDebit   = $payment - $customer->credit;
                         $customer->credit = 0;
                         $customer->debit += $remainingDebit;
                     } else {
@@ -139,9 +136,9 @@ class CustomerController extends Controller
                     $customer->debit += $payment;
                 }
                 $customer->save();
-                $manual_payment = new ManualPayment();
+                $manual_payment               = new ManualPayment();
                 $manual_payment->payment_type = 'You Got';
-                $manual_payment->payment = $payment;
+                $manual_payment->payment      = $payment;
                 $customer->manualPayments()->save($manual_payment);
                 return response()->json([
                     'status' => 'success',
@@ -159,12 +156,12 @@ class CustomerController extends Controller
 
     public function Customer_update(Request $request, $id)
     {
-        $Customer = Customer::findOrFail($id);
-        $Customer->Customer = $request->Customer;
+        $Customer                 = Customer::findOrFail($id);
+        $Customer->Customer       = $request->Customer;
         $Customer->contact_person = $request->contact_person;
-        $Customer->address = $request->address;
-        $Customer->contact_no = $request->contact_no;
-        $Customer->note = $request->note;
+        $Customer->address        = $request->address;
+        $Customer->contact_no     = $request->contact_no;
+        $Customer->note           = $request->note;
         $Customer->save();
 
         return response()->json(['message' => 'Customer updated successfully!']);
@@ -179,7 +176,7 @@ class CustomerController extends Controller
         return response()->json(['message' => 'Customer deleted successfully!']);
     }
 
-   public function customer_filter(Request $request)
+    public function customer_filter(Request $request)
     {
         // Use eager loading to prevent N+1 issues and ensure relations are available
         $query = Customer::with(['sales', 'activeRecoveryDate']);
@@ -187,33 +184,43 @@ class CustomerController extends Controller
         // 1. Handle Recovery Status Filters (Pending, Today, Upcoming)
         if ($request->has('recovery_status')) {
             $status = $request->recovery_status;
-            $today = \Carbon\Carbon::today()->format('Y-m-d');
+            $today  = \Carbon\Carbon::today()->format('Y-m-d');
 
-            $query->whereHas('activeRecoveryDate', function($q) use ($status, $today) {
-                if ($status == 'pending') {
-                    // Dates strictly before today
-                    $q->where('recovery_date', '<', $today);
-                } elseif ($status == 'today') {
-                    // Dates exactly today
-                    $q->where('recovery_date', '=', $today);
-                } elseif ($status == 'upcoming') {
-                    // Dates strictly after today
-                    $q->where('recovery_date', '>', $today);
-                }
-                // Ensure we only look at active dates
-                $q->where('is_active', 1);
-            });
+            // CASE 1: "No Date" (Date na ho AUR Balance ho)
+            if ($status == 'no_date') {
+                $query->whereDoesntHave('activeRecoveryDate')
+                    ->where(function ($q) {
+                        $q->where('debit', '>', 0)
+                            ->orWhere('credit', '>', 0);
+                    });
+            }
+            // CASE 2: Pending, Today, Upcoming (Wo log jinki date set hai)
+            else {
+                $query->whereHas('activeRecoveryDate', function ($q) use ($status, $today) {
+
+                    // Sirf active dates check karein
+                    $q->where('is_active', 1);
+
+                    if ($status == 'pending') {
+                        $q->where('recovery_date', '<', $today);
+                    } elseif ($status == 'today') {
+                        $q->where('recovery_date', '=', $today);
+                    } elseif ($status == 'upcoming') {
+                        $q->where('recovery_date', '>', $today);
+                    }
+                });
+            }
         }
 
         // 2. Handle Existing Sorting
         $sortOrder = $request->input('sort_order', 'asc');
-    
+
         if ($request->has('filter_debit')) {
-            $query->orderBy('debit', $sortOrder); 
+            $query->orderBy('debit', $sortOrder);
         }
-    
+
         if ($request->has('filter_credit')) {
-            $query->orderBy('credit', $sortOrder); 
+            $query->orderBy('credit', $sortOrder);
         }
 
         // 3. Handle "Hide Zero Balance"
@@ -222,12 +229,12 @@ class CustomerController extends Controller
                 $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
             });
         }
-        
+
         // Default Sort if no specific sort is applied (optional)
-        // $query->latest(); 
+        // $query->latest();
 
         $data['customers'] = $query->get();
-    
+
         return view('pages.customer.show', $data);
     }
 
@@ -236,12 +243,12 @@ class CustomerController extends Controller
         $customer = Customer::with('sales')->findOrFail($id);
 
         $summary = [
-            'total_sales' => $customer->sales->count(),
-            'total_amount' => $customer->sales->sum('total_amount'),
-            'total_cash' => $customer->sales->sum('cash'),
+            'total_sales'    => $customer->sales->count(),
+            'total_amount'   => $customer->sales->sum('total_amount'),
+            'total_cash'     => $customer->sales->sum('cash'),
             'total_discount' => $customer->sales->sum('total_discount'),
-            'credit' => $customer->credit,
-            'debit' => $customer->debit,
+            'credit'         => $customer->credit,
+            'debit'          => $customer->debit,
         ];
 
         return view('pages.customer.sales_summary', compact('customer', 'summary'));
@@ -259,9 +266,9 @@ class CustomerController extends Controller
 
         // 2. Create the new active date
         CustomerRecoveryDate::create([
-            'customer_id' => $request->customer_id,
+            'customer_id'   => $request->customer_id,
             'recovery_date' => $request->date,
-            'is_active' => 1
+            'is_active'     => 1,
         ]);
 
         return response()->json(['status' => 'success', 'message' => 'Date added successfully']);
@@ -272,7 +279,7 @@ class CustomerController extends Controller
         CustomerRecoveryDate::where('id', $request->id)->delete();
         return response()->json(['status' => 'success', 'message' => 'Date deleted']);
     }
-    
+
     // --- NEW FUNCTION: Mark as Received ---
     public function markRecoveryReceived(Request $request)
     {
@@ -285,39 +292,40 @@ class CustomerController extends Controller
         return response()->json(['status' => 'error', 'message' => 'Not found'], 404);
     }
 
-
     public function sendRecoveryReminder(Request $request)
     {
         // 1. Fetch Recovery & Customer Data
         $recoveryDate = CustomerRecoveryDate::find($request->id);
 
-        if (!$recoveryDate) {
+        if (! $recoveryDate) {
             return response()->json(['status' => 'error', 'message' => 'Recovery date not found'], 404);
         }
 
         $customer = Customer::find($recoveryDate->customer_id);
-        
-        if (!$customer || empty($customer->mobile_number)) {
+
+        if (! $customer || empty($customer->mobile_number)) {
             return response()->json(['status' => 'error', 'message' => 'Customer has no mobile number'], 400);
         }
 
         // 2. Prepare Message
         $dateFormatted = \Carbon\Carbon::parse($recoveryDate->recovery_date)->format('d M, Y');
-        $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
-        $message = "Hello {$customer->name}, friendly reminder: Your payment of {$balance} RS is due on {$dateFormatted}. Please clear your dues.";
+        $balance       = $customer->debit > 0 ? $customer->debit : $customer->credit;
+        $message       = "Hello {$customer->name}, friendly reminder: Your payment of {$balance} RS is due on {$dateFormatted}. Please clear your dues.";
 
         // 3. Handle Multiple Numbers
         $phoneNumbers = explode(',', $customer->mobile_number);
         $successCount = 0;
-        $errors = []; // Capture errors
+        $errors       = []; // Capture errors
 
         foreach ($phoneNumbers as $number) {
             $number = trim($number);
-            if (empty($number)) continue;
+            if (empty($number)) {
+                continue;
+            }
 
             // Call the helper
             $result = $this->sendToWhatsAppGateway($number, $message);
-            
+
             if ($result['success']) {
                 $successCount++;
             } else {
@@ -327,50 +335,50 @@ class CustomerController extends Controller
 
         if ($successCount > 0) {
             return response()->json([
-                'status' => 'success', 
-                'message' => "Sent to {$successCount} number(s) successfully!"
+                'status'  => 'success',
+                'message' => "Sent to {$successCount} number(s) successfully!",
             ]);
         } else {
             // RETURN THE REAL ERROR TO THE FRONTEND
             $errorString = implode(', ', $errors);
             Log::error("WhatsApp Failed: " . $errorString);
-            
+
             return response()->json([
-                'status' => 'error', 
-                'message' => "Failed: " . $errorString
+                'status'  => 'error',
+                'message' => "Failed: " . $errorString,
             ], 500);
         }
     }
 
     private function sendToWhatsAppGateway($to, $message)
     {
-        $sid    = env('TWILIO_SID');
-        $token  = env('TWILIO_AUTH_TOKEN');
-        $from   = env('TWILIO_WHATSAPP_NUMBER');
+        $sid   = env('TWILIO_SID');
+        $token = env('TWILIO_AUTH_TOKEN');
+        $from  = env('TWILIO_WHATSAPP_NUMBER');
 
-        if (!$sid || !$token || !$from) {
+        if (! $sid || ! $token || ! $from) {
             return ['success' => false, 'error' => 'Twilio Credentials missing in .env'];
         }
 
         // ==============================================================
         //  FIX: SMART PHONE NUMBER FORMATTING (PK -> International)
         // ==============================================================
-        
+
         // 1. Remove all non-numeric characters (spaces, dashes, brackets)
         // Result: "0340-0602398" becomes "03400602398"
         $to = preg_replace('/[^0-9]/', '', $to);
 
         // 2. Check for local format (starts with '03') and convert to '923'
         if (substr($to, 0, 2) == '03') {
-             // Remove the leading '0' and add '92'
-             $to = '92' . substr($to, 1); 
+            // Remove the leading '0' and add '92'
+            $to = '92' . substr($to, 1);
         }
 
         // 3. Ensure it starts with '+' for Twilio
         if (substr($to, 0, 1) != '+') {
-             $to = '+' . $to; 
+            $to = '+' . $to;
         }
-        
+
         // Result is now: +923400602398 (Valid!)
         // ==============================================================
 
@@ -379,7 +387,7 @@ class CustomerController extends Controller
                 ->asForm()
                 ->post("https://api.twilio.com/2010-04-01/Accounts/{$sid}/Messages.json", [
                     'From' => "whatsapp:{$from}",
-                    'To'   => "whatsapp:{$to}", 
+                    'To' => "whatsapp:{$to}",
                     'Body' => $message,
                 ]);
 
@@ -387,7 +395,7 @@ class CustomerController extends Controller
                 return ['success' => true, 'error' => null];
             } else {
                 $errorData = $response->json();
-                $msg = $errorData['message'] ?? 'Unknown Twilio Error';
+                $msg       = $errorData['message'] ?? 'Unknown Twilio Error';
                 return ['success' => false, 'error' => $msg];
             }
 
