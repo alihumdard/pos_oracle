@@ -12,10 +12,7 @@
 
         <div class="card mt-4">
             <div class="row">
-                {{-- 
-                    CHANGED: col-6 to col-12 col-lg-6 
-                    (Stacks on mobile, side-by-side on desktop)
-                --}}
+                {{-- LEFT SIDE: BALANCE & RECOVERY DATES --}}
                 <div class="col-12 col-lg-6 mb-3 mt-4 p-4">
                     <div style="background-color: black; color: white; padding: 20px; border-radius: 10px;">
                         {{-- Balance Table --}}
@@ -114,12 +111,12 @@
                                             $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
                                             $formattedDate = $dateObj->format('d M, Y');
                                         @endphp
-                                        <button class="btn btn-sm btn-warning send-reminder mb-1"
+                                        <button class="btn btn-sm  send-reminder mb-1" style="background: rgb(57, 166, 57); color: white;"
                                             data-name="{{ $customer->name }}"
                                             data-mobile="{{ $customer->mobile_number }}"
                                             data-balance="{{ $balance }} ({{ $balanceType }})"
                                             data-due-date="{{ $formattedDate }}">
-                                            <i class="fa-brands fa-whatsapp"></i> Reminder
+                                            <i class="fab fa-whatsapp"></i> Reminder
                                         </button>
 
                                         <button class="btn btn-sm btn-danger delete-recovery mb-1"
@@ -171,10 +168,7 @@
                     </div>
                 </div>
 
-                {{-- 
-                    CHANGED: col-6 to col-12 col-lg-6 
-                    (Stacks on mobile, side-by-side on desktop)
-                --}}
+                {{-- RIGHT SIDE: PAYMENT FORM --}}
                 <div class="col-12 col-lg-6 mb-3 mt-4 p-4">
                     <form id="paymentForm">
                         <div class="form-group">
@@ -184,6 +178,12 @@
                                 <option value="youGot">You Got</option>
                                 <option value="youGive">You Give</option>
                             </select>
+                        </div>
+
+                        {{-- NEW: NOTE INPUT FIELD --}}
+                        <div class="form-group mt-3">
+                            <label for="paymentNote">Note / Description</label>
+                            <textarea id="paymentNote" class="form-control" rows="2" placeholder="Optional: Add details about this payment..."></textarea>
                         </div>
 
                         <input type="hidden" id="customerId" value="{{ $customer->id }}" class="form-control">
@@ -218,13 +218,13 @@
     <div class="col-12">
         <div class="card w-100">
             <h5 class="text-center mt-4 mb-4">Manual Payments Detail</h5>
-            {{-- ADDED: table-responsive wrapper --}}
             <div class="table-responsive p-2">
                 <table class="table table-hover w-100" id="example1">
                     <thead class="bg-primary">
                         <tr>
                             <th>Payment Type</th>
                             <th>Payment</th>
+                            <th>Note</th> {{-- Optional: Show Note in table if you want --}}
                         </tr>
                     </thead>
                     <tbody id="tableHolder">
@@ -237,6 +237,7 @@
                                 @if($payment->payment_type == 'You Got')
                                     <td style="color:red;"> {{ $payment->payment }}</td>
                                 @endif
+                                <td>{{ $payment->note ?? '-' }}</td> {{-- Display Note --}}
                             </tr>
                         @endforeach
                     </tbody>
@@ -248,7 +249,6 @@
     <div class="col-12">
         <div class="card w-100">
             <h5 class="text-center mt-4 mb-4">Sales Detail</h5>
-            {{-- ADDED: table-responsive wrapper --}}
             <div class="table-responsive p-2">
                 <table class="table table-hover w-100" id="example2">
                     <thead class="bg-primary">
@@ -263,7 +263,6 @@
                             <tr>
                                 <td>{{ $sale->total_amount ?? 'N/A' }}</td>
                                 <td>{{ $sale->cash ?? 'N/A' }}</td>
-                                {{-- ADDED: flex-wrap to prevent button squash --}}
                                 <td style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
                                     <a href="javascript:void(0)" class="view-detail btn btn-sm btn-outline-dark" data-id="{{ $sale->id }}">
                                         <i class="fa fa-eye" aria-hidden="true"></i> View
@@ -284,6 +283,7 @@
     </div>
 </div>
 
+{{-- Modal Code (No Change) --}}
 <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -303,11 +303,9 @@
 @pushOnce('scripts')
     <script>
         $(document).ready(function () {
-            // ... (Your existing JavaScript remains exactly the same) ...
-            
-            // ============================================================
-            //  1. WHATSAPP REMINDER LOGIC (Click-to-Chat)
-            // ============================================================
+            // ... (Existing WhatsApp, Detail View logic remains same) ...
+
+            // 1. WHATSAPP REMINDER (Keep your existing code here)
             $(document).on('click', '.send-reminder', function () {
                 var name = $(this).data('name');
                 var rawMobile = $(this).data('mobile');
@@ -323,7 +321,17 @@
                     return num.trim();
                 });
 
-                var text = `Hello ${name}, friendly reminder from Rana Electronics Shop. Your outstanding balance of ${balance} is due on ${dueDate}. Please clear your dues.`;
+                var text = `Dear ${name},
+                This is a formal reminder from RANA ELECTRONICS KM. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience. Thank you.
+
+                -------------------------
+
+                محترم ${name}،
+                رانا الیکٹرانکس کے ایم کی جانب سے یہ ایک یاد دہانی ہے۔ آپ کے کھاتے میں ${balance} کا بقایا موجود ہے۔ براہ کرم اپنی سہولت کے مطابق جلد از جلد یہ واجبات ادا کریں۔ شکریہ۔
+
+                For further details contact us:
+                RANA ELECTRONICS KM
+                03007667440`;
                 var encodedText = encodeURIComponent(text);
 
                 function getWaLink(number) {
@@ -362,27 +370,18 @@
                 }
             });
 
-            // ============================================================
-            //  2. MARK AS RECEIVED
-            // ============================================================
+            // 2. MARK RECEIVED (Keep existing code)
             $(document).on('click', '.mark-received', function () {
                 var id = $(this).data('id');
                 var btn = $(this);
-
                 if (confirm('Are you sure you want to mark this payment as Received?')) {
                     btn.prop('disabled', true);
-
                     $.ajax({
                         url: '/customer/recovery/received',
                         type: 'POST',
-                        data: {
-                            id: id,
-                            _token: '{{ csrf_token() }}'
-                        },
+                        data: { id: id, _token: '{{ csrf_token() }}' },
                         success: function (response) {
-                            if (response.status === 'success') {
-                                location.reload();
-                            }
+                            if (response.status === 'success') location.reload();
                         },
                         error: function () {
                             alert('Error updating status.');
@@ -392,9 +391,7 @@
                 }
             });
 
-            // ============================================================
-            //  3. VIEW DETAILS MODAL
-            // ============================================================
+            // 3. VIEW DETAIL (Keep existing code)
             $(document).on('click', '.view-detail', function () {
                 var saleId = $(this).data('id');
                 $.ajax({
@@ -407,14 +404,12 @@
                         });
                         $('#transactionModal').modal('show');
                     },
-                    error: function () {
-                        alert('Error fetching transaction details.');
-                    }
+                    error: function () { alert('Error fetching details.'); }
                 });
             });
 
             // ============================================================
-            //  4. PAYMENT FORM TOGGLE & SUBMISSION
+            //  4. PAYMENT FORM TOGGLE & SUBMISSION (UPDATED)
             // ============================================================
             $('#dropdownAction').on('change', function () {
                 var action = $(this).val();
@@ -443,11 +438,15 @@
                 }
             });
 
+            // UPDATED FUNCTION TO SEND NOTE
             function sendPaymentData(action, amount, customerId) {
+                var note = $('#paymentNote').val(); // GET NOTE VALUE
+
                 var data = {
                     action: action,
                     payment: amount,
                     customer_id: customerId,
+                    note: note, // SEND NOTE TO SERVER
                     _token: '{{ csrf_token() }}'
                 };
 
@@ -466,32 +465,17 @@
                 });
             }
 
-            // ============================================================
-            //  5. RECOVERY DATE MANAGEMENT (Add / Delete)
-            // ============================================================
+            // 5. RECOVERY DATE (Keep existing code)
             $('#addRecoveryBtn').on('click', function () {
                 var date = $('#recoveryDateInput').val();
                 var customerId = $('#customerId').val();
-
-                if (!date) {
-                    alert('Please select a date');
-                    return;
-                }
-
+                if (!date) { alert('Please select a date'); return; }
                 $.ajax({
                     url: '/customer/recovery/add',
                     type: 'POST',
-                    data: {
-                        date: date,
-                        customer_id: customerId,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function (response) {
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('Error adding recovery date.');
-                    }
+                    data: { date: date, customer_id: customerId, _token: '{{ csrf_token() }}' },
+                    success: function (response) { location.reload(); },
+                    error: function () { alert('Error adding recovery date.'); }
                 });
             });
 
@@ -501,16 +485,9 @@
                     $.ajax({
                         url: '/customer/recovery/delete',
                         type: 'POST',
-                        data: {
-                            id: id,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            location.reload();
-                        },
-                        error: function () {
-                            alert('Error deleting date.');
-                        }
+                        data: { id: id, _token: '{{ csrf_token() }}' },
+                        success: function (response) { location.reload(); },
+                        error: function () { alert('Error deleting date.'); }
                     });
                 }
             });
