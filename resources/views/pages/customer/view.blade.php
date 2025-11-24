@@ -12,52 +12,51 @@
 
         <div class="card mt-4">
             <div class="row">
-                <div class="col-6 mb-3 mt-4 p-4">
+                {{-- 
+                    CHANGED: col-6 to col-12 col-lg-6 
+                    (Stacks on mobile, side-by-side on desktop)
+                --}}
+                <div class="col-12 col-lg-6 mb-3 mt-4 p-4">
                     <div style="background-color: black; color: white; padding: 20px; border-radius: 10px;">
                         {{-- Balance Table --}}
-                        <table style="width: 100%; color: white; border-collapse: collapse;">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">
-                                        Customer Name</th>
-                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">Payment
-                                        Type</th>
-                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">Balance
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="padding: 10px;">{{$customer->name}}</td>
-                                    @if($customer->debit > 0)
-                                        <td style="padding: 10px; color: green; font-weight: bold;">You Give</td>
-                                        <td style="padding: 10px; color: green; font-weight: bold;">{{$customer->debit}}/RS
-                                        </td>
-                                    @else
-                                        <td style="padding: 10px; color: red; font-weight: bold;">You Got</td>
-                                        <td style="padding: 10px; color: red; font-weight: bold;">{{$customer->credit}}/RS
-                                        </td>
-                                    @endif
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table style="width: 100%; color: white; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">
+                                            Customer Name</th>
+                                        <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">
+                                            Payment Type</th>
+                                        <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">
+                                            Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 10px;">{{$customer->name}}</td>
+                                        @if($customer->debit > 0)
+                                            <td style="padding: 10px; color: green; font-weight: bold;">You Give</td>
+                                            <td style="padding: 10px; color: green; font-weight: bold;">{{$customer->debit}}/RS</td>
+                                        @else
+                                            <td style="padding: 10px; color: red; font-weight: bold;">You Got</td>
+                                            <td style="padding: 10px; color: red; font-weight: bold;">{{$customer->credit}}/RS</td>
+                                        @endif
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                         <hr style="border-top: 1px solid #555; margin-top: 20px;">
 
                         @php
-                            // Get all dates sorted by latest
                             $allDates = $customer->recoveryDates;
-
-                            // Find the active one
                             $activeRecovery = $allDates->where('is_active', 1)->first();
-
-                            // Filter out the active one to get history
                             $historyDates = $allDates->where('is_active', 0);
                         @endphp
 
                         <h6 class="mt-3 text-warning"><i class="fa fa-calendar"></i> Recovery Payment Dates</h6>
 
-                        {{-- INPUT FORM (Visible only if Credit exists) --}}
+                        {{-- INPUT FORM --}}
                         @if($customer->credit > 0)
                             <div class="mt-3 mb-4">
                                 <label class="mb-2" style="font-size: 0.9em; color: #ccc;">Add New/Update Date:</label>
@@ -76,7 +75,7 @@
                             @php
                                 $dateObj = \Carbon\Carbon::parse($activeRecovery->recovery_date);
                                 $isExpired = $dateObj->endOfDay()->isPast();
-                                $isReceived = $activeRecovery->is_received == 1; // Check DB Status
+                                $isReceived = $activeRecovery->is_received == 1;
                             @endphp
 
                             <div class="p-3 mb-3"
@@ -85,40 +84,37 @@
                                     {{ $isReceived ? 'Payment Received' : 'Current Active Date' }}
                                 </span>
 
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span
-                                        style="font-size: 1.2em; font-weight: bold; color: {{ $isReceived ? '#28a745' : ($isExpired ? 'red' : '#00ffaa') }};">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                    <span style="font-size: 1.2em; font-weight: bold; color: {{ $isReceived ? '#28a745' : ($isExpired ? 'red' : '#00ffaa') }};">
                                         {{ $isReceived ? 'Received On: ' : 'Due: ' }} {{ $dateObj->format('d M, Y') }}
                                     </span>
                                 </div>
 
                                 @if($isExpired && !$isReceived)
-                                    <small class="text-danger"><i class="fa fa-exclamation-circle"></i> This date has
-                                        passed.</small>
+                                    <small class="text-danger"><i class="fa fa-exclamation-circle"></i> This date has passed.</small>
                                 @endif
 
-                                <div class="mt-3 d-flex gap-2">
+                                <div class="mt-3 d-flex flex-wrap gap-2">
                                     {{-- RECEIVED BUTTON --}}
                                     @if(!$isReceived)
-                                        <button class="btn btn-sm btn-success mark-received"
+                                        <button class="btn btn-sm btn-success mark-received mb-1"
                                             data-id="{{ $activeRecovery->id }}">
                                             <i class="fa fa-check"></i> Received
                                         </button>
                                     @else
-                                        <button class="btn btn-sm btn-secondary" disabled>
+                                        <button class="btn btn-sm btn-secondary mb-1" disabled>
                                             <i class="fa fa-check-double"></i> Received
                                         </button>
                                     @endif
 
-                                    {{-- ACTION BUTTONS (Hidden if Received) --}}
+                                    {{-- ACTION BUTTONS --}}
                                     @if(!$isReceived)
-                                        {{-- UPDATED: WhatsApp Reminder Button --}}
                                         @php
                                             $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
                                             $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
                                             $formattedDate = $dateObj->format('d M, Y');
                                         @endphp
-                                        <button class="btn btn-sm btn-warning send-reminder"
+                                        <button class="btn btn-sm btn-warning send-reminder mb-1"
                                             data-name="{{ $customer->name }}"
                                             data-mobile="{{ $customer->mobile_number }}"
                                             data-balance="{{ $balance }} ({{ $balanceType }})"
@@ -126,7 +122,7 @@
                                             <i class="fa-brands fa-whatsapp"></i> Reminder
                                         </button>
 
-                                        <button class="btn btn-sm btn-danger delete-recovery"
+                                        <button class="btn btn-sm btn-danger delete-recovery mb-1"
                                             data-id="{{ $activeRecovery->id }}">
                                             <i class="fa fa-trash"></i>
                                         </button>
@@ -139,41 +135,47 @@
                         @if($historyDates->count() > 0)
                             <h6 class="mt-4 text-white" style="font-size: 0.9em; text-transform: uppercase;">History</h6>
                             <div style="max-height: 200px; overflow-y: auto;">
-                                <table class="table table-dark table-sm table-striped" style="font-size: 0.9em;">
-                                    <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($historyDates as $date)
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-sm table-striped" style="font-size: 0.9em;">
+                                        <thead>
                                             <tr>
-                                                <td>{{ \Carbon\Carbon::parse($date->recovery_date)->format('d M, Y') }}</td>
-                                                <td>
-                                                    @if($date->is_received)
-                                                        <span class="badge bg-success">Received</span>
-                                                    @else
-                                                        <span class="badge bg-secondary">Skipped/Inactive</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-xs btn-danger delete-recovery"
-                                                        style="padding: 2px 5px;" data-id="{{ $date->id }}">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </td>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($historyDates as $date)
+                                                <tr>
+                                                    <td>{{ \Carbon\Carbon::parse($date->recovery_date)->format('d M, Y') }}</td>
+                                                    <td>
+                                                        @if($date->is_received)
+                                                            <span class="badge bg-success">Received</span>
+                                                        @else
+                                                            <span class="badge bg-secondary">Skipped/Inactive</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-xs btn-danger delete-recovery"
+                                                            style="padding: 2px 5px;" data-id="{{ $date->id }}">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         @endif
                     </div>
                 </div>
 
-                <div class="col-6 mb-3 mt-4 p-4">
+                {{-- 
+                    CHANGED: col-6 to col-12 col-lg-6 
+                    (Stacks on mobile, side-by-side on desktop)
+                --}}
+                <div class="col-12 col-lg-6 mb-3 mt-4 p-4">
                     <form id="paymentForm">
                         <div class="form-group">
                             <label for="dropdownAction">Select Payment Method</label>
@@ -191,7 +193,7 @@
                                 <label for="paymentInputYouGive">Enter Payment</label>
                                 <input type="number" id="paymentInputYouGive" class="form-control" placeholder="Enter amount">
                             </div>
-                            <button type="button" id="addPaymentYouGive" class="btn btn-primary btn-block">Add Payment</button>
+                            <button type="button" id="addPaymentYouGive" class="btn btn-primary btn-block w-100">Add Payment</button>
                         </div>
 
                         <div id="youGotForm" class="mt-3" style="display: none;">
@@ -199,12 +201,12 @@
                                 <label for="paymentInputYouGot">Enter Payment</label>
                                 <input type="number" id="paymentInputYouGot" class="form-control" placeholder="Enter amount">
                             </div>
-                            <button type="button" id="addPaymentYouGot" class="btn btn-primary btn-block">Add Payment</button>
+                            <button type="button" id="addPaymentYouGot" class="btn btn-primary btn-block w-100">Add Payment</button>
                         </div>
                     </form>
 
                     <div class="d-flex justify-content-center mt-4">
-                        <a href="{{ route('customer.sales.summary', $customer->id) }}" class="btn btn-info" style="width: 100%;">
+                        <a href="{{ route('customer.sales.summary', $customer->id) }}" class="btn btn-info w-100">
                             <i class="fa fa-list-alt"></i> View Sales Summary
                         </a>
                     </div>
@@ -216,60 +218,68 @@
     <div class="col-12">
         <div class="card w-100">
             <h5 class="text-center mt-4 mb-4">Manual Payments Detail</h5>
-            <table class="table table-hover w-100" id="example1">
-                <thead class="bg-primary">
-                    <tr>
-                        <th>Payment Type</th>
-                        <th>Payment</th>
-                    </tr>
-                </thead>
-                <tbody id="tableHolder">
-                    @foreach($manual_customers->manualPayments as $payment)
+            {{-- ADDED: table-responsive wrapper --}}
+            <div class="table-responsive p-2">
+                <table class="table table-hover w-100" id="example1">
+                    <thead class="bg-primary">
                         <tr>
-                            <td>{{ $payment->payment_type }}</td>
-                            @if($payment->payment_type == 'You Give')
-                                <td style="color:green;"> {{ $payment->payment }}</td>
-                            @endif
-                            @if($payment->payment_type == 'You Got')
-                                <td style="color:red;"> {{ $payment->payment }}</td>
-                            @endif
+                            <th>Payment Type</th>
+                            <th>Payment</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="tableHolder">
+                        @foreach($manual_customers->manualPayments as $payment)
+                            <tr>
+                                <td>{{ $payment->payment_type }}</td>
+                                @if($payment->payment_type == 'You Give')
+                                    <td style="color:green;"> {{ $payment->payment }}</td>
+                                @endif
+                                @if($payment->payment_type == 'You Got')
+                                    <td style="color:red;"> {{ $payment->payment }}</td>
+                                @endif
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <div class="col-12">
         <div class="card w-100">
             <h5 class="text-center mt-4 mb-4">Sales Detail</h5>
-            <table class="table table-hover w-100" id="example2">
-                <thead class="bg-primary">
-                    <tr>
-                        <th>Total Amount</th>
-                        <th>Cash</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="tableHolderSales">
-                    @foreach($sales as $sale)
+            {{-- ADDED: table-responsive wrapper --}}
+            <div class="table-responsive p-2">
+                <table class="table table-hover w-100" id="example2">
+                    <thead class="bg-primary">
                         <tr>
-                            <td>{{ $sale->total_amount ?? 'N/A' }}</td>
-                            <td>{{ $sale->cash ?? 'N/A' }}</td>
-                            <td style="display: flex; justify-content: space-between;">
-                                <a href="javascript:void(0)" class="view-detail" data-id="{{ $sale->id }}">
-                                    <i class="fa fa-eye" aria-hidden="true"></i> View</a>
-                                <a href="{{ route('pages.customer.invoice', $sale->id) }}" class="btn btn-sm btn-primary">
-                                    Regenerate Invoice
-                                </a>
-                                <a href="{{ route('show.transaction', ['id' => $sale->id]) }}" class="btn btn-warning">
-                                    Return Sale
-                                </a>
-                            </td>
+                            <th>Total Amount</th>
+                            <th>Cash</th>
+                            <th>Action</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="tableHolderSales">
+                        @foreach($sales as $sale)
+                            <tr>
+                                <td>{{ $sale->total_amount ?? 'N/A' }}</td>
+                                <td>{{ $sale->cash ?? 'N/A' }}</td>
+                                {{-- ADDED: flex-wrap to prevent button squash --}}
+                                <td style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
+                                    <a href="javascript:void(0)" class="view-detail btn btn-sm btn-outline-dark" data-id="{{ $sale->id }}">
+                                        <i class="fa fa-eye" aria-hidden="true"></i> View
+                                    </a>
+                                    <a href="{{ route('pages.customer.invoice', $sale->id) }}" class="btn btn-sm btn-primary">
+                                        Regenerate Invoice
+                                    </a>
+                                    <a href="{{ route('show.transaction', ['id' => $sale->id]) }}" class="btn btn-sm btn-warning">
+                                        Return Sale
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -293,7 +303,8 @@
 @pushOnce('scripts')
     <script>
         $(document).ready(function () {
-
+            // ... (Your existing JavaScript remains exactly the same) ...
+            
             // ============================================================
             //  1. WHATSAPP REMINDER LOGIC (Click-to-Chat)
             // ============================================================
@@ -301,28 +312,22 @@
                 var name = $(this).data('name');
                 var rawMobile = $(this).data('mobile');
                 var balance = $(this).data('balance');
-                var dueDate = $(this).data('due-date'); // Extra info specific to this page
+                var dueDate = $(this).data('due-date'); 
 
-                // 1. Check Number
                 if (!rawMobile) {
                     Swal.fire("Error", "No mobile number found for this customer.", "warning");
                     return;
                 }
 
-                // 2. Handle Multiple Numbers
-                // Convert to string first to avoid errors, then split
                 var phones = rawMobile.toString().split(',').map(function(num) {
                     return num.trim();
                 });
 
-                // 3. Prepare Message
                 var text = `Hello ${name}, friendly reminder from Rana Electronics Shop. Your outstanding balance of ${balance} is due on ${dueDate}. Please clear your dues.`;
                 var encodedText = encodeURIComponent(text);
 
-                // 4. Link Helper
                 function getWaLink(number) {
                     var clean = number.replace(/\D/g, '');
-                    // Auto-format for Pakistan (03 -> 923)
                     if (clean.startsWith('03')) {
                         clean = '92' + clean.substring(1);
                     } else if (clean.length === 10 && clean.startsWith('3')) {
@@ -331,12 +336,9 @@
                     return `https://wa.me/${clean}?text=${encodedText}`;
                 }
 
-                // 5. Open WhatsApp
                 if (phones.length === 1) {
-                    // Single number: Open directly
                     window.open(getWaLink(phones[0]), '_blank');
                 } else {
-                    // Multiple numbers: Ask user
                     var inputOptions = {};
                     phones.forEach(function(phone) {
                         inputOptions[phone] = phone;
@@ -414,8 +416,6 @@
             // ============================================================
             //  4. PAYMENT FORM TOGGLE & SUBMISSION
             // ============================================================
-            
-            // Toggle Forms
             $('#dropdownAction').on('change', function () {
                 var action = $(this).val();
                 $('#youGiveForm, #youGotForm').hide();
@@ -427,7 +427,6 @@
                 }
             });
 
-            // Add Payment (You Give)
             $('#addPaymentYouGive').on('click', function () {
                 var credit = $('#paymentInputYouGive').val();
                 var customerId = $('#customerId').val();
@@ -436,7 +435,6 @@
                 }
             });
 
-            // Add Payment (You Got)
             $('#addPaymentYouGot').on('click', function () {
                 var debit = $('#paymentInputYouGot').val();
                 var customerId = $('#customerId').val();
@@ -445,7 +443,6 @@
                 }
             });
 
-            // Helper: Send Payment Data
             function sendPaymentData(action, amount, customerId) {
                 var data = {
                     action: action,
@@ -472,8 +469,6 @@
             // ============================================================
             //  5. RECOVERY DATE MANAGEMENT (Add / Delete)
             // ============================================================
-
-            // Add Recovery Date
             $('#addRecoveryBtn').on('click', function () {
                 var date = $('#recoveryDateInput').val();
                 var customerId = $('#customerId').val();
@@ -500,7 +495,6 @@
                 });
             });
 
-            // Delete Recovery Date
             $('.delete-recovery').on('click', function () {
                 var id = $(this).data('id');
                 if (confirm('Are you sure you want to delete this recovery date?')) {
