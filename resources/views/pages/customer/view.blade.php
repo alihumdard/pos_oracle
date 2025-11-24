@@ -9,94 +9,171 @@
 
 <div class="row mt-5">
     <div class="col-12">
-        
+
         <div class="card mt-4">
             <div class="row">
                 <div class="col-6 mb-3 mt-4 p-4">
                     <div style="background-color: black; color: white; padding: 20px; border-radius: 10px;">
-
+                        {{-- Balance Table --}}
                         <table style="width: 100%; color: white; border-collapse: collapse;">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">Customer Name</th>
-                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">Payment Type</th>
-                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">Balance</th>
+                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">
+                                        Customer Name</th>
+                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">Payment
+                                        Type</th>
+                                    <th style="text-align: left; padding: 10px; border-bottom: 1px solid white;">Balance
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td style="padding: 10px;">{{$customer->name}}</td>
                                     @if($customer->debit > 0)
-                                    <td style="padding: 10px; color: green; font-weight: bold;">You Give</td>
-                                    <td style="padding: 10px; color: green; font-weight: bold;">{{$customer->debit}}/RS</td>
+                                        <td style="padding: 10px; color: green; font-weight: bold;">You Give</td>
+                                        <td style="padding: 10px; color: green; font-weight: bold;">{{$customer->debit}}/RS
+                                        </td>
                                     @else
-                                    <td style="padding: 10px; color: red; font-weight: bold;">You Got</td>
-                                    <td style="padding: 10px; color: red; font-weight: bold;">{{$customer->credit}}/RS</td>
+                                        <td style="padding: 10px; color: red; font-weight: bold;">You Got</td>
+                                        <td style="padding: 10px; color: red; font-weight: bold;">{{$customer->credit}}/RS
+                                        </td>
                                     @endif
                                 </tr>
                             </tbody>
                         </table>
 
-                        {{-- DEBUG MODE: Changed check to TRUE so it always shows --}}
-                        @if(true) 
-                            <hr style="border-top: 1px solid #555; margin-top: 20px;">
-                            
+                        <hr style="border-top: 1px solid #555; margin-top: 20px;">
+
+                        @php
+                            // Get all dates sorted by latest
+                            $allDates = $customer->recoveryDates;
+
+                            // Find the active one
+                            $activeRecovery = $allDates->where('is_active', 1)->first();
+
+                            // Filter out the active one to get history
+                            $historyDates = $allDates->where('is_active', 0);
+                        @endphp
+
+                        <h6 class="mt-3 text-warning"><i class="fa fa-calendar"></i> Recovery Payment Dates</h6>
+
+                        {{-- INPUT FORM (Visible only if Credit exists) --}}
+                        @if($customer->credit > 0)
+                            <div class="mt-3 mb-4">
+                                <label class="mb-2" style="font-size: 0.9em; color: #ccc;">Add New/Update Date:</label>
+                                <div class="input-group">
+                                    <input type="date" id="recoveryDateInput" class="form-control"
+                                        min="{{ date('Y-m-d') }}">
+                                    <button class="btn btn-success" id="addRecoveryBtn">
+                                        <i class="fa fa-plus"></i> Set Date
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- ACTIVE DATE DISPLAY --}}
+                        @if($activeRecovery)
                             @php
-                                // 1. Fetch the latest active date
-                                // Use optional() or check relation existence to prevent crash if relation missing
-                                $activeRecovery = $customer->recoveryDates ? $customer->recoveryDates()->where('is_active', 1)->first() : null;
-                                
-                                // 2. Check Expiry: If date exists but is in the past (yesterday or before), mark as expired
-                                $isExpired = false;
-                                if ($activeRecovery) {
-                                    $dateObj = \Carbon\Carbon::parse($activeRecovery->recovery_date);
-                                    // isPast() returns true if date is before right now. 
-                                    // We usually want 'endOfDay' so today is still valid.
-                                    if ($dateObj->endOfDay()->isPast()) {
-                                        $isExpired = true;
-                                    }
-                                }
+                                $dateObj = \Carbon\Carbon::parse($activeRecovery->recovery_date);
+                                $isExpired = $dateObj->endOfDay()->isPast();
+                                $isReceived = $activeRecovery->is_received == 1; // Check DB Status
                             @endphp
 
-                            <h6 class="mt-3 text-warning"><i class="fa fa-calendar"></i> Recovery Payment Date</h6>
+                            <div class="p-3 mb-3"
+                                style="border: 1px dashed {{ $isReceived ? '#28a745' : ($isExpired ? 'red' : '#00ffaa') }}; border-radius: 5px; background-color: #1a1a1a;">
+                                <span class="badge {{ $isReceived ? 'bg-success' : 'bg-primary' }} mb-2">
+                                    {{ $isReceived ? 'Payment Received' : 'Current Active Date' }}
+                                </span>
 
-                            @if($activeRecovery && !$isExpired)
-                                <div class="mt-3 p-3" style="border: 1px dashed #fff; border-radius: 5px; background-color: #1a1a1a;">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span style="font-size: 1.1em; font-weight: bold; color: #00ffaa;">
-                                            Due: {{ \Carbon\Carbon::parse($activeRecovery->recovery_date)->format('d M, Y') }}
-                                        </span>
-                                    </div>
-                                    <div class="mt-3">
-                                        <button class="btn btn-sm btn-warning send-reminder" data-id="{{ $activeRecovery->id }}">
-                                            <i class="fa fa-bell"></i> Reminder
-                                        </button>
-                                        <button class="btn btn-sm btn-danger delete-recovery" data-id="{{ $activeRecovery->id }}">
-                                            <i class="fa fa-trash"></i> Delete
-                                        </button>
-                                    </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span
+                                        style="font-size: 1.2em; font-weight: bold; color: {{ $isReceived ? '#28a745' : ($isExpired ? 'red' : '#00ffaa') }};">
+                                        {{ $isReceived ? 'Received On: ' : 'Due: ' }} {{ $dateObj->format('d M, Y') }}
+                                    </span>
                                 </div>
 
-                            @else
-                                <div class="mt-3">
-                                    <label class="mb-2" style="font-size: 0.9em;">Select Next Payment Date:</label>
-                                    <div class="input-group">
-                                        <input type="date" id="recoveryDateInput" class="form-control" min="{{ date('Y-m-d') }}">
-                                        <button class="btn btn-success" id="addRecoveryBtn">Add</button>
-                                    </div>
-                                    
-                                    @if($isExpired)
-                                        <small class="text-danger d-block mt-2">
-                                            <i class="fa fa-exclamation-circle"></i> Previous date ({{ $activeRecovery->recovery_date }}) has expired.
-                                        </small>
+                                @if($isExpired && !$isReceived)
+                                    <small class="text-danger"><i class="fa fa-exclamation-circle"></i> This date has
+                                        passed.</small>
+                                @endif
+
+                                <div class="mt-3 d-flex gap-2">
+                                    {{-- RECEIVED BUTTON --}}
+                                    @if(!$isReceived)
+                                        <button class="btn btn-sm btn-success mark-received"
+                                            data-id="{{ $activeRecovery->id }}">
+                                            <i class="fa fa-check"></i> Received
+                                        </button>
+                                    @else
+                                        <button class="btn btn-sm btn-secondary" disabled>
+                                            <i class="fa fa-check-double"></i> Received
+                                        </button>
+                                    @endif
+
+                                    {{-- ACTION BUTTONS (Hidden if Received) --}}
+                                    @if(!$isReceived)
+                                        {{-- UPDATED: WhatsApp Reminder Button --}}
+                                        @php
+                                            $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
+                                            $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
+                                            $formattedDate = $dateObj->format('d M, Y');
+                                        @endphp
+                                        <button class="btn btn-sm btn-warning send-reminder"
+                                            data-name="{{ $customer->name }}"
+                                            data-mobile="{{ $customer->mobile_number }}"
+                                            data-balance="{{ $balance }} ({{ $balanceType }})"
+                                            data-due-date="{{ $formattedDate }}">
+                                            <i class="fa-brands fa-whatsapp"></i> Reminder
+                                        </button>
+
+                                        <button class="btn btn-sm btn-danger delete-recovery"
+                                            data-id="{{ $activeRecovery->id }}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                     @endif
                                 </div>
-                            @endif
+                            </div>
+                        @endif
+
+                        {{-- HISTORY LIST --}}
+                        @if($historyDates->count() > 0)
+                            <h6 class="mt-4 text-white" style="font-size: 0.9em; text-transform: uppercase;">History</h6>
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                <table class="table table-dark table-sm table-striped" style="font-size: 0.9em;">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($historyDates as $date)
+                                            <tr>
+                                                <td>{{ \Carbon\Carbon::parse($date->recovery_date)->format('d M, Y') }}</td>
+                                                <td>
+                                                    @if($date->is_received)
+                                                        <span class="badge bg-success">Received</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">Skipped/Inactive</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-xs btn-danger delete-recovery"
+                                                        style="padding: 2px 5px;" data-id="{{ $date->id }}">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         @endif
                     </div>
                 </div>
 
-                <div class="col-5 mb-4 mt-5 p-1">
+                <div class="col-6 mb-3 mt-4 p-4">
                     <form id="paymentForm">
                         <div class="form-group">
                             <label for="dropdownAction">Select Payment Method</label>
@@ -106,7 +183,7 @@
                                 <option value="youGive">You Give</option>
                             </select>
                         </div>
-                        
+
                         <input type="hidden" id="customerId" value="{{ $customer->id }}" class="form-control">
 
                         <div id="youGiveForm" class="mt-3" style="display: none;">
@@ -114,16 +191,23 @@
                                 <label for="paymentInputYouGive">Enter Payment</label>
                                 <input type="number" id="paymentInputYouGive" class="form-control" placeholder="Enter amount">
                             </div>
-                            <button type="button" id="addPaymentYouGive" class="btn btn-primary">Add Payment</button>
+                            <button type="button" id="addPaymentYouGive" class="btn btn-primary btn-block">Add Payment</button>
                         </div>
+
                         <div id="youGotForm" class="mt-3" style="display: none;">
                             <div class="form-group">
                                 <label for="paymentInputYouGot">Enter Payment</label>
                                 <input type="number" id="paymentInputYouGot" class="form-control" placeholder="Enter amount">
                             </div>
-                            <button type="button" id="addPaymentYouGot" class="btn btn-primary">Add Payment</button>
+                            <button type="button" id="addPaymentYouGot" class="btn btn-primary btn-block">Add Payment</button>
                         </div>
                     </form>
+
+                    <div class="d-flex justify-content-center mt-4">
+                        <a href="{{ route('customer.sales.summary', $customer->id) }}" class="btn btn-info" style="width: 100%;">
+                            <i class="fa fa-list-alt"></i> View Sales Summary
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -141,15 +225,15 @@
                 </thead>
                 <tbody id="tableHolder">
                     @foreach($manual_customers->manualPayments as $payment)
-                    <tr>
-                        <td>{{ $payment->payment_type }}</td>
-                        @if($payment->payment_type=='You Give')
-                        <td style="color:green;"> {{ $payment->payment }}</td>
-                        @endif
-                        @if($payment->payment_type=='You Got')
-                        <td style="color:red;"> {{ $payment->payment }}</td>
-                        @endif
-                    </tr>
+                        <tr>
+                            <td>{{ $payment->payment_type }}</td>
+                            @if($payment->payment_type == 'You Give')
+                                <td style="color:green;"> {{ $payment->payment }}</td>
+                            @endif
+                            @if($payment->payment_type == 'You Got')
+                                <td style="color:red;"> {{ $payment->payment }}</td>
+                            @endif
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -159,7 +243,8 @@
     <div class="col-12">
         <div class="card w-100">
             <h5 class="text-center mt-4 mb-4">Sales Detail</h5>
-            <table class="table table-hover w-100" id="example2"> <thead class="bg-primary">
+            <table class="table table-hover w-100" id="example2">
+                <thead class="bg-primary">
                     <tr>
                         <th>Total Amount</th>
                         <th>Cash</th>
@@ -168,26 +253,23 @@
                 </thead>
                 <tbody id="tableHolderSales">
                     @foreach($sales as $sale)
-                    <tr>
-                        <td>{{ $sale->total_amount ?? 'N/A' }}</td>
-                        <td>{{ $sale->cash ?? 'N/A' }}</td>
-                        <td style="display: flex; justify-content: space-between;">
-                            <a href="javascript:void(0)" class="view-detail" data-id="{{ $sale->id }}">
-                                <i class="fa fa-eye" aria-hidden="true"></i> View</a>
-                            <a href="{{ route('pages.customer.invoice', $sale->id) }}" class="btn btn-sm btn-primary">
-                                Regenerate Invoice
-                            </a>
-                            <a href="{{ route('show.transaction', ['id' => $sale->id]) }}" class="btn btn-warning">
-                                Return Sale
-                            </a>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td>{{ $sale->total_amount ?? 'N/A' }}</td>
+                            <td>{{ $sale->cash ?? 'N/A' }}</td>
+                            <td style="display: flex; justify-content: space-between;">
+                                <a href="javascript:void(0)" class="view-detail" data-id="{{ $sale->id }}">
+                                    <i class="fa fa-eye" aria-hidden="true"></i> View</a>
+                                <a href="{{ route('pages.customer.invoice', $sale->id) }}" class="btn btn-sm btn-primary">
+                                    Regenerate Invoice
+                                </a>
+                                <a href="{{ route('show.transaction', ['id' => $sale->id]) }}" class="btn btn-warning">
+                                    Return Sale
+                                </a>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
-            <a href="{{ route('customer.sales.summary', $customer->id) }}" class="btn btn-primary" style="width: 180px; margin-top: 20px;" >
-                View Sales Summary
-            </a>
         </div>
     </div>
 </div>
@@ -199,7 +281,7 @@
                 <h5 class="modal-title" id="transactionModalLabel">Transaction Details</h5>
             </div>
             <div id="modal-body">
-                </div>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
@@ -209,169 +291,236 @@
 @stop
 
 @pushOnce('scripts')
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function () {
 
-        // --- VIEW DETAILS MODAL ---
-        $(document).on('click', '.view-detail', function() {
-            var saleId = $(this).data('id');
-            $.ajax({
-                url: '/sales/' + saleId + '/detail',
-                type: 'GET',
-                success: function(response) {
-                    $('#modal-body').html(response);
-                    $(".btn-secondary").click(function() {
-                        $('#transactionModal').modal('hide');
-                    });
-                    $('#transactionModal').modal('show');
-                },
-                error: function() {
-                    alert('Error fetching transaction details.');
+            // ============================================================
+            //  1. WHATSAPP REMINDER LOGIC (Click-to-Chat)
+            // ============================================================
+            $(document).on('click', '.send-reminder', function () {
+                var name = $(this).data('name');
+                var rawMobile = $(this).data('mobile');
+                var balance = $(this).data('balance');
+                var dueDate = $(this).data('due-date'); // Extra info specific to this page
+
+                // 1. Check Number
+                if (!rawMobile) {
+                    Swal.fire("Error", "No mobile number found for this customer.", "warning");
+                    return;
                 }
-            });
-        });
 
-        // --- TOGGLE PAYMENT FORMS ---
-        $('#dropdownAction').on('change', function() {
-            var action = $(this).val();
-            if (action === 'youGive') {
-                $('#youGiveForm').fadeIn();
-                $('#youGotForm').fadeOut();
-            } else if (action === 'youGot') {
-                $('#youGiveForm').fadeOut();
-                $('#youGotForm').fadeIn();
-            } else {
-                $('#youGiveForm').fadeOut();
-                $('#youGotForm').fadeOut();
-            }
-        });
+                // 2. Handle Multiple Numbers
+                // Convert to string first to avoid errors, then split
+                var phones = rawMobile.toString().split(',').map(function(num) {
+                    return num.trim();
+                });
 
-        // --- ADD PAYMENT (YOU GIVE) ---
-        $('#addPaymentYouGive').on('click', function() {
-            var credit = $('#paymentInputYouGive').val();
-            var customerId = $('#customerId').val();
-            if (credit) {
-                sendPaymentData('youGive', credit, customerId); 
-            }
-        });
-        
-        // --- ADD PAYMENT (YOU GOT) ---
-        $('#addPaymentYouGot').on('click', function() {
-            var debit = $('#paymentInputYouGot').val();
-            var customerId = $('#customerId').val();
-            if (debit) {
-                sendPaymentData('youGot', debit, customerId);
-            }
-        });
+                // 3. Prepare Message
+                var text = `Hello ${name}, friendly reminder from Rana Electronics Shop. Your outstanding balance of ${balance} is due on ${dueDate}. Please clear your dues.`;
+                var encodedText = encodeURIComponent(text);
 
-        // --- HELPER: SEND PAYMENT DATA ---
-        function sendPaymentData(action, amount, customerId) {
-            var data = {
-                action: action,
-                payment: amount,
-                customer_id: customerId,
-                _token: '{{ csrf_token() }}'
-            };
-
-            $.ajax({
-                url: '/customer/add',
-                type: 'POST',
-                data: data,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        location.reload();
+                // 4. Link Helper
+                function getWaLink(number) {
+                    var clean = number.replace(/\D/g, '');
+                    // Auto-format for Pakistan (03 -> 923)
+                    if (clean.startsWith('03')) {
+                        clean = '92' + clean.substring(1);
+                    } else if (clean.length === 10 && clean.startsWith('3')) {
+                        clean = '92' + clean;
                     }
-                },
-                error: function(error) {
-                    alert('Error sending data. Please try again.');
+                    return `https://wa.me/${clean}?text=${encodedText}`;
+                }
+
+                // 5. Open WhatsApp
+                if (phones.length === 1) {
+                    // Single number: Open directly
+                    window.open(getWaLink(phones[0]), '_blank');
+                } else {
+                    // Multiple numbers: Ask user
+                    var inputOptions = {};
+                    phones.forEach(function(phone) {
+                        inputOptions[phone] = phone;
+                    });
+
+                    Swal.fire({
+                        title: 'Select Number',
+                        text: `${name} has multiple numbers. Which one to message?`,
+                        input: 'radio',
+                        inputOptions: inputOptions,
+                        inputValue: phones[0],
+                        showCancelButton: true,
+                        confirmButtonText: 'Open WhatsApp <i class="fa fa-external-link"></i>',
+                        confirmButtonColor: '#25D366',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value) {
+                            window.open(getWaLink(result.value), '_blank');
+                        }
+                    });
                 }
             });
-        }
 
-        // ============================================================
-        // NEW: RECOVERY DATE JS LOGIC
-        // ============================================================
+            // ============================================================
+            //  2. MARK AS RECEIVED
+            // ============================================================
+            $(document).on('click', '.mark-received', function () {
+                var id = $(this).data('id');
+                var btn = $(this);
 
-        // 1. ADD RECOVERY DATE
-        $('#addRecoveryBtn').on('click', function() {
-            var date = $('#recoveryDateInput').val();
-            var customerId = $('#customerId').val();
+                if (confirm('Are you sure you want to mark this payment as Received?')) {
+                    btn.prop('disabled', true);
 
-            if (!date) {
-                alert('Please select a date');
-                return;
-            }
+                    $.ajax({
+                        url: '/customer/recovery/received',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                location.reload();
+                            }
+                        },
+                        error: function () {
+                            alert('Error updating status.');
+                            btn.prop('disabled', false);
+                        }
+                    });
+                }
+            });
 
-            $.ajax({
-                url: '/customer/recovery/add', // Ensure route exists
-                type: 'POST',
-                data: {
-                    date: date,
+            // ============================================================
+            //  3. VIEW DETAILS MODAL
+            // ============================================================
+            $(document).on('click', '.view-detail', function () {
+                var saleId = $(this).data('id');
+                $.ajax({
+                    url: '/sales/' + saleId + '/detail',
+                    type: 'GET',
+                    success: function (response) {
+                        $('#modal-body').html(response);
+                        $(".btn-secondary").click(function () {
+                            $('#transactionModal').modal('hide');
+                        });
+                        $('#transactionModal').modal('show');
+                    },
+                    error: function () {
+                        alert('Error fetching transaction details.');
+                    }
+                });
+            });
+
+            // ============================================================
+            //  4. PAYMENT FORM TOGGLE & SUBMISSION
+            // ============================================================
+            
+            // Toggle Forms
+            $('#dropdownAction').on('change', function () {
+                var action = $(this).val();
+                $('#youGiveForm, #youGotForm').hide();
+                
+                if (action === 'youGive') {
+                    $('#youGiveForm').fadeIn();
+                } else if (action === 'youGot') {
+                    $('#youGotForm').fadeIn();
+                }
+            });
+
+            // Add Payment (You Give)
+            $('#addPaymentYouGive').on('click', function () {
+                var credit = $('#paymentInputYouGive').val();
+                var customerId = $('#customerId').val();
+                if (credit) {
+                    sendPaymentData('youGive', credit, customerId);
+                }
+            });
+
+            // Add Payment (You Got)
+            $('#addPaymentYouGot').on('click', function () {
+                var debit = $('#paymentInputYouGot').val();
+                var customerId = $('#customerId').val();
+                if (debit) {
+                    sendPaymentData('youGot', debit, customerId);
+                }
+            });
+
+            // Helper: Send Payment Data
+            function sendPaymentData(action, amount, customerId) {
+                var data = {
+                    action: action,
+                    payment: amount,
                     customer_id: customerId,
                     _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    location.reload();
-                },
-                error: function() {
-                    alert('Error adding recovery date.');
-                }
-            });
-        });
+                };
 
-        // 2. DELETE RECOVERY DATE
-        $('.delete-recovery').on('click', function() {
-            var id = $(this).data('id');
-            if(confirm('Are you sure you want to delete this recovery date?')) {
                 $.ajax({
-                    url: '/customer/recovery/delete', // Ensure route exists
+                    url: '/customer/add',
                     type: 'POST',
-                    data: {
-                        id: id,
-                        _token: '{{ csrf_token() }}'
+                    data: data,
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            location.reload();
+                        }
                     },
-                    success: function(response) {
-                        location.reload();
-                    },
-                    error: function() {
-                        alert('Error deleting date.');
+                    error: function (error) {
+                        alert('Error sending data. Please try again.');
                     }
                 });
             }
-        });
 
-        // 3. SEND REMINDER
-        $('.send-reminder').on('click', function() {
-            var id = $(this).data('id');
-            var btn = $(this);
-            
-            // Visual feedback
-            btn.html('<i class="fa fa-spinner fa-spin"></i> Sending...');
-            btn.prop('disabled', true);
+            // ============================================================
+            //  5. RECOVERY DATE MANAGEMENT (Add / Delete)
+            // ============================================================
 
-            $.ajax({
-                url: '/customer/recovery/reminder', // Ensure route exists
-                type: 'POST',
-                data: {
-                    id: id,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    alert('Reminder sent successfully!');
-                    btn.html('<i class="fa fa-check"></i> Sent');
-                    setTimeout(function(){
-                        btn.html('<i class="fa fa-bell"></i> Reminder');
-                        btn.prop('disabled', false);
-                    }, 2000);
-                },
-                error: function() {
-                    alert('Error sending reminder.');
-                    btn.html('<i class="fa fa-bell"></i> Reminder');
-                    btn.prop('disabled', false);
+            // Add Recovery Date
+            $('#addRecoveryBtn').on('click', function () {
+                var date = $('#recoveryDateInput').val();
+                var customerId = $('#customerId').val();
+
+                if (!date) {
+                    alert('Please select a date');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/customer/recovery/add',
+                    type: 'POST',
+                    data: {
+                        date: date,
+                        customer_id: customerId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Error adding recovery date.');
+                    }
+                });
+            });
+
+            // Delete Recovery Date
+            $('.delete-recovery').on('click', function () {
+                var id = $(this).data('id');
+                if (confirm('Are you sure you want to delete this recovery date?')) {
+                    $.ajax({
+                        url: '/customer/recovery/delete',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function () {
+                            alert('Error deleting date.');
+                        }
+                    });
                 }
             });
-        });
 
-    });
-</script>
+        });
+    </script>
 @endPushOnce
