@@ -1,6 +1,5 @@
 @extends('index')
 
-
 @section('content')
     <style>
         /* Root Variables */
@@ -15,30 +14,24 @@
             --transition: all 0.3s ease;
         }
 
-        /* General Body Styling - CRITICAL: REMOVED CENTERING STYLES */
+        /* General Body Styling */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f4f7fc;
-            /* Removed: display: flex; justify-content: center; align-items: center; height: 100vh; */
             margin: 0;
-
             padding-bottom: 20px;
-            /* Add some bottom padding if needed */
-            /* Ensure no overflow-x: hidden here */
             overflow-x: auto;
-            /* Allow body to scroll if content somehow pushes it */
-        }
-
-        /* Container for the filter form, adjusted for responsiveness */
-        .filter-container-wrapper {
-            display: flex;
-            justify-content: center;
-            /* Center the form within its column */
-            width: 100%;
-            /* Ensure it takes full width of its parent column */
         }
 
         /* Filter Form Styles */
+        .filter-container-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            flex-direction: column; 
+            gap: 15px;
+        }
+
         form.filter-form {
             border: 1px solid var(--light-gray);
             background: white;
@@ -56,24 +49,17 @@
 
         form.filter-form select,
         form.filter-form input[type="checkbox"],
-         {
-            border: 1px solid #ccc;
+        form.filter-form button {
             border-radius: 6px;
             font-size: 16px;
             transition: var(--transition);
-            /* flex-grow: 1; */
-        }
-         form.filter-form button {
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 16px;
-            transition: var(--transition);
-            flex-grow: 1;
         }
 
         form.filter-form select {
             cursor: pointer;
             min-width: 150px;
+            border: 1px solid #ccc;
+            padding: 8px;
         }
 
         .checkbox-group {
@@ -121,39 +107,29 @@
             box-shadow: var(--box-shadow);
             margin-top: 20px;
             overflow: hidden;
-            /* This is fine here to contain the card content */
         }
 
         .card-body {
             padding: 1.5rem;
         }
 
-        /* Table Responsive Wrapper - CRITICAL FOR HORIZONTAL SCROLLING */
         .table-responsive {
             overflow-x: auto;
-            /* THIS IS THE KEY */
             -webkit-overflow-scrolling: touch;
-            /* Smooth scrolling on iOS */
             padding-bottom: 10px;
-            /* Add some padding at the bottom of the scrollable area */
         }
 
         .table {
             width: 100%;
             margin-bottom: 0;
-            /* Do NOT set white-space: nowrap here on the table itself,
-                   apply it to th/td if you want to force single line content */
         }
 
-        .table th,
-        .table td {
+        .table th, .table td {
             padding: 1rem;
             vertical-align: middle;
             border-top: 1px solid var(--light-gray);
             white-space: nowrap;
-            /* Forces content into a single line, causing overflow */
             min-width: 120px;
-            /* Ensures columns are wide enough to trigger scroll */
         }
 
         .table thead th {
@@ -161,15 +137,12 @@
             color: white;
             font-weight: 600;
             border: none;
-            white-space: nowrap;
-            /* Keep headers on one line */
         }
 
         .table tbody tr:hover {
             background-color: rgba(0, 123, 255, 0.05);
         }
 
-        /* Action Buttons within table */
         .action-buttons {
             display: flex;
             gap: 8px;
@@ -182,124 +155,22 @@
             font-size: 0.85rem;
         }
 
-        /* Modal Styling */
-        .modal-content {
-            border-radius: var(--border-radius);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            border-bottom: 1px solid var(--light-gray);
-            padding: 1.25rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-top-left-radius: var(--border-radius);
-            border-top-right-radius: var(--border-radius);
-        }
-
-        .modal-title {
-            font-weight: 600;
-        }
-
-        .modal-header .close {
-            color: white;
-            opacity: 0.8;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-body .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .modal-body .form-control {
-            height: 45px;
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-        }
-
-        .modal-body .form-control:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        .modal-body .text-danger {
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: block;
-        }
-
-        .modal-footer {
-            border-top: 1px solid var(--light-gray);
-            padding: 1rem 1.5rem;
-        }
-
-        /* Responsive Adjustments */
+        /* Responsive */
         @media (max-width: 768px) {
             .card-header {
                 flex-direction: column;
                 align-items: flex-start !important;
-                padding: 1rem;
             }
-
-            .card-header .btn {
-                width: 100%;
-                margin-top: 10px;
-            }
-
-            /* Adjust modal dialog for smaller screens */
-            .modal-dialog {
-                margin: 1rem;
-            }
-
-            .modal-body .row>.form-group {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-
-            /* Adjust filter form for smaller screens */
             form.filter-form {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 10px;
-                padding: 15px;
             }
-
-            form.filter-form select,
-            form.filter-form button {
-                width: 100%;
-                min-width: unset;
-            }
-
             .checkbox-group {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 5px;
-            }
-
-            .checkbox-group label {
-                width: 100%;
-            }
-
-            .col-12.text-right {
-                text-align: left !important;
-                margin-top: 15px;
-            }
-
-            .col-12.text-right .btn {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .table-responsive thead th {
-                white-space: nowrap;
             }
         }
     </style>
-
 
     <div class="row pt-16 sm:pt-6">
         <div class="col-12 justify-content-end align-items-center d-flex">
@@ -307,8 +178,8 @@
         </div>
     </div>
 
-    <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel"
-        aria-hidden="true">
+    {{-- ADD CUSTOMER MODAL --}}
+    <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -332,20 +203,17 @@
                             </div>
                             <div class="form-group col-md-6 col-12">
                                 <label for="mobile_no">Mobile No</label>
-                                <input type="text" name="mobile_no" class="form-control" id="mobile_no"
-                                    placeholder="Enter Mobile No">
+                                <input type="text" name="mobile_no" class="form-control" id="mobile_no" placeholder="Enter Mobile No">
                                 <small class="text-danger d-none" id="mobileNoError">Mobile number is required.</small>
                             </div>
                             <div class="form-group col-md-6 col-12">
                                 <label for="address">Address</label>
-                                <input type="text" name="address" class="form-control" id="address"
-                                    placeholder="Enter Address">
+                                <input type="text" name="address" class="form-control" id="address" placeholder="Enter Address">
                                 <small class="text-danger d-none" id="addressError">Address is required.</small>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
-                            <button type="submit" class="btn btn-primary px-4" id="submitBtn" data-action="add">Save
-                                Customer</button>
+                            <button type="submit" class="btn btn-primary px-4" id="submitBtn" data-action="add">Save Customer</button>
                         </div>
                     </form>
                 </div>
@@ -369,34 +237,37 @@
                     </div>
 
                     <div class="card-body">
+                        {{-- FILTERS WRAPPER --}}
                         <div class="filter-container-wrapper mb-4">
+                            
+                            {{-- FILTER FORM --}}
                             <form action="{{ route('customer.filter') }}" method="GET" class="filter-form">
                                 @csrf
+                                {{-- Keep status if selected --}}
+                                @if(request('recovery_status'))
+                                    <input type="hidden" name="recovery_status" value="{{ request('recovery_status') }}">
+                                @endif
+
                                 <label class="mb-0">Sort By:</label>
                                 <select name="sort_order" class="form-control">
-                                    <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High
-                                    </option>
-                                    <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low
-                                    </option>
+                                    <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High</option>
+                                    <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low</option>
                                 </select>
-                                <div
-                                    class="checkbox-group flex flex-col md:flex-row md:flex-wrap md:items-center md:gap-4 gap-2">
-                                    <label
-                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
+                                
+                                <div class="checkbox-group flex flex-col md:flex-row md:flex-wrap md:items-center md:gap-4 gap-2">
+                                    <label class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
                                         <span>Debit</span>
                                         <input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
                                     </label>
 
-                                    <label
-                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
+                                    <label class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
                                         <span>Credit</span>
                                         <input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
                                     </label>
 
-                                    <label
-                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
+                                    <label class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
                                         <span>Hide Zero Balance</span>
                                         <input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
@@ -404,12 +275,35 @@
                                 </div>
 
                                 <button type="submit">Apply Filter</button>
+                                
+                                {{-- Reset Button (Fixed Route) --}}
+                                <a href="{{ route('show.customers') }}" class="btn btn-secondary" style="background: #6c757d; border:none; padding: 10px 20px; color:white; text-decoration:none; border-radius:8px;">
+                                    Reset
+                                </a>
                             </form>
+
+                            {{-- NEW RECOVERY STATUS BUTTONS (PENDING, TODAY, UPCOMING) --}}
+                            <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'pending'])) }}" 
+                                   class="btn {{ request('recovery_status') == 'pending' ? 'btn-danger' : 'btn-outline-danger' }}">
+                                    <i class="fa fa-clock"></i> Pending (Past Due)
+                                </a>
+
+                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'today'])) }}" 
+                                   class="btn {{ request('recovery_status') == 'today' ? 'btn-warning' : 'btn-outline-warning' }}">
+                                    <i class="fa fa-calendar-day"></i> Today
+                                </a>
+
+                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'upcoming'])) }}" 
+                                   class="btn {{ request('recovery_status') == 'upcoming' ? 'btn-success' : 'btn-outline-success' }}">
+                                    <i class="fa fa-calendar-check"></i> Upcoming
+                                </a>
+                            </div>
                         </div>
 
                         {{-- DataTables Table --}}
                         <table class="table table-hover w-100" id="example1">
-                           <thead class="bg-primary text-white">
+                            <thead class="bg-primary text-white">
                                 <tr>
                                     <th>#Sr.No</th>
                                     <th>Customer Name</th>
@@ -418,7 +312,7 @@
                                     <th>CNIC</th>
                                     <th>Debit</th>
                                     <th>Credit</th>
-                                    <th>Recovery Date</th> {{-- NEW COLUMN ADDED HERE --}}
+                                    <th>Recovery Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -428,8 +322,7 @@
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $customer->name ?? '' }}</td>
                                         <td>{{ $customer->mobile_number ?? ''}}</td>
-                                        <td
-                                            style="max-width: 150px; white-space: normal; word-break: break-word; overflow-wrap: break-word;">
+                                        <td style="max-width: 150px; white-space: normal; word-break: break-word;">
                                             {{ $customer->address ?? '' }}
                                         </td>
                                         <td>{{ $customer->cnic ?? '' }}</td>
@@ -437,8 +330,14 @@
                                         <td>{{ $customer->credit ?? '' }}</td>
                                         <td>
                                             @if($customer->activeRecoveryDate)
-                                                <span class="badge bg-warning text-dark" style="font-size: 0.9em;">
-                                                    {{ \Carbon\Carbon::parse($customer->activeRecoveryDate->recovery_date)->format('d M, Y') }}
+                                                @php
+                                                    $rDate = \Carbon\Carbon::parse($customer->activeRecoveryDate->recovery_date);
+                                                    $isPast = $rDate->isPast() && !$rDate->isToday();
+                                                    $isToday = $rDate->isToday();
+                                                @endphp
+                                                <span class="badge {{ $isPast ? 'bg-danger' : ($isToday ? 'bg-warning text-dark' : 'bg-success') }}" 
+                                                      style="font-size: 0.9em;">
+                                                    {{ $rDate->format('d M, Y') }}
                                                 </span>
                                             @else
                                                 <span class="text-muted">-</span>
@@ -450,7 +349,19 @@
                                                     class="btn btn-sm btn-info" title="View Details">
                                                     <i class="fa fa-eye"></i> View
                                                 </a>
-                                                
+
+                                                {{-- WHATSAPP BUTTON (Click-to-Chat) --}}
+                                                @php
+                                                    $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
+                                                    $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
+                                                @endphp
+                                                <button class="btn btn-sm btn-success open-whatsapp-btn" 
+                                                        data-name="{{ $customer->name }}"
+                                                        data-mobile="{{ $customer->mobile_number }}"
+                                                        data-balance="{{ $balance }} ({{ $balanceType }})"
+                                                        title="Open WhatsApp">
+                                                    <i class="fa-brands fa-whatsapp"></i> Remind
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -462,20 +373,92 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @pushOnce('scripts')
     <script>
         $(document).ready(function () {
-            // Initializing DataTable
             initDataTable();
+
+            // -----------------------------------------------------------
+            // WHATSAPP CLICK-TO-CHAT LOGIC (Client Side)
+            // -----------------------------------------------------------
+            $(document).on('click', '.open-whatsapp-btn', function () {
+                var name = $(this).data('name');
+                var rawMobile = $(this).data('mobile');
+                var balance = $(this).data('balance');
+                
+                // 1. Check if number exists
+                if (!rawMobile) {
+                    Swal.fire("Error", "No mobile number found for this customer.", "warning");
+                    return;
+                }
+
+                // 2. Handle Multiple Numbers (Split by comma)
+                // Convert to string to be safe, then split
+                var phones = rawMobile.toString().split(',').map(function(num) {
+                    return num.trim();
+                });
+
+                // 3. Prepare Message
+                var text = `Hello ${name}, friendly reminder from Electronics Shop. Your outstanding balance is ${balance}. Please pay your dues.`;
+                var encodedText = encodeURIComponent(text);
+
+                // 4. Helper to Format Number (PK specific +923...)
+                function getWaLink(number) {
+                    // Remove all non-digits
+                    var clean = number.replace(/\D/g, '');
+                    
+                    // If it starts with '03' (PK local), replace '0' with '92'
+                    if (clean.startsWith('03')) {
+                        clean = '92' + clean.substring(1);
+                    }
+                    // If it's missing 92 but is 10 digits (3001234567), add 92
+                    else if (clean.length === 10 && clean.startsWith('3')) {
+                        clean = '92' + clean;
+                    }
+
+                    return `https://wa.me/${clean}?text=${encodedText}`;
+                }
+
+                // 5. Logic: One number vs Multiple
+                if (phones.length === 1) {
+                    // Open directly
+                    window.open(getWaLink(phones[0]), '_blank');
+                } else {
+                    // Show Popup to choose number
+                    var inputOptions = {};
+                    phones.forEach(function(phone) {
+                        inputOptions[phone] = phone;
+                    });
+
+                    Swal.fire({
+                        title: 'Select Number',
+                        text: `${name} has multiple numbers. Which one to message?`,
+                        input: 'radio',
+                        inputOptions: inputOptions,
+                        inputValue: phones[0], // Select first by default
+                        showCancelButton: true,
+                        confirmButtonText: 'Open WhatsApp <i class="fa fa-external-link"></i>',
+                        confirmButtonColor: '#25D366',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value) {
+                            window.open(getWaLink(result.value), '_blank');
+                        }
+                    });
+                }
+            });
+
+            // -----------------------------------------------------------
+            // EXISTING CUSTOMER ADD/EDIT/DELETE LOGIC
+            // -----------------------------------------------------------
 
             // Open modal for adding a new customer
             $('#addCustomerBtn').click(function () {
                 $('#addCutomerModalLabel').text('Add New Customer');
-                $('#customerForm')[0].reset(); // Reset form fields
-                $('.text-danger').addClass('d-none'); // Hide all validation errors
+                $('#customerForm')[0].reset();
+                $('.text-danger').addClass('d-none');
                 $('#submitBtn').text('Save Customer').data('action', 'add');
                 $('#addCutomerModal').modal('show');
             });
@@ -496,28 +479,24 @@
                     cnic: $('#cnic').val().trim(),
                 };
 
-                // Frontend validation
                 let hasError = false;
-                $('.text-danger').addClass('d-none'); // Hide previous errors
+                $('.text-danger').addClass('d-none');
 
                 function getErrorElementId(key) {
                     return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) + 'Error';
                 }
 
-                // Validate each field
                 Object.keys(formData).forEach(function (key) {
                     const value = formData[key];
                     const errorElement = $('#' + getErrorElementId(key));
-
                     if (!value && key !== '_token') {
                         errorElement.removeClass('d-none');
                         hasError = true;
                     }
                 });
 
-                if (hasError) return; // Stop if there are frontend validation errors
+                if (hasError) return;
 
-                // AJAX request for add or update
                 $.ajax({
                     url: url,
                     type: actionType === 'add' ? 'POST' : 'PUT',
@@ -528,75 +507,24 @@
                             text: response.message || (actionType === 'add' ? 'Customer added successfully!' : 'Customer updated successfully!'),
                             icon: "success",
                         });
-
                         $('#addCutomerModal').modal('hide');
-                        $('#customerForm')[0].reset(); // Reset form fields
+                        $('#customerForm')[0].reset();
                         refreshTable();
                     },
                     error: function (xhr) {
-                        if (xhr.status === 422) { // Validation errors from backend
+                        if (xhr.status === 422) {
                             const errors = xhr.responseJSON.errors;
                             Object.keys(errors).forEach(function (key) {
                                 const errorElementId = getErrorElementId(key);
                                 $('#' + errorElementId).text(errors[key][0]).removeClass('d-none');
                             });
-                            Swal.fire({
-                                icon: "error",
-                                title: "Validation Error",
-                                text: "Please correct the highlighted fields.",
-                            });
+                            Swal.fire({ icon: "error", title: "Validation Error", text: "Please correct the highlighted fields." });
                         } else {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Oops...",
-                                text: "Something went wrong!",
-                                footer: '<a href="#">An error occurred. Please try again.</a>'
-                            });
+                            Swal.fire({ icon: "error", title: "Oops...", text: "Something went wrong!" });
                         }
                     },
                 });
             });
-
-            // Function to refresh the table content and reinitialize DataTables
-            function refreshTable() {
-                // Use a temporary element to load the new table content to avoid issues during reinitialization
-                $('body').append('<div id="tempTableContent" style="display:none;"></div>');
-                $('#tempTableContent').load("{{ route('show.customers') }} #tableHolder > *", function () {
-                    // Destroy the old DataTable instance if it exists
-                    if ($.fn.DataTable.isDataTable('#example1')) {
-                        $('#example1').DataTable().destroy();
-                    }
-
-                    // Replace the old table body with the new one
-                    $('#tableHolder').html($('#tempTableContent #tableHolder').html());
-                    $('#tempTableContent').remove(); // Remove the temporary element
-
-                    // Reinitialize the DataTable
-                    initDataTable();
-                });
-            }
-
-            // Initialize/Reinitialize DataTable
-            function initDataTable() {
-                if ($('#example1').length) {
-                    if ($.fn.DataTable.isDataTable('#example1')) {
-                        // Destroy previous instance of DataTable
-                        $('#example1').DataTable().clear().destroy();
-                    }
-
-                    // Re-initialize DataTable with options
-                    $('#example1').DataTable({
-                        responsive: false, // <--- IMPORTANT: Changed to false
-                        lengthChange: true,
-                        autoWidth: false, // <--- IMPORTANT: Changed to false
-                        scrollY: false,
-                        scrollX: true,   // <--- IMPORTANT: Changed to false
-                        buttons: ["excel", "pdf"]
-                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                } else {
-                    console.log('Table #example1 not found in DOM, skipping initialization');
-                }
-            }
 
             // Edit customer logic
             $(document).on('click', '.edit-customer', function () {
@@ -607,7 +535,7 @@
                     success: function (response) {
                         $('#addCutomerModalLabel').text('Edit Customer');
                         $('#customerForm')[0].reset();
-                        $('.text-danger').addClass('d-none'); // Hide errors
+                        $('.text-danger').addClass('d-none');
                         $('#submitBtn').text('Update Customer').data('action', 'edit').data('id', customerId);
                         $('#name').val(response.customer.name);
                         $('#mobile_no').val(response.customer.mobile_number);
@@ -616,11 +544,7 @@
                         $('#addCutomerModal').modal('show');
                     },
                     error: function () {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Error!",
-                            text: "Could not fetch customer details. Please try again.",
-                        });
+                        Swal.fire({ icon: "error", title: "Error!", text: "Could not fetch customer details." });
                     },
                 });
             });
@@ -628,16 +552,13 @@
             // Delete customer logic
             $(document).on('click', '.delete-customer', function () {
                 const customerId = $(this).data('id');
-
                 Swal.fire({
                     title: "Are you sure?",
                     text: "Do you really want to delete this customer?",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Yes, delete it!",
-                    cancelButtonText: "No, cancel!"
+                    confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
@@ -645,31 +566,46 @@
                             type: 'DELETE',
                             data: { _token: '{{ csrf_token() }}' },
                             success: function (response) {
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: "Customer deleted successfully!",
-                                    icon: "success",
-                                });
+                                Swal.fire("Deleted!", "Customer deleted successfully!", "success");
                                 refreshTable();
                             },
                             error: function (xhr) {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Oops...",
-                                    text: "Something went wrong!",
-                                    footer: '<a href="#">An error occurred while deleting the customer. Please try again.</a>'
-                                });
+                                Swal.fire("Error", "Something went wrong!", "error");
                             }
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Cancelled",
-                            text: "The customer is safe.",
-                            icon: "info"
                         });
                     }
                 });
             });
+
+            // Function to refresh the table content
+            function refreshTable() {
+                $('body').append('<div id="tempTableContent" style="display:none;"></div>');
+                $('#tempTableContent').load("{{ route('show.customers') }} #tableHolder > *", function () {
+                    if ($.fn.DataTable.isDataTable('#example1')) {
+                        $('#example1').DataTable().destroy();
+                    }
+                    $('#tableHolder').html($('#tempTableContent #tableHolder').html());
+                    $('#tempTableContent').remove();
+                    initDataTable();
+                });
+            }
+
+            // Initialize DataTable
+            function initDataTable() {
+                if ($('#example1').length) {
+                    if ($.fn.DataTable.isDataTable('#example1')) {
+                        $('#example1').DataTable().clear().destroy();
+                    }
+                    $('#example1').DataTable({
+                        responsive: false,
+                        lengthChange: true,
+                        autoWidth: false,
+                        scrollY: false,
+                        scrollX: true,
+                        buttons: ["excel", "pdf"]
+                    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                }
+            }
         });
     </script>
 @endPushOnce

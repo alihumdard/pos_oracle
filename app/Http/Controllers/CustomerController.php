@@ -179,9 +179,33 @@ class CustomerController extends Controller
         return response()->json(['message' => 'Customer deleted successfully!']);
     }
 
-    public function customer_filter(Request $request)
+   public function customer_filter(Request $request)
     {
-        $query = Customer::query();
+        // Use eager loading to prevent N+1 issues and ensure relations are available
+        $query = Customer::with(['sales', 'activeRecoveryDate']);
+
+        // 1. Handle Recovery Status Filters (Pending, Today, Upcoming)
+        if ($request->has('recovery_status')) {
+            $status = $request->recovery_status;
+            $today = \Carbon\Carbon::today()->format('Y-m-d');
+
+            $query->whereHas('activeRecoveryDate', function($q) use ($status, $today) {
+                if ($status == 'pending') {
+                    // Dates strictly before today
+                    $q->where('recovery_date', '<', $today);
+                } elseif ($status == 'today') {
+                    // Dates exactly today
+                    $q->where('recovery_date', '=', $today);
+                } elseif ($status == 'upcoming') {
+                    // Dates strictly after today
+                    $q->where('recovery_date', '>', $today);
+                }
+                // Ensure we only look at active dates
+                $q->where('is_active', 1);
+            });
+        }
+
+        // 2. Handle Existing Sorting
         $sortOrder = $request->input('sort_order', 'asc');
     
         if ($request->has('filter_debit')) {
@@ -192,16 +216,20 @@ class CustomerController extends Controller
             $query->orderBy('credit', $sortOrder); 
         }
 
+        // 3. Handle "Hide Zero Balance"
         if ($request->has('hide_zero_balance')) {
             $query->where(function ($q) {
                 $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
             });
         }
+        
+        // Default Sort if no specific sort is applied (optional)
+        // $query->latest(); 
 
         $data['customers'] = $query->get();
     
         return view('pages.customer.show', $data);
-    } 
+    }
 
     public function salesSummary($id)
     {

@@ -112,11 +112,20 @@
 
                                     {{-- ACTION BUTTONS (Hidden if Received) --}}
                                     @if(!$isReceived)
-                                        {{-- Reminder logic is handled by JS below --}}
+                                        {{-- UPDATED: WhatsApp Reminder Button --}}
+                                        @php
+                                            $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
+                                            $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
+                                            $formattedDate = $dateObj->format('d M, Y');
+                                        @endphp
                                         <button class="btn btn-sm btn-warning send-reminder"
-                                            data-id="{{ $activeRecovery->id }}">
-                                            <i class="fa fa-bell"></i> Reminder
+                                            data-name="{{ $customer->name }}"
+                                            data-mobile="{{ $customer->mobile_number }}"
+                                            data-balance="{{ $balance }} ({{ $balanceType }})"
+                                            data-due-date="{{ $formattedDate }}">
+                                            <i class="fa-brands fa-whatsapp"></i> Reminder
                                         </button>
+
                                         <button class="btn btn-sm btn-danger delete-recovery"
                                             data-id="{{ $activeRecovery->id }}">
                                             <i class="fa fa-trash"></i>
@@ -286,51 +295,69 @@
         $(document).ready(function () {
 
             // ============================================================
-            //  1. WHATSAPP REMINDER LOGIC (For Active Recovery Date)
+            //  1. WHATSAPP REMINDER LOGIC (Click-to-Chat)
             // ============================================================
             $(document).on('click', '.send-reminder', function () {
-                var btn = $(this);
-                var recoveryId = btn.data('id'); // Gets ID from the button
+                var name = $(this).data('name');
+                var rawMobile = $(this).data('mobile');
+                var balance = $(this).data('balance');
+                var dueDate = $(this).data('due-date'); // Extra info specific to this page
 
-                Swal.fire({
-                    title: "Send Payment Reminder?",
-                    text: "Send WhatsApp reminder for this specific due date?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#25D366", // WhatsApp Green
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, Send it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // UI: Loading State
-                        var originalText = btn.html();
-                        btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Sending...');
+                // 1. Check Number
+                if (!rawMobile) {
+                    Swal.fire("Error", "No mobile number found for this customer.", "warning");
+                    return;
+                }
 
-                        // AJAX Call to Laravel
-                        $.ajax({
-                            url: '/customer/recovery/reminder', // Ensure this route exists in web.php
-                            type: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                id: recoveryId
-                            },
-                            success: function (response) {
-                                Swal.fire("Sent!", response.message, "success");
-                            },
-                            error: function (xhr) {
-                                var msg = "Failed to send message.";
-                                if(xhr.responseJSON && xhr.responseJSON.message) {
-                                    msg = xhr.responseJSON.message;
-                                }
-                                Swal.fire("Error", msg, "error");
-                            },
-                            complete: function() {
-                                // UI: Reset Button
-                                btn.prop('disabled', false).html(originalText);
-                            }
-                        });
-                    }
+                // 2. Handle Multiple Numbers
+                // Convert to string first to avoid errors, then split
+                var phones = rawMobile.toString().split(',').map(function(num) {
+                    return num.trim();
                 });
+
+                // 3. Prepare Message
+                var text = `Hello ${name}, friendly reminder from Rana Electronics Shop. Your outstanding balance of ${balance} is due on ${dueDate}. Please clear your dues.`;
+                var encodedText = encodeURIComponent(text);
+
+                // 4. Link Helper
+                function getWaLink(number) {
+                    var clean = number.replace(/\D/g, '');
+                    // Auto-format for Pakistan (03 -> 923)
+                    if (clean.startsWith('03')) {
+                        clean = '92' + clean.substring(1);
+                    } else if (clean.length === 10 && clean.startsWith('3')) {
+                        clean = '92' + clean;
+                    }
+                    return `https://wa.me/${clean}?text=${encodedText}`;
+                }
+
+                // 5. Open WhatsApp
+                if (phones.length === 1) {
+                    // Single number: Open directly
+                    window.open(getWaLink(phones[0]), '_blank');
+                } else {
+                    // Multiple numbers: Ask user
+                    var inputOptions = {};
+                    phones.forEach(function(phone) {
+                        inputOptions[phone] = phone;
+                    });
+
+                    Swal.fire({
+                        title: 'Select Number',
+                        text: `${name} has multiple numbers. Which one to message?`,
+                        input: 'radio',
+                        inputOptions: inputOptions,
+                        inputValue: phones[0],
+                        showCancelButton: true,
+                        confirmButtonText: 'Open WhatsApp <i class="fa fa-external-link"></i>',
+                        confirmButtonColor: '#25D366',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value) {
+                            window.open(getWaLink(result.value), '_blank');
+                        }
+                    });
+                }
             });
 
             // ============================================================
