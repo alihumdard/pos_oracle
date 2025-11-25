@@ -318,7 +318,27 @@
                                 </a>
                             </div>
                         </div>
+                        <div class="row mt-4 mb-2 justify-content-center">
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-center gap-4">
+                                    {{-- Total Debit Card --}}
+                                    <div class="card bg-danger text-white flex-fill text-center p-3 shadow-sm"
+                                        style="border: none; border-radius: 10px;">
+                                        <h6 class="mb-1" style="font-size: 0.9rem; opacity: 0.9;">Total You Give (Debit)
+                                        </h6>
+                                        <h4 class="mb-0 font-weight-bold">{{ number_format($totalDebit ?? 0) }} RS</h4>
+                                    </div>
 
+                                    {{-- Total Credit Card --}}
+                                    <div class="card bg-success text-white flex-fill text-center p-3 shadow-sm"
+                                        style="border: none; border-radius: 10px;">
+                                        <h6 class="mb-1" style="font-size: 0.9rem; opacity: 0.9;">Total You Got (Credit)
+                                        </h6>
+                                        <h4 class="mb-0 font-weight-bold">{{ number_format($totalCredit ?? 0) }} RS</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         {{-- DataTables Table --}}
                         <table class="table table-hover w-100" id="example1">
                             <thead class="bg-primary text-white">
@@ -336,7 +356,10 @@
                             </thead>
                             <tbody id="tableHolder">
                                 @foreach($customers as $customer)
-                                    <tr>
+                                    {{-- UPDATED TR TAG --}}
+                                    <tr class="clickable-row" data-href="{{ route('customer.view', ['id' => $customer->id]) }}"
+                                        style="cursor: pointer;">
+
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $customer->name ?? '' }}</td>
                                         <td>{{ $customer->mobile_number ?? ''}}</td>
@@ -369,7 +392,7 @@
                                                     <i class="fa fa-eye"></i> View
                                                 </a>
 
-                                                {{-- WHATSAPP BUTTON (Click-to-Chat) --}}
+                                                {{-- WHATSAPP BUTTON --}}
                                                 @php
                                                     $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
                                                     $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
@@ -397,7 +420,18 @@
     <script>
         $(document).ready(function () {
             initDataTable();
-
+// ============================================================
+//  ROW CLICK LOGIC (Table Row click par View Page)
+// ============================================================
+$(document).on('click', '.clickable-row', function(e) {
+    // Check: Agar user ne Button, Link (a tag) ya .btn class par click kiya hai to redirect mat karo
+    if ($(e.target).closest('a, button, .btn, input').length) {
+        return;
+    }
+    
+    // Redirect to the URL stored in data-href
+    window.location = $(this).data('href');
+});
             // -----------------------------------------------------------
             // WHATSAPP CLICK-TO-CHAT LOGIC (Client Side)
             // -----------------------------------------------------------
@@ -418,19 +452,19 @@
                 });
 
                 // 3. Prepare Message (Added space after balance)
-               var text = `"Dear ${name},
-This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
-Thank you."
-For further detail contact us.
-*RANA ELECTRONICS KM*
-03007667440
+                var text = `"Dear ${name},
+        This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
+        Thank you."
+        For further detail contact us.
+        *RANA ELECTRONICS KM*
+        03007667440
 
-السلام علیکم
-جناب ${name}
-یہ *رانا الیکٹرونکس کوٹمومن* کی جانب سے ادائیگی کی یاددہانی ہے۔ آپ کے کھاتے میں ${balance} کی بقایا رقم ہے۔ برائے مہربانی ان واجبات کو جلد از جلد ادا کریں۔ شکریہ۔
-مزید تفصیلات کے لیے ہم سے رابطہ کریں۔
-*رانا الیکٹرونکس کوٹمومن*
-03007667440`;
+        السلام علیکم
+        جناب ${name}
+        یہ *رانا الیکٹرونکس کوٹمومن* کی جانب سے ادائیگی کی یاددہانی ہے۔ آپ کے کھاتے میں ${balance} کی بقایا رقم ہے۔ برائے مہربانی ان واجبات کو جلد از جلد ادا کریں۔ شکریہ۔
+        مزید تفصیلات کے لیے ہم سے رابطہ کریں۔
+        *رانا الیکٹرونکس کوٹمومن*
+        03007667440`;
 
 
                 var encodedText = encodeURIComponent(text);

@@ -14,7 +14,7 @@ class CustomerController extends Controller
 {
     public function customer_show()
     {
-        // 1. Pehle Database se customers fetch karein
+        // 1. Data Fetch
         $customers = Customer::with(['sales', 'activeRecoveryDate'])
             ->where(function ($query) {
                 $query->where('debit', '>', 0)
@@ -23,6 +23,11 @@ class CustomerController extends Controller
             ->whereHas('sales')
             ->get();
 
+        // 2. Calculate Totals (Yeh lines add karein)
+        $data['totalDebit']  = $customers->sum('debit');
+        $data['totalCredit'] = $customers->sum('credit');
+
+        // 3. Sorting
         $data['customers'] = $customers->sortBy(function ($customer) {
             return $customer->activeRecoveryDate
                 ? $customer->activeRecoveryDate->recovery_date
@@ -224,7 +229,7 @@ class CustomerController extends Controller
         // 3. Handle Sorting Logic
         // Pehle check karein ke kya user ne Debit ya Credit se sort karne ko kaha hai?
         $hasManualSort = false;
-        $sortOrder = $request->input('sort_order', 'asc');
+        $sortOrder     = $request->input('sort_order', 'asc');
 
         if ($request->has('filter_debit')) {
             $query->orderBy('debit', $sortOrder);
@@ -239,12 +244,15 @@ class CustomerController extends Controller
         // Data fetch karein
         $customers = $query->get();
 
+        $data['totalDebit']  = $customers->sum('debit');
+        $data['totalCredit'] = $customers->sum('credit');
+        
         // 4. CUSTOM DATE SORTING (Agar user ne Debit/Credit sort select nahi kiya)
         // Yeh wohi logic hai jo customer_show mein lagayi thi
-        if (!$hasManualSort) {
+        if (! $hasManualSort) {
             $customers = $customers->sortBy(function ($customer) {
-                return $customer->activeRecoveryDate 
-                    ? $customer->activeRecoveryDate->recovery_date 
+                return $customer->activeRecoveryDate
+                    ? $customer->activeRecoveryDate->recovery_date
                     : '9999-12-31'; // No date walay end pe
             });
         }
