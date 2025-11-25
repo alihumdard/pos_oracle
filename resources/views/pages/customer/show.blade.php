@@ -173,6 +173,285 @@
                 align-items: flex-start;
             }
         }
+
+        .stat-box {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid #ccc;
+            /* Default Border */
+            transition: transform 0.2s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-box.debit {
+            border-left-color: #dc3545;
+        }
+
+        .stat-box.credit {
+            border-left-color: #198754;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0;
+            color: #212529;
+        }
+
+        /* --- 2. Aligned Filter Bar --- */
+        .filter-wrapper {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        /* Custom Checkbox Button Style */
+        .btn-check+.btn-outline-custom {
+            color: #6c757d;
+            border-color: #dee2e6;
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-check:checked+.btn-outline-custom {
+            background-color: #e7f1ff;
+            color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: none;
+        }
+
+        /* Form Controls alignment */
+        .filter-form-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* --- 3. Quick Action Tabs (Pills) --- */
+        .nav-pills .nav-link {
+            color: #495057;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            margin: 0 5px;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-pills .nav-link.active-pending {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .nav-pills .nav-link.active-today {
+            background-color: #ffc107;
+            color: black;
+            border-color: #ffc107;
+        }
+
+        .nav-pills .nav-link.active-upcoming {
+            background-color: #198754;
+            color: white;
+            border-color: #198754;
+        }
+
+        .nav-pills .nav-link.active-default {
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .nav-pills .nav-link:hover {
+            background-color: #e9ecef;
+            color: black;
+        }
+
+        /* --- Mobile Adjustments --- */
+        @media (max-width: 768px) {
+            .filter-form-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .stat-box {
+                margin-bottom: 10px;
+                text-align: center;
+            }
+        }
+
+        /* --- Filter Card Container --- */
+        .filter-card {
+            background: #ffffff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            /* Soft modern shadow */
+            border: 1px solid #eff2f7;
+            margin-bottom: 25px;
+        }
+
+        /* --- 1. Sort Section --- */
+        .sort-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 220px;
+        }
+
+        .sort-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .custom-select {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color: #495057;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            transition: all 0.2s;
+        }
+
+        .custom-select:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+            outline: none;
+        }
+
+        /* --- 2. Checkbox Pills (Center) --- */
+        .filter-toggles {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex-grow: 1;
+            /* Takes up available middle space */
+        }
+
+        /* Hide default checkbox */
+        .btn-check {
+            position: absolute;
+            clip: rect(0, 0, 0, 0);
+            pointer-events: none;
+        }
+
+        /* Custom Pill Design */
+        .filter-pill {
+            display: inline-block;
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6c757d;
+            background-color: #fff;
+            border: 1px solid #dfe3e8;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            user-select: none;
+        }
+
+        .filter-pill:hover {
+            background-color: #f8f9fa;
+            border-color: #c4c8ce;
+        }
+
+        /* Active State (When Checked) */
+        .btn-check:checked+.filter-pill {
+            background-color: #e7f1ff;
+            color: #0d6efd;
+            border-color: #0d6efd;
+            box-shadow: 0 2px 5px rgba(13, 110, 253, 0.15);
+        }
+
+        /* --- 3. Action Buttons (Right) --- */
+        .action-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-custom-primary {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-custom-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-custom-reset {
+            background-color: white;
+            color: #6c757d;
+            border: 1px solid #dfe3e8;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .btn-custom-reset:hover {
+            background-color: #f8f9fa;
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 992px) {
+            .filter-card form {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 20px;
+            }
+
+            .sort-group,
+            .filter-toggles,
+            .action-group {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .action-group button,
+            .action-group a {
+                width: 50%;
+                /* Buttons share width on mobile */
+                text-align: center;
+            }
+        }
     </style>
 
     <div class="row pt-16 sm:pt-6">
@@ -232,112 +511,134 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                        <div class="mb-2 mb-md-0">
-                            <h3 class="card-title">Customer Detail</h3>
-                        </div>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <button type="button" class="btn btn-primary" id="addCustomerBtn">
-                                <i class="fa fa-plus mr-2"></i>Add Customer
-                            </button>
-                        </div>
-                    </div>
+                   <div class="card-header d-flex flex-column flex-md-row align-items-center bg-white py-3 border-bottom">
+
+    {{-- Title Section --}}
+    <div class="mb-2 mb-md-0">
+        <h5 class="mb-0 fw-bold text-dark">
+            <i class="fas fa-users me-2 text-primary"></i> Customer Detail
+        </h5>
+    </div>
+
+    {{-- Action Button Section --}}
+    {{-- 'ms-md-auto' (Bootstrap 5) ya 'ml-md-auto' (Bootstrap 4) button ko right dhakel dega --}}
+    <div class="d-flex gap-2 ms-md-auto ml-md-auto"> 
+        <button type="button" class="btn btn-primary px-4 shadow-sm" id="addCustomerBtn"
+            style="border-radius: 50px; font-weight: 500;">
+            <i class="fas fa-user-plus me-1"></i> Add Customer
+        </button>
+    </div>
+
+</div>
 
                     <div class="card-body">
                         {{-- FILTERS WRAPPER --}}
-                        <div class="filter-container-wrapper mb-4">
+                        <div class="card-body">
 
-                            {{-- FILTER FORM --}}
-                            <form action="{{ route('customer.filter') }}" method="GET" class="filter-form">
-                                @csrf
-                                {{-- Keep status if selected --}}
-                                @if(request('recovery_status'))
-                                    <input type="hidden" name="recovery_status" value="{{ request('recovery_status') }}">
-                                @endif
-
-                                <label class="mb-0">Sort By:</label>
-                                <select name="sort_order" class="form-control">
-                                    <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Low to High
-                                    </option>
-                                    <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>High to Low
-                                    </option>
-                                </select>
-
-                                <div
-                                    class="checkbox-group flex flex-col md:flex-row md:flex-wrap md:items-center md:gap-4 gap-2">
-                                    <label
-                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
-                                        <span>Debit</span>
-                                        <input type="checkbox" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}
-                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
-                                    </label>
-
-                                    <label
-                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
-                                        <span>Credit</span>
-                                        <input type="checkbox" name="filter_credit" {{ request('filter_credit') ? 'checked' : '' }}
-                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
-                                    </label>
-
-                                    <label
-                                        class="flex items-center justify-between md:justify-start w-full md:w-auto text-gray-700">
-                                        <span>Hide Zero Balance</span>
-                                        <input type="checkbox" name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}
-                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 order-last md:order-first md:ml-2 ml-1">
-                                    </label>
-                                </div>
-
-                                <button type="submit">Apply all filter</button>
-
-                                {{-- Reset Button (Fixed Route) --}}
-                                <a href="{{ route('show.customers') }}" class="btn btn-secondary"
-                                    style="background: #6c757d; border:none; padding: 10px 20px; color:white; text-decoration:none; border-radius:8px;">
-                                    Reset
-                                </a>
-                            </form>
-
-                            {{-- NEW RECOVERY STATUS BUTTONS (PENDING, TODAY, UPCOMING) --}}
-                            <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
-                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'pending'])) }}"
-                                    class="btn {{ request('recovery_status') == 'pending' ? 'btn-danger' : 'btn-outline-danger' }}">
-                                    <i class="fa fa-clock"></i> Pending (Past Due)
-                                </a>
-
-                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'today'])) }}"
-                                    class="btn {{ request('recovery_status') == 'today' ? 'btn-warning' : 'btn-outline-warning' }}">
-                                    <i class="fa fa-calendar-day"></i> Today
-                                </a>
-
-                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'upcoming'])) }}"
-                                    class="btn {{ request('recovery_status') == 'upcoming' ? 'btn-success' : 'btn-outline-success' }}">
-                                    <i class="fa fa-calendar-check"></i> Upcoming
-                                </a>
-                                <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'no_date'])) }}"
-                                    class="btn {{ request('recovery_status') == 'no_date' ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                                    <i class="fa fa-calendar-times"></i> No Date
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row mt-4 mb-2 justify-content-center">
-                            <div class="col-md-8">
-                                <div class="d-flex justify-content-center gap-4">
-                                    {{-- Total Debit Card --}}
-                                    <div class="card bg-danger text-white flex-fill text-center p-3 shadow-sm"
-                                        style="border: none; border-radius: 10px;">
-                                        <h6 class="mb-1" style="font-size: 0.9rem; opacity: 0.9;">Total You Give (Debit)
-                                        </h6>
-                                        <h4 class="mb-0 font-weight-bold">{{ number_format($totalDebit ?? 0) }} RS</h4>
+                            {{-- 1. SIMPLE STATS ROW --}}
+                            {{-- Logic: Aligned vertically center, responsive columns --}}
+                            <div class="row mb-4">
+                                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                    <div class="stat-box debit">
+                                        <div class="stat-label">Total You Give (Debit)</div>
+                                        <div class="stat-number text-danger">{{ number_format($totalDebit ?? 0) }} RS</div>
                                     </div>
-
-                                    {{-- Total Credit Card --}}
-                                    <div class="card bg-success text-white flex-fill text-center p-3 shadow-sm"
-                                        style="border: none; border-radius: 10px;">
-                                        <h6 class="mb-1" style="font-size: 0.9rem; opacity: 0.9;">Total You Got (Credit)
-                                        </h6>
-                                        <h4 class="mb-0 font-weight-bold">{{ number_format($totalCredit ?? 0) }} RS</h4>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="stat-box credit">
+                                        <div class="stat-label">Total You Got (Credit)</div>
+                                        <div class="stat-number text-success">{{ number_format($totalCredit ?? 0) }} RS
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="filter-wrapper mb-4">
+                                <div class="filter-card">
+                                    <form action="{{ route('customer.filter') }}" method="GET"
+                                        class="d-flex align-items-center justify-content-between w-100 gap-3">
+                                        @csrf
+
+                                        {{-- Preserve Hidden Inputs --}}
+                                        @if(request('recovery_status'))
+                                            <input type="hidden" name="recovery_status"
+                                                value="{{ request('recovery_status') }}">
+                                        @endif
+
+                                        {{-- 1. LEFT: SORTING --}}
+                                        <div class="sort-group">
+                                            <span class="sort-label"><i class="fas fa-sort-amount-down me-1"></i> Sort
+                                                By:</span>
+                                            <select name="sort_order" class="custom-select w-100">
+                                                <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>
+                                                    Oldest First (Low to High)</option>
+                                                <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>
+                                                    Newest First (High to Low)</option>
+                                            </select>
+                                        </div>
+
+                                        {{-- 2. CENTER: FILTER PILLS --}}
+                                        <div class="filter-toggles">
+                                            {{-- Debit Toggle --}}
+                                            <input type="checkbox" class="btn-check" id="check-debit" name="filter_debit" {{ request('filter_debit') ? 'checked' : '' }}>
+                                            <label class="filter-pill" for="check-debit">
+                                                <i class="fas fa-arrow-up me-1"></i> Debit
+                                            </label>
+
+                                            {{-- Credit Toggle --}}
+                                            <input type="checkbox" class="btn-check" id="check-credit" name="filter_credit"
+                                                {{ request('filter_credit') ? 'checked' : '' }}>
+                                            <label class="filter-pill" for="check-credit">
+                                                <i class="fas fa-arrow-down me-1"></i> Credit
+                                            </label>
+
+                                            {{-- Zero Balance Toggle --}}
+                                            <input type="checkbox" class="btn-check" id="check-zero"
+                                                name="hide_zero_balance" {{ request('hide_zero_balance') ? 'checked' : '' }}>
+                                            <label class="filter-pill" for="check-zero">
+                                                <i class="fas fa-eye-slash me-1"></i> Hide Zero Bal
+                                            </label>
+                                        </div>
+
+                                        {{-- 3. RIGHT: ACTION BUTTONS --}}
+                                        <div class="action-group">
+                                            <button type="submit" class="btn-custom-primary">
+                                                Apply Filters
+                                            </button>
+                                            <a href="{{ route('show.customers') }}" class="btn-custom-reset">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </a>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+
+                            {{-- 3. STATUS TABS (Centered) --}}
+                            <div class="d-flex justify-content-center mb-4 overflow-auto pb-2">
+                                <nav class="nav nav-pills flex-nowrap">
+                                    <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'pending'])) }}"
+                                        class="nav-link {{ request('recovery_status') == 'pending' ? 'active-pending' : '' }}">
+                                        <i class="fa fa-clock me-1"></i> Pending
+                                    </a>
+
+                                    <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'today'])) }}"
+                                        class="nav-link {{ request('recovery_status') == 'today' ? 'active-today' : '' }}">
+                                        <i class="fa fa-calendar-day me-1"></i> Today
+                                    </a>
+
+                                    <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'upcoming'])) }}"
+                                        class="nav-link {{ request('recovery_status') == 'upcoming' ? 'active-upcoming' : '' }}">
+                                        <i class="fa fa-calendar-check me-1"></i> Upcoming
+                                    </a>
+
+                                    <a href="{{ route('customer.filter', array_merge(request()->all(), ['recovery_status' => 'no_date'])) }}"
+                                        class="nav-link {{ request('recovery_status') == 'no_date' ? 'active-default' : '' }}">
+                                        <i class="fa fa-calendar-times me-1"></i> No Date
+                                    </a>
+                                </nav>
+                            </div>
+
                         </div>
                         {{-- DataTables Table --}}
                         <table class="table table-hover w-100" id="example1">
@@ -387,11 +688,6 @@
                                         </td>
                                         <td>
                                             <div class="action-buttons">
-                                                <a href="{{ route('customer.view', ['id' => $customer->id]) }}"
-                                                    class="btn btn-sm btn-info" title="View Details">
-                                                    <i class="fa fa-eye"></i> View
-                                                </a>
-
                                                 {{-- WHATSAPP BUTTON --}}
                                                 @php
                                                     $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
@@ -420,18 +716,18 @@
     <script>
         $(document).ready(function () {
             initDataTable();
-// ============================================================
-//  ROW CLICK LOGIC (Table Row click par View Page)
-// ============================================================
-$(document).on('click', '.clickable-row', function(e) {
-    // Check: Agar user ne Button, Link (a tag) ya .btn class par click kiya hai to redirect mat karo
-    if ($(e.target).closest('a, button, .btn, input').length) {
-        return;
-    }
-    
-    // Redirect to the URL stored in data-href
-    window.location = $(this).data('href');
-});
+            // ============================================================
+            //  ROW CLICK LOGIC (Table Row click par View Page)
+            // ============================================================
+            $(document).on('click', '.clickable-row', function (e) {
+                // Check: Agar user ne Button, Link (a tag) ya .btn class par click kiya hai to redirect mat karo
+                if ($(e.target).closest('a, button, .btn, input').length) {
+                    return;
+                }
+
+                // Redirect to the URL stored in data-href
+                window.location = $(this).data('href');
+            });
             // -----------------------------------------------------------
             // WHATSAPP CLICK-TO-CHAT LOGIC (Client Side)
             // -----------------------------------------------------------
@@ -453,18 +749,18 @@ $(document).on('click', '.clickable-row', function(e) {
 
                 // 3. Prepare Message (Added space after balance)
                 var text = `"Dear ${name},
-        This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
-        Thank you."
-        For further detail contact us.
-        *RANA ELECTRONICS KM*
-        03007667440
+                        This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
+                        Thank you."
+                        For further detail contact us.
+                        *RANA ELECTRONICS KM*
+                        03007667440
 
-        السلام علیکم
-        جناب ${name}
-        یہ *رانا الیکٹرونکس کوٹمومن* کی جانب سے ادائیگی کی یاددہانی ہے۔ آپ کے کھاتے میں ${balance} کی بقایا رقم ہے۔ برائے مہربانی ان واجبات کو جلد از جلد ادا کریں۔ شکریہ۔
-        مزید تفصیلات کے لیے ہم سے رابطہ کریں۔
-        *رانا الیکٹرونکس کوٹمومن*
-        03007667440`;
+                        السلام علیکم
+                        جناب ${name}
+                        یہ *رانا الیکٹرونکس کوٹمومن* کی جانب سے ادائیگی کی یاددہانی ہے۔ آپ کے کھاتے میں ${balance} کی بقایا رقم ہے۔ برائے مہربانی ان واجبات کو جلد از جلد ادا کریں۔ شکریہ۔
+                        مزید تفصیلات کے لیے ہم سے رابطہ کریں۔
+                        *رانا الیکٹرونکس کوٹمومن*
+                        03007667440`;
 
 
                 var encodedText = encodeURIComponent(text);
