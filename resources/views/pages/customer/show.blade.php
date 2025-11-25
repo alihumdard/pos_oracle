@@ -287,7 +287,7 @@
                                     </label>
                                 </div>
 
-                                <button type="submit">Apply Filter</button>
+                                <button type="submit">Apply all filter</button>
 
                                 {{-- Reset Button (Fixed Route) --}}
                                 <a href="{{ route('show.customers') }}" class="btn btn-secondary"
@@ -418,17 +418,21 @@
                 });
 
                 // 3. Prepare Message (Added space after balance)
-                var text = `Dear ${name},
-                    This is a formal reminder from RANA ELECTRONICS KM. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience. Thank you.
+               var text = `"Dear ${name},
+This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
+Thank you."
+For further detail contact us.
+*RANA ELECTRONICS KM*
+03007667440
 
-                    -------------------------
+السلام علیکم
+جناب ${name}
+یہ *رانا الیکٹرونکس کوٹمومن* کی جانب سے ادائیگی کی یاددہانی ہے۔ آپ کے کھاتے میں ${balance} کی بقایا رقم ہے۔ برائے مہربانی ان واجبات کو جلد از جلد ادا کریں۔ شکریہ۔
+مزید تفصیلات کے لیے ہم سے رابطہ کریں۔
+*رانا الیکٹرونکس کوٹمومن*
+03007667440`;
 
-                    محترم ${name}،
-                    رانا الیکٹرانکس کے ایم کی جانب سے یہ ایک یاد دہانی ہے۔ آپ کے کھاتے میں ${balance} کا بقایا موجود ہے۔ براہ کرم اپنی سہولت کے مطابق جلد از جلد یہ واجبات ادا کریں۔ شکریہ۔
 
-                    For further details contact us:
-                    RANA ELECTRONICS KM
-                    03007667440`;
                 var encodedText = encodeURIComponent(text);
 
                 // 4. Helper to Format Number
@@ -513,12 +517,12 @@
                     return key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) + 'Error';
                 }
 
-             Object.keys(formData).forEach(function (key) {
+                Object.keys(formData).forEach(function (key) {
                     const value = formData[key];
                     const errorElement = $('#' + getErrorElementId(key));
-                    
+
                     // CHANGE HERE: Humne check lagaya ke agar key 'cnic' hai to error na dikhaye
-                    if (!value && key !== '_token' && key !== 'cnic') { 
+                    if (!value && key !== '_token' && key !== 'cnic') {
                         errorElement.removeClass('d-none');
                         hasError = true;
                     }

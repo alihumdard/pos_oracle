@@ -118,6 +118,7 @@ class CustomerController extends Controller
                 $manual_payment               = new ManualPayment();
                 $manual_payment->payment_type = 'You Give';
                 $manual_payment->payment      = $payment;
+                $manual_payment->note         = $request->note;
                 $customer->manualPayments()->save($manual_payment);
 
                 return response()->json([
@@ -139,6 +140,7 @@ class CustomerController extends Controller
                 $manual_payment               = new ManualPayment();
                 $manual_payment->payment_type = 'You Got';
                 $manual_payment->payment      = $payment;
+                $manual_payment->note         = $request->note;
                 $customer->manualPayments()->save($manual_payment);
                 return response()->json([
                     'status' => 'success',
@@ -290,117 +292,5 @@ class CustomerController extends Controller
             return response()->json(['status' => 'success', 'message' => 'Marked Received']);
         }
         return response()->json(['status' => 'error', 'message' => 'Not found'], 404);
-    }
-
-    public function sendRecoveryReminder(Request $request)
-    {
-        // 1. Fetch Recovery & Customer Data
-        $recoveryDate = CustomerRecoveryDate::find($request->id);
-
-        if (! $recoveryDate) {
-            return response()->json(['status' => 'error', 'message' => 'Recovery date not found'], 404);
-        }
-
-        $customer = Customer::find($recoveryDate->customer_id);
-
-        if (! $customer || empty($customer->mobile_number)) {
-            return response()->json(['status' => 'error', 'message' => 'Customer has no mobile number'], 400);
-        }
-
-        // 2. Prepare Message
-        $dateFormatted = \Carbon\Carbon::parse($recoveryDate->recovery_date)->format('d M, Y');
-        $balance       = $customer->debit > 0 ? $customer->debit : $customer->credit;
-        $message       = "Hello {$customer->name}, friendly reminder: Your payment of {$balance} RS is due on {$dateFormatted}. Please clear your dues.";
-
-        // 3. Handle Multiple Numbers
-        $phoneNumbers = explode(',', $customer->mobile_number);
-        $successCount = 0;
-        $errors       = []; // Capture errors
-
-        foreach ($phoneNumbers as $number) {
-            $number = trim($number);
-            if (empty($number)) {
-                continue;
-            }
-
-            // Call the helper
-            $result = $this->sendToWhatsAppGateway($number, $message);
-
-            if ($result['success']) {
-                $successCount++;
-            } else {
-                $errors[] = $number . ": " . $result['error'];
-            }
-        }
-
-        if ($successCount > 0) {
-            return response()->json([
-                'status'  => 'success',
-                'message' => "Sent to {$successCount} number(s) successfully!",
-            ]);
-        } else {
-            // RETURN THE REAL ERROR TO THE FRONTEND
-            $errorString = implode(', ', $errors);
-            Log::error("WhatsApp Failed: " . $errorString);
-
-            return response()->json([
-                'status'  => 'error',
-                'message' => "Failed: " . $errorString,
-            ], 500);
-        }
-    }
-
-    private function sendToWhatsAppGateway($to, $message)
-    {
-        $sid   = env('TWILIO_SID');
-        $token = env('TWILIO_AUTH_TOKEN');
-        $from  = env('TWILIO_WHATSAPP_NUMBER');
-
-        if (! $sid || ! $token || ! $from) {
-            return ['success' => false, 'error' => 'Twilio Credentials missing in .env'];
-        }
-
-        // ==============================================================
-        //  FIX: SMART PHONE NUMBER FORMATTING (PK -> International)
-        // ==============================================================
-
-        // 1. Remove all non-numeric characters (spaces, dashes, brackets)
-        // Result: "0340-0602398" becomes "03400602398"
-        $to = preg_replace('/[^0-9]/', '', $to);
-
-        // 2. Check for local format (starts with '03') and convert to '923'
-        if (substr($to, 0, 2) == '03') {
-            // Remove the leading '0' and add '92'
-            $to = '92' . substr($to, 1);
-        }
-
-        // 3. Ensure it starts with '+' for Twilio
-        if (substr($to, 0, 1) != '+') {
-            $to = '+' . $to;
-        }
-
-        // Result is now: +923400602398 (Valid!)
-        // ==============================================================
-
-        try {
-            $response = Http::withBasicAuth($sid, $token)
-                ->asForm()
-                ->post("https://api.twilio.com/2010-04-01/Accounts/{$sid}/Messages.json", [
-                    'From' => "whatsapp:{$from}",
-                    'To' => "whatsapp:{$to}",
-                    'Body' => $message,
-                ]);
-
-            if ($response->successful()) {
-                return ['success' => true, 'error' => null];
-            } else {
-                $errorData = $response->json();
-                $msg       = $errorData['message'] ?? 'Unknown Twilio Error';
-                return ['success' => false, 'error' => $msg];
-            }
-
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
     }
 }
