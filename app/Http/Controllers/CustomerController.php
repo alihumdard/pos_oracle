@@ -21,7 +21,7 @@ class CustomerController extends Controller
                 $query->where('debit', '>', 0)
                     ->orWhere('credit', '>', 0);
             })
-            ->whereHas('sales')
+            // ->whereHas('sales')
             ->withMax('sales as last_sale_at', 'created_at')
             ->orderByDesc('last_sale_at')
             ->get();
