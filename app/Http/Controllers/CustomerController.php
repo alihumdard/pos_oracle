@@ -7,28 +7,30 @@ use App\Models\ManualPayment;
 use App\Models\Sale;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 // --- IMPORTS ADDED FOR WHATSAPP & LOGGING ---
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
     public function customer_show()
     {
-        $data['customers'] = Customer::with(['sales', 'activeRecoveryDate'])
+        // 1. Pehle Database se customers fetch karein
+        $customers = Customer::with(['sales', 'activeRecoveryDate'])
             ->where(function ($query) {
                 $query->where('debit', '>', 0)
                     ->orWhere('credit', '>', 0);
             })
-            // ->whereHas('sales')
-            ->withMax('sales as last_sale_at', 'created_at')
-            ->orderByDesc('last_sale_at')
+            ->whereHas('sales')
             ->get();
+
+        $data['customers'] = $customers->sortBy(function ($customer) {
+            return $customer->activeRecoveryDate
+                ? $customer->activeRecoveryDate->recovery_date
+                : '9999-12-31';
+        });
 
         return view('pages.customer.show', $data);
     }
-
     public function view($id)
     {
         $data['manual_customers'] = Customer::with(['manualPayments' => function ($query) {
@@ -180,7 +182,7 @@ class CustomerController extends Controller
 
     public function customer_filter(Request $request)
     {
-        // Use eager loading to prevent N+1 issues and ensure relations are available
+        // Use eager loading to prevent N+1 issues
         $query = Customer::with(['sales', 'activeRecoveryDate']);
 
         // 1. Handle Recovery Status Filters (Pending, Today, Upcoming)
@@ -188,7 +190,7 @@ class CustomerController extends Controller
             $status = $request->recovery_status;
             $today  = \Carbon\Carbon::today()->format('Y-m-d');
 
-            // CASE 1: "No Date" (Date na ho AUR Balance ho)
+            // CASE 1: "No Date"
             if ($status == 'no_date') {
                 $query->whereDoesntHave('activeRecoveryDate')
                     ->where(function ($q) {
@@ -196,11 +198,9 @@ class CustomerController extends Controller
                             ->orWhere('credit', '>', 0);
                     });
             }
-            // CASE 2: Pending, Today, Upcoming (Wo log jinki date set hai)
+            // CASE 2: Pending, Today, Upcoming
             else {
                 $query->whereHas('activeRecoveryDate', function ($q) use ($status, $today) {
-
-                    // Sirf active dates check karein
                     $q->where('is_active', 1);
 
                     if ($status == 'pending') {
@@ -214,28 +214,42 @@ class CustomerController extends Controller
             }
         }
 
-        // 2. Handle Existing Sorting
-        $sortOrder = $request->input('sort_order', 'asc');
-
-        if ($request->has('filter_debit')) {
-            $query->orderBy('debit', $sortOrder);
-        }
-
-        if ($request->has('filter_credit')) {
-            $query->orderBy('credit', $sortOrder);
-        }
-
-        // 3. Handle "Hide Zero Balance"
+        // 2. Handle "Hide Zero Balance"
         if ($request->has('hide_zero_balance')) {
             $query->where(function ($q) {
                 $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
             });
         }
 
-        // Default Sort if no specific sort is applied (optional)
-        // $query->latest();
+        // 3. Handle Sorting Logic
+        // Pehle check karein ke kya user ne Debit ya Credit se sort karne ko kaha hai?
+        $hasManualSort = false;
+        $sortOrder = $request->input('sort_order', 'asc');
 
-        $data['customers'] = $query->get();
+        if ($request->has('filter_debit')) {
+            $query->orderBy('debit', $sortOrder);
+            $hasManualSort = true;
+        }
+
+        if ($request->has('filter_credit')) {
+            $query->orderBy('credit', $sortOrder);
+            $hasManualSort = true;
+        }
+
+        // Data fetch karein
+        $customers = $query->get();
+
+        // 4. CUSTOM DATE SORTING (Agar user ne Debit/Credit sort select nahi kiya)
+        // Yeh wohi logic hai jo customer_show mein lagayi thi
+        if (!$hasManualSort) {
+            $customers = $customers->sortBy(function ($customer) {
+                return $customer->activeRecoveryDate 
+                    ? $customer->activeRecoveryDate->recovery_date 
+                    : '9999-12-31'; // No date walay end pe
+            });
+        }
+
+        $data['customers'] = $customers;
 
         return view('pages.customer.show', $data);
     }

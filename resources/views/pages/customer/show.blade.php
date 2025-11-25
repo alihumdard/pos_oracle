@@ -635,6 +635,8 @@ For further detail contact us.
                         autoWidth: false,
                         scrollY: false,
                         scrollX: true,
+                        "pageLength": 100,
+                        "order": [],
                         buttons: ["excel", "pdf"]
                     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
                 }
