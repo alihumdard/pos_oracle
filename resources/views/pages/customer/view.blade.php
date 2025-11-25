@@ -33,10 +33,12 @@
                                         <td style="padding: 10px;">{{$customer->name}}</td>
                                         @if($customer->debit > 0)
                                             <td style="padding: 10px; color: green; font-weight: bold;">You Give</td>
-                                            <td style="padding: 10px; color: green; font-weight: bold;">{{$customer->debit}}/RS</td>
+                                            <td style="padding: 10px; color: green; font-weight: bold;">
+                                                {{$customer->debit}}/RS</td>
                                         @else
                                             <td style="padding: 10px; color: red; font-weight: bold;">You Got</td>
-                                            <td style="padding: 10px; color: red; font-weight: bold;">{{$customer->credit}}/RS</td>
+                                            <td style="padding: 10px; color: red; font-weight: bold;">
+                                                {{$customer->credit}}/RS</td>
                                         @endif
                                     </tr>
                                 </tbody>
@@ -82,13 +84,15 @@
                                 </span>
 
                                 <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                    <span style="font-size: 1.2em; font-weight: bold; color: {{ $isReceived ? '#28a745' : ($isExpired ? 'red' : '#00ffaa') }};">
+                                    <span
+                                        style="font-size: 1.2em; font-weight: bold; color: {{ $isReceived ? '#28a745' : ($isExpired ? 'red' : '#00ffaa') }};">
                                         {{ $isReceived ? 'Received On: ' : 'Due: ' }} {{ $dateObj->format('d M, Y') }}
                                     </span>
                                 </div>
 
                                 @if($isExpired && !$isReceived)
-                                    <small class="text-danger"><i class="fa fa-exclamation-circle"></i> This date has passed.</small>
+                                    <small class="text-danger"><i class="fa fa-exclamation-circle"></i> This date has
+                                        passed.</small>
                                 @endif
 
                                 <div class="mt-3 d-flex flex-wrap gap-2">
@@ -111,9 +115,9 @@
                                             $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
                                             $formattedDate = $dateObj->format('d M, Y');
                                         @endphp
-                                        <button class="btn btn-sm  send-reminder mb-1" style="background: rgb(57, 166, 57); color: white;"
-                                            data-name="{{ $customer->name }}"
-                                            data-mobile="{{ $customer->mobile_number }}"
+                                        <button class="btn btn-sm  send-reminder mb-1"
+                                            style="background: rgb(57, 166, 57); color: white;"
+                                            data-name="{{ $customer->name }}" data-mobile="{{ $customer->mobile_number }}"
                                             data-balance="{{ $balance }} ({{ $balanceType }})"
                                             data-due-date="{{ $formattedDate }}">
                                             <i class="fab fa-whatsapp"></i> Reminder
@@ -183,7 +187,8 @@
                         {{-- NEW: NOTE INPUT FIELD --}}
                         <div class="form-group mt-3">
                             <label for="paymentNote">Note / Description</label>
-                            <textarea id="paymentNote" class="form-control" rows="2" placeholder="Optional: Add details about this payment..."></textarea>
+                            <textarea id="paymentNote" class="form-control" rows="2"
+                                placeholder="Optional: Add details about this payment..."></textarea>
                         </div>
 
                         <input type="hidden" id="customerId" value="{{ $customer->id }}" class="form-control">
@@ -191,17 +196,21 @@
                         <div id="youGiveForm" class="mt-3" style="display: none;">
                             <div class="form-group">
                                 <label for="paymentInputYouGive">Enter Payment</label>
-                                <input type="number" id="paymentInputYouGive" class="form-control" placeholder="Enter amount">
+                                <input type="number" id="paymentInputYouGive" class="form-control"
+                                    placeholder="Enter amount">
                             </div>
-                            <button type="button" id="addPaymentYouGive" class="btn btn-primary btn-block w-100">Add Payment</button>
+                            <button type="button" id="addPaymentYouGive" class="btn btn-primary btn-block w-100">Add
+                                Payment</button>
                         </div>
 
                         <div id="youGotForm" class="mt-3" style="display: none;">
                             <div class="form-group">
                                 <label for="paymentInputYouGot">Enter Payment</label>
-                                <input type="number" id="paymentInputYouGot" class="form-control" placeholder="Enter amount">
+                                <input type="number" id="paymentInputYouGot" class="form-control"
+                                    placeholder="Enter amount">
                             </div>
-                            <button type="button" id="addPaymentYouGot" class="btn btn-primary btn-block w-100">Add Payment</button>
+                            <button type="button" id="addPaymentYouGot" class="btn btn-primary btn-block w-100">Add
+                                Payment</button>
                         </div>
                     </form>
 
@@ -264,13 +273,16 @@
                                 <td>{{ $sale->total_amount ?? 'N/A' }}</td>
                                 <td>{{ $sale->cash ?? 'N/A' }}</td>
                                 <td style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
-                                    <a href="javascript:void(0)" class="view-detail btn btn-sm btn-outline-dark" data-id="{{ $sale->id }}">
+                                    <a href="javascript:void(0)" class="view-detail btn btn-sm btn-outline-dark"
+                                        data-id="{{ $sale->id }}">
                                         <i class="fa fa-eye" aria-hidden="true"></i> View
                                     </a>
-                                    <a href="{{ route('pages.customer.invoice', $sale->id) }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('pages.customer.invoice', $sale->id) }}"
+                                        class="btn btn-sm btn-primary">
                                         Regenerate Invoice
                                     </a>
-                                    <a href="{{ route('show.transaction', ['id' => $sale->id]) }}" class="btn btn-sm btn-warning">
+                                    <a href="{{ route('show.transaction', ['id' => $sale->id]) }}"
+                                        class="btn btn-sm btn-warning">
                                         Return Sale
                                     </a>
                                 </td>
@@ -303,35 +315,36 @@
 @pushOnce('scripts')
     <script>
         $(document).ready(function () {
-            // ... (Existing WhatsApp, Detail View logic remains same) ...
 
             // 1. WHATSAPP REMINDER (Keep your existing code here)
             $(document).on('click', '.send-reminder', function () {
                 var name = $(this).data('name');
                 var rawMobile = $(this).data('mobile');
                 var balance = $(this).data('balance');
-                var dueDate = $(this).data('due-date'); 
+                var dueDate = $(this).data('due-date');
 
                 if (!rawMobile) {
                     Swal.fire("Error", "No mobile number found for this customer.", "warning");
                     return;
                 }
 
-                var phones = rawMobile.toString().split(',').map(function(num) {
+                var phones = rawMobile.toString().split(',').map(function (num) {
                     return num.trim();
                 });
 
-                var text = `Dear ${name},
-                This is a formal reminder from RANA ELECTRONICS KM. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience. Thank you.
+               var text = `"Dear ${name},
+This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
+Thank you."
+For further detail contact us.
+*RANA ELECTRONICS KM*
+03007667440
 
-                -------------------------
-
-                محترم ${name}،
-                رانا الیکٹرانکس کے ایم کی جانب سے یہ ایک یاد دہانی ہے۔ آپ کے کھاتے میں ${balance} کا بقایا موجود ہے۔ براہ کرم اپنی سہولت کے مطابق جلد از جلد یہ واجبات ادا کریں۔ شکریہ۔
-
-                For further details contact us:
-                RANA ELECTRONICS KM
-                03007667440`;
+السلام علیکم
+جناب ${name}
+یہ *رانا الیکٹرونکس کوٹمومن* کی جانب سے ادائیگی کی یاددہانی ہے۔ آپ کے کھاتے میں ${balance} کی بقایا رقم ہے۔ برائے مہربانی ان واجبات کو جلد از جلد ادا کریں۔ شکریہ۔
+مزید تفصیلات کے لیے ہم سے رابطہ کریں۔
+*رانا الیکٹرونکس کوٹمومن*
+03007667440`;
                 var encodedText = encodeURIComponent(text);
 
                 function getWaLink(number) {
@@ -348,7 +361,7 @@
                     window.open(getWaLink(phones[0]), '_blank');
                 } else {
                     var inputOptions = {};
-                    phones.forEach(function(phone) {
+                    phones.forEach(function (phone) {
                         inputOptions[phone] = phone;
                     });
 
@@ -414,7 +427,7 @@
             $('#dropdownAction').on('change', function () {
                 var action = $(this).val();
                 $('#youGiveForm, #youGotForm').hide();
-                
+
                 if (action === 'youGive') {
                     $('#youGiveForm').fadeIn();
                 } else if (action === 'youGot') {
