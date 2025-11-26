@@ -20,7 +20,6 @@ class CustomerController extends Controller
                 $query->where('debit', '>', 0)
                     ->orWhere('credit', '>', 0);
             })
-            ->whereHas('sales')
             ->get();
 
         // 2. Calculate Totals (Yeh lines add karein)
