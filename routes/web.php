@@ -118,3 +118,5 @@ Route::post('/customer/recovery/reminder', [CustomerController::class, 'sendReco
 Route::post('/customer/recovery/received', [CustomerController::class, 'markRecoveryReceived']);
 
 Route::post('/customer/send-reminder', [CustomerController::class, 'sendRecoveryReminder'])->name('customer.send_reminder');
+Route::get('/customer/manual-payment/{id}', [CustomerController::class, 'fetchManualPayment']);
+Route::post('/customer/manual-payment/update', [CustomerController::class, 'updateManualPayment']);

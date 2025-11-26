@@ -12,9 +12,10 @@
 
         <div class="card mt-4">
             <div class="row">
-                {{-- LEFT SIDE: BALANCE & RECOVERY DATES --}}
+                {{-- LEFT SIDE: BALANCE & RECOVERY DATES (Black Box) --}}
                 <div class="col-12 col-lg-6 mb-3 mt-4 p-4">
                     <div style="background-color: black; color: white; padding: 20px; border-radius: 10px;">
+                        
                         {{-- Balance Table --}}
                         <div class="table-responsive">
                             <table style="width: 100%; color: white; border-collapse: collapse;">
@@ -115,7 +116,7 @@
                                             $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
                                             $formattedDate = $dateObj->format('d M, Y');
                                         @endphp
-                                        <button class="btn btn-sm  send-reminder mb-1"
+                                        <button class="btn btn-sm send-reminder mb-1"
                                             style="background: rgb(57, 166, 57); color: white;"
                                             data-name="{{ $customer->name }}" data-mobile="{{ $customer->mobile_number }}"
                                             data-balance="{{ $balance }} ({{ $balanceType }})"
@@ -148,7 +149,8 @@
                                         <tbody>
                                             @foreach($historyDates as $date)
                                                 <tr>
-                                                    <td>{{ \Carbon\Carbon::parse($date->recovery_date)->format('d M, Y') }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($date->recovery_date)->format('d M, Y') }}
+                                                    </td>
                                                     <td>
                                                         @if($date->is_received)
                                                             <span class="badge bg-success">Received</span>
@@ -224,7 +226,8 @@
         </div>
     </div>
 
-    <div class="col-12">
+    {{-- MANUAL PAYMENTS DETAIL TABLE (Updated with Note & Edit Button) --}}
+    <div class="col-12 mt-4">
         <div class="card w-100">
             <h5 class="text-center mt-4 mb-4">Manual Payments Detail</h5>
             <div class="table-responsive p-2">
@@ -233,7 +236,8 @@
                         <tr>
                             <th>Payment Type</th>
                             <th>Payment</th>
-                            <th>Note</th> {{-- Optional: Show Note in table if you want --}}
+                            <th>Note</th> {{-- NEW COLUMN --}}
+                            <th>Action</th> {{-- NEW COLUMN --}}
                         </tr>
                     </thead>
                     <tbody id="tableHolder">
@@ -247,6 +251,13 @@
                                     <td style="color:red;"> {{ $payment->payment }}</td>
                                 @endif
                                 <td>{{ $payment->note ?? '-' }}</td> {{-- Display Note --}}
+                                <td>
+                                    {{-- NEW EDIT BUTTON --}}
+                                    <button class="btn btn-sm btn-warning edit-manual-payment"
+                                        data-id="{{ $payment->id }}">
+                                        <i class="fa fa-edit"></i> Edit
+                                    </button>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -255,7 +266,8 @@
         </div>
     </div>
 
-    <div class="col-12">
+    {{-- SALES DETAIL TABLE --}}
+    <div class="col-12 mt-4">
         <div class="card w-100">
             <h5 class="text-center mt-4 mb-4">Sales Detail</h5>
             <div class="table-responsive p-2">
@@ -295,7 +307,7 @@
     </div>
 </div>
 
-{{-- Modal Code (No Change) --}}
+{{-- EXISTING TRANSACTION DETAIL MODAL --}}
 <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -305,7 +317,49 @@
             <div id="modal-body">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- NEW EDIT MANUAL PAYMENT MODAL --}}
+<div class="modal fade" id="editPaymentModal" tabindex="-1" aria-labelledby="editPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPaymentModalLabel">Edit Manual Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPaymentForm">
+                    {{-- Hidden fields to send data back to controller --}}
+                    <input type="hidden" id="edit_payment_id" name="id">
+                    <input type="hidden" id="edit_customer_id" value="{{ $customer->id }}">
+                    
+                    <div class="form-group mb-3">
+                        <label for="edit_payment_type">Payment Type</label>
+                        <select id="edit_payment_type" name="payment_type" class="form-control">
+                            <option value="You Give">You Give</option>
+                            <option value="You Got">You Got</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="edit_payment_amount">Payment Amount (RS)</label>
+                        <input type="number" id="edit_payment_amount" name="payment" class="form-control" placeholder="Enter new amount" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="edit_payment_note">Note / Description</label>
+                        <textarea id="edit_payment_note" name="note" class="form-control" rows="2" placeholder="Update note..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditPaymentBtn">Save Changes</button>
             </div>
         </div>
     </div>
@@ -316,7 +370,9 @@
     <script>
         $(document).ready(function () {
 
-            // 1. WHATSAPP REMINDER (Keep your existing code here)
+            // ============================================================
+            // 1. WHATSAPP REMINDER LOGIC
+            // ============================================================
             $(document).on('click', '.send-reminder', function () {
                 var name = $(this).data('name');
                 var rawMobile = $(this).data('mobile');
@@ -332,7 +388,7 @@
                     return num.trim();
                 });
 
-               var text = `"Dear ${name},
+                var text = `"Dear ${name},
 This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
 Thank you."
 For further detail contact us.
@@ -383,7 +439,9 @@ For further detail contact us.
                 }
             });
 
-            // 2. MARK RECEIVED (Keep existing code)
+            // ============================================================
+            // 2. MARK AS RECEIVED (Recovery Date)
+            // ============================================================
             $(document).on('click', '.mark-received', function () {
                 var id = $(this).data('id');
                 var btn = $(this);
@@ -404,7 +462,9 @@ For further detail contact us.
                 }
             });
 
-            // 3. VIEW DETAIL (Keep existing code)
+            // ============================================================
+            // 3. VIEW DETAIL MODAL (Sales)
+            // ============================================================
             $(document).on('click', '.view-detail', function () {
                 var saleId = $(this).data('id');
                 $.ajax({
@@ -422,7 +482,7 @@ For further detail contact us.
             });
 
             // ============================================================
-            //  4. PAYMENT FORM TOGGLE & SUBMISSION (UPDATED)
+            // 4. PAYMENT FORM TOGGLE & SUBMISSION (ADD)
             // ============================================================
             $('#dropdownAction').on('change', function () {
                 var action = $(this).val();
@@ -451,7 +511,6 @@ For further detail contact us.
                 }
             });
 
-            // UPDATED FUNCTION TO SEND NOTE
             function sendPaymentData(action, amount, customerId) {
                 var note = $('#paymentNote').val(); // GET NOTE VALUE
 
@@ -478,7 +537,9 @@ For further detail contact us.
                 });
             }
 
-            // 5. RECOVERY DATE (Keep existing code)
+            // ============================================================
+            // 5. RECOVERY DATE MANAGEMENT
+            // ============================================================
             $('#addRecoveryBtn').on('click', function () {
                 var date = $('#recoveryDateInput').val();
                 var customerId = $('#customerId').val();
@@ -504,6 +565,67 @@ For further detail contact us.
                     });
                 }
             });
+
+            // ============================================================
+            // 6. EDIT MANUAL PAYMENT LOGIC (FETCH DATA)
+            // ============================================================
+            $(document).on('click', '.edit-manual-payment', function () {
+                var paymentId = $(this).data('id');
+                // Requires Laravel Route: GET /customer/manual-payment/{id}
+                $.ajax({
+                    url: '/customer/manual-payment/' + paymentId,
+                    type: 'GET',
+                    success: function (payment) {
+                        // Populate modal
+                        $('#edit_payment_id').val(payment.id);
+                        $('#edit_payment_type').val(payment.payment_type);
+                        $('#edit_payment_amount').val(payment.payment);
+                        $('#edit_payment_note').val(payment.note);
+
+                        $('#editPaymentModal').modal('show');
+                    },
+                    error: function () {
+                        alert('Error fetching payment details. Please check your backend route.');
+                    }
+                });
+            });
+
+            // ============================================================
+            // 7. EDIT MANUAL PAYMENT LOGIC (SAVE CHANGES)
+            // ============================================================
+            $('#saveEditPaymentBtn').on('click', function () {
+                var paymentId = $('#edit_payment_id').val();
+                var customerId = $('#edit_customer_id').val();
+
+                var data = {
+                    id: paymentId,
+                    customer_id: customerId,
+                    payment: $('#edit_payment_amount').val(),
+                    payment_type: $('#edit_payment_type').val(),
+                    note: $('#edit_payment_note').val(),
+                    _token: '{{ csrf_token() }}'
+                };
+
+                // Requires Laravel Route: POST /customer/manual-payment/update
+                $.ajax({
+                    url: '/customer/manual-payment/update',
+                    type: 'POST',
+                    data: data,
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            Swal.fire('Updated!', 'Payment successfully updated.', 'success').then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Error updating payment. Please check your controller logic.');
+                    }
+                });
+            });
+
 
         });
     </script>
