@@ -314,4 +314,93 @@ class CustomerController extends Controller
         }
         return response()->json(['status' => 'error', 'message' => 'Not found'], 404);
     }
+
+    public function fetchManualPayment($id)
+{
+    // Ensure you use the correct model name (ManualPayment)
+    $payment = ManualPayment::find($id);
+
+    if (!$payment) {
+        // Return a 404 response if the payment is not found
+        return response()->json(['message' => 'Payment not found'], 404);
+    }
+
+    // Return the payment data as JSON to the frontend
+    return response()->json($payment);
+    }
+
+    public function updateManualPayment(Request $request)
+{
+    // Basic Validation (ensure payment and type are present)
+    $request->validate([
+        'id' => 'required|exists:manual_payments,id',
+        'customer_id' => 'required|exists:customers,id',
+        'payment' => 'required|numeric|min:0',
+        'payment_type' => 'required|in:You Give,You Got',
+    ]);
+
+    // 1. Fetch Records
+    $oldPayment = ManualPayment::findOrFail($request->id);
+    $customer = Customer::findOrFail($request->customer_id);
+
+    // Get old values before updating
+    $oldType = $oldPayment->payment_type;
+    $oldAmount = $oldPayment->payment;
+    
+    // --- Start Transaction (Crucial for Balance Integrity) ---
+    \DB::beginTransaction();
+
+    try {
+        // 2. REVERSE THE OLD PAYMENT'S EFFECT
+        // If the original payment was 'You Give' (Credit to Customer), reverse it by Debiting the customer.
+        if ($oldType === 'You Give') {
+            $customer->credit -= $oldAmount;
+        } 
+        // If the original payment was 'You Got' (Debit to Customer), reverse it by Crediting the customer.
+        elseif ($oldType === 'You Got') {
+            $customer->debit -= $oldAmount;
+        }
+
+        // 3. APPLY THE NEW PAYMENT'S EFFECT
+        $newAmount = $request->payment;
+        $newType = $request->payment_type;
+
+        // Apply new payment rules
+        if ($newType === 'You Give') {
+            $customer->credit += $newAmount;
+        } elseif ($newType === 'You Got') {
+            $customer->debit += $newAmount;
+        }
+        
+        // Ensure balances are not negative (though logic above should handle this if starting balance is zero/positive)
+        $customer->credit = max(0, $customer->credit);
+        $customer->debit = max(0, $customer->debit);
+
+        // 4. Update the Manual Payment Record
+        $oldPayment->payment_type = $newType;
+        $oldPayment->payment = $newAmount;
+        $oldPayment->note = $request->note;
+        $oldPayment->save();
+
+        // 5. Save the Customer Balance
+        $customer->save();
+
+        \DB::commit(); // Commit all changes if successful
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Payment updated and balance recalculated successfully.'
+        ]);
+
+    } catch (\Exception $e) {
+        \DB::rollback(); // Rollback if any error occurs
+        // Log the detailed error for debugging
+        \Log::error("Manual Payment Update Failed: " . $e->getMessage()); 
+        
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Internal server error during balance update.'
+        ], 500); // Return a 500 status to the AJAX handler
+    }
+    }
 }
