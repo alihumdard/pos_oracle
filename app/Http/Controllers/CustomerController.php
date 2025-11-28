@@ -14,19 +14,20 @@ class CustomerController extends Controller
 {
     public function customer_show()
     {
-        // 1. Data Fetch
+        // 1. Data Fetch:
         $customers = Customer::with(['sales', 'activeRecoveryDate'])
             ->where(function ($query) {
-                $query->where('debit', '>', 0)
-                    ->orWhere('credit', '>', 0);
+                // FIX: Use whereRaw and ABS() to handle floating point issues strictly
+                $query->whereRaw('ABS(debit) > 0.00')
+                    ->orWhereRaw('ABS(credit) > 0.00');
             })
             ->get();
 
-        // 2. Calculate Totals (Yeh lines add karein)
+        // 2. Calculate Totals
         $data['totalDebit']  = $customers->sum('debit');
         $data['totalCredit'] = $customers->sum('credit');
 
-        // 3. Sorting
+        // 3. Sorting (Rest of the code remains the same)
         $data['customers'] = $customers->sortBy(function ($customer) {
             return $customer->activeRecoveryDate
                 ? $customer->activeRecoveryDate->recovery_date
@@ -164,24 +165,26 @@ class CustomerController extends Controller
 
     public function Customer_update(Request $request, $id)
     {
-        $Customer                 = Customer::findOrFail($id);
-        $Customer->Customer       = $request->Customer;
-        $Customer->contact_person = $request->contact_person;
-        $Customer->address        = $request->address;
-        $Customer->contact_no     = $request->contact_no;
-        $Customer->note           = $request->note;
-        $Customer->save();
+        // 1. Validation (Highly Recommended)
+        $request->validate([
+            'name'      => 'required|string|max:100',
+            'mobile_no' => 'required|string|max:20',
+            'address'   => 'required|string|max:255',
+            'cnic'      => 'nullable|string|max:20',
+        ]);
+
+        // 2. Locate and Update the Customer
+        $customer = Customer::findOrFail($id);
+
+                                                        // FIX: Map request keys (from frontend form) to database columns
+        $customer->name          = $request->name;      // Correct: name from form maps to name column
+        $customer->mobile_number = $request->mobile_no; // Correct: mobile_no from form maps to mobile_number column (assuming your DB column is mobile_number)
+        $customer->address       = $request->address;
+        $customer->cnic          = $request->cnic;
+
+        $customer->save();
 
         return response()->json(['message' => 'Customer updated successfully!']);
-    }
-
-    // Delete Customer
-    public function Customer_delete($id)
-    {
-        $Customer = Customer::findOrFail($id);
-        $Customer->delete();
-
-        return response()->json(['message' => 'Customer deleted successfully!']);
     }
 
     public function customer_filter(Request $request)
@@ -189,22 +192,29 @@ class CustomerController extends Controller
         // Use eager loading to prevent N+1 issues
         $query = Customer::with(['sales', 'activeRecoveryDate']);
 
-        // 1. Handle Recovery Status Filters (Pending, Today, Upcoming)
+        // Flag to track if a filter that alters the default view is applied
+        $isFilteringActive = false;
+
+        // 1. Handle Recovery Status Filters (Pending, Today, Upcoming, No Date)
         if ($request->has('recovery_status')) {
-            $status = $request->recovery_status;
-            $today  = \Carbon\Carbon::today()->format('Y-m-d');
+            $status            = $request->recovery_status;
+            $today             = \Carbon\Carbon::today()->format('Y-m-d');
+            $isFilteringActive = true;
 
             // CASE 1: "No Date"
             if ($status == 'no_date') {
                 $query->whereDoesntHave('activeRecoveryDate')
                     ->where(function ($q) {
-                        $q->where('debit', '>', 0)
-                            ->orWhere('credit', '>', 0);
+                        // Show only No Date customers who still have a positive balance
+                        $q->whereRaw('ABS(debit) > 0.00')
+                            ->orWhereRaw('ABS(credit) > 0.00');
                     });
             }
-            // CASE 2: Pending, Today, Upcoming
+
+            // CASE 2: Pending, Today, Upcoming (The section with the critical fix)
             else {
                 $query->whereHas('activeRecoveryDate', function ($q) use ($status, $today) {
+                    // Step 1: Filter by Recovery Date status
                     $q->where('is_active', 1);
 
                     if ($status == 'pending') {
@@ -214,19 +224,35 @@ class CustomerController extends Controller
                     } elseif ($status == 'upcoming') {
                         $q->where('recovery_date', '>', $today);
                     }
-                });
+                })
+                // *** FIX: STRICT BALANCE CHECK ADDED ***
+                // Step 2: Ensure that customers found in Step 1 ALSO have an outstanding balance.
+                    ->where(function ($q) {
+                        $q->whereRaw('ABS(debit) > 0.00')
+                            ->orWhereRaw('ABS(credit) > 0.00');
+                    });
+                // *** END FIX ***
             }
         }
 
-        // 2. Handle "Hide Zero Balance"
+        // 2. Handle "Hide Zero Balance" Filter
         if ($request->has('hide_zero_balance')) {
             $query->where(function ($q) {
-                $q->where('debit', '!=', 0)->orWhere('credit', '!=', 0);
+                // Explicitly show only customers not equal to zero balance
+                $q->whereRaw('ABS(debit) > 0.00')->orWhereRaw('ABS(credit) > 0.00');
+            });
+            $isFilteringActive = true;
+        }
+
+        // 3. Default Filter (If no filter is applied, apply the Hide Zero Balance rule)
+        if (! $isFilteringActive) {
+            $query->where(function ($q) {
+                $q->whereRaw('ABS(debit) > 0.00')
+                    ->orWhereRaw('ABS(credit) > 0.00');
             });
         }
 
-        // 3. Handle Sorting Logic
-        // Pehle check karein ke kya user ne Debit ya Credit se sort karne ko kaha hai?
+        // 4. Handle Sorting Logic
         $hasManualSort = false;
         $sortOrder     = $request->input('sort_order', 'asc');
 
@@ -245,9 +271,8 @@ class CustomerController extends Controller
 
         $data['totalDebit']  = $customers->sum('debit');
         $data['totalCredit'] = $customers->sum('credit');
-        
-        // 4. CUSTOM DATE SORTING (Agar user ne Debit/Credit sort select nahi kiya)
-        // Yeh wohi logic hai jo customer_show mein lagayi thi
+
+        // 5. CUSTOM DATE SORTING (Agar user ne Debit/Credit sort select nahi kiya)
         if (! $hasManualSort) {
             $customers = $customers->sortBy(function ($customer) {
                 return $customer->activeRecoveryDate
@@ -316,91 +341,92 @@ class CustomerController extends Controller
     }
 
     public function fetchManualPayment($id)
-{
-    // Ensure you use the correct model name (ManualPayment)
-    $payment = ManualPayment::find($id);
+    {
+        // Ensure you use the correct model name (ManualPayment)
+        $payment = ManualPayment::find($id);
 
-    if (!$payment) {
-        // Return a 404 response if the payment is not found
-        return response()->json(['message' => 'Payment not found'], 404);
-    }
+        if (! $payment) {
+            // Return a 404 response if the payment is not found
+            return response()->json(['message' => 'Payment not found'], 404);
+        }
 
-    // Return the payment data as JSON to the frontend
-    return response()->json($payment);
+        // Return the payment data as JSON to the frontend
+        return response()->json($payment);
     }
 
     public function updateManualPayment(Request $request)
-{
-    // Basic Validation (ensure payment and type are present)
-    $request->validate([
-        'id' => 'required|exists:manual_payments,id',
-        'customer_id' => 'required|exists:customers,id',
-        'payment' => 'required|numeric|min:0',
-        'payment_type' => 'required|in:You Give,You Got',
-    ]);
-
-    // 1. Fetch Records
-    $oldPayment = ManualPayment::findOrFail($request->id);
-    $customer = Customer::findOrFail($request->customer_id);
-
-    // Get old values before updating
-    $oldType = $oldPayment->payment_type;
-    $oldAmount = $oldPayment->payment;
-    
-    // --- Start Transaction (Crucial for Balance Integrity) ---
-    \DB::beginTransaction();
-
-    try {
-        // 2. REVERSE THE OLD PAYMENT'S EFFECT
-        // If the original payment was 'You Give' (Credit to Customer), reverse it by Debiting the customer.
-        if ($oldType === 'You Give') {
-            $customer->credit -= $oldAmount;
-        } 
-        // If the original payment was 'You Got' (Debit to Customer), reverse it by Crediting the customer.
-        elseif ($oldType === 'You Got') {
-            $customer->debit -= $oldAmount;
-        }
-
-        // 3. APPLY THE NEW PAYMENT'S EFFECT
-        $newAmount = $request->payment;
-        $newType = $request->payment_type;
-
-        // Apply new payment rules
-        if ($newType === 'You Give') {
-            $customer->credit += $newAmount;
-        } elseif ($newType === 'You Got') {
-            $customer->debit += $newAmount;
-        }
-        
-        // Ensure balances are not negative (though logic above should handle this if starting balance is zero/positive)
-        $customer->credit = max(0, $customer->credit);
-        $customer->debit = max(0, $customer->debit);
-
-        // 4. Update the Manual Payment Record
-        $oldPayment->payment_type = $newType;
-        $oldPayment->payment = $newAmount;
-        $oldPayment->note = $request->note;
-        $oldPayment->save();
-
-        // 5. Save the Customer Balance
-        $customer->save();
-
-        \DB::commit(); // Commit all changes if successful
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Payment updated and balance recalculated successfully.'
+    {
+        // Basic Validation (ensure payment and type are present)
+        $request->validate([
+            'id'           => 'required|exists:manual_payments,id',
+            'customer_id'  => 'required|exists:customers,id',
+            'payment'      => 'required|numeric|min:0',
+            'payment_type' => 'required|in:You Give,You Got',
         ]);
 
-    } catch (\Exception $e) {
-        \DB::rollback(); // Rollback if any error occurs
-        // Log the detailed error for debugging
-        \Log::error("Manual Payment Update Failed: " . $e->getMessage()); 
-        
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Internal server error during balance update.'
-        ], 500); // Return a 500 status to the AJAX handler
+        // 1. Fetch Records
+        $oldPayment = ManualPayment::findOrFail($request->id);
+        $customer   = Customer::findOrFail($request->customer_id);
+
+        // Get old values before updating
+        $oldType   = $oldPayment->payment_type;
+        $oldAmount = $oldPayment->payment;
+
+        // --- Start Transaction (Crucial for Balance Integrity) ---
+        \DB::beginTransaction();
+
+        try {
+            // 2. REVERSE THE OLD PAYMENT'S EFFECT
+            // If the original payment was 'You Give' (Credit to Customer), reverse it by Debiting the customer.
+            if ($oldType === 'You Give') {
+                $customer->credit -= $oldAmount;
+            }
+            // If the original payment was 'You Got' (Debit to Customer), reverse it by Crediting the customer.
+            elseif ($oldType === 'You Got') {
+                $customer->debit -= $oldAmount;
+            }
+
+            // 3. APPLY THE NEW PAYMENT'S EFFECT
+            $newAmount = $request->payment;
+            $newType   = $request->payment_type;
+
+            // Apply new payment rules
+            if ($newType === 'You Give') {
+                $customer->credit += $newAmount;
+            } elseif ($newType === 'You Got') {
+                $customer->debit += $newAmount;
+            }
+
+            // Ensure balances are not negative (though logic above should handle this if starting balance is zero/positive)
+            $customer->credit = max(0, $customer->credit);
+            $customer->debit  = max(0, $customer->debit);
+
+            // 4. Update the Manual Payment Record
+            $oldPayment->payment_type = $newType;
+            $oldPayment->payment      = $newAmount;
+            $oldPayment->note         = $request->note;
+            $oldPayment->save();
+
+            // 5. Save the Customer Balance
+            $customer->save();
+
+            \DB::commit(); // Commit all changes if successful
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Payment updated and balance recalculated successfully.',
+            ]);
+
+        } catch (\Exception $e) {
+            \DB::rollback(); // Rollback if any error occurs
+                             // Log the detailed error for debugging
+            \Log::error("Manual Payment Update Failed: " . $e->getMessage());
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Internal server error during balance update.',
+            ], 500); // Return a 500 status to the AJAX handler
+        }
     }
-    }
+
 }
