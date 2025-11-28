@@ -53,6 +53,15 @@ Route::get('/customer/show', [CustomerController::class,'customer_show'])->name(
 Route::post('/customer/add', [CustomerController::class,'customer_add'])->name('add.customers');
 Route::get('/customer/filter', [CustomerController::class,'customer_filter'])->name('customer.filter');
 
+// --- NEW CUSTOMER ROUTES FOR EDIT AND DELETE (Matching show.blade.php AJAX) ---
+// Fetch customer details for editing
+Route::get('/customers/{id}', [CustomerController::class, 'Customer_edit']); 
+// Update customer details (used by customerForm submit in show.blade.php)
+Route::put('/customers/{id}', [CustomerController::class, 'Customer_update']); 
+// Delete customer
+Route::delete('/customers/{id}', [CustomerController::class, 'Customer_delete']); 
+// ------------------------------------------------------------------------------
+
 // Route::post('/supplier/add', [SupplierController::class, 'supplier_add'])->name('add.suppliers');
 // Route::get('suppliers/{id}', [SupplierController::class, 'supplier_edit']);
 // Route::put('/suppliers/{id}', [SupplierController::class, 'supplier_update'])->name('suppliers.update');
@@ -71,7 +80,8 @@ Route::get('generate-pdf/{id}', [TransactionController::class, 'generatePDF'])->
 Route::get('/customer/{id}/sales-summary', [CustomerController::class, 'salesSummary'])->name('customer.sales.summary');
 Route::post('/sale/update/{id}', [TransactionController::class, 'update_sale'])->name('sale.update');
 Route::put('/transaction/{id}', [TransactionController::class, 'update_transaction'])->name('transaction.update');
-Route::delete('/transaction/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
+// Note: This DELETE route for transaction is duplicated and likely points to TransactionController::destroy
+Route::delete('/transaction/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy'); 
 // return view('pages.customer.pdf_generate');
 // });
 Route::get('/sales', [SaleController::class, 'index'])->name('sale.index');
@@ -95,7 +105,7 @@ Route::prefix('purchases')->name('purchase.')->group(function () {
     Route::get('/create', [PurchaseController::class, 'create'])->name('create');
     Route::post('/store', [PurchaseController::class, 'store'])->name('store');
     Route::get('/product-details/{id}', [PurchaseController::class, 'getProductDetails'])->name('product.details');
-    Route::get('/get-products-by-supplier/{id}', [PurchaseController::class, 'getProductsBySupplier'])->name('products-by-supplier');    
+    Route::get('/get-products-by-supplier/{id}', [PurchaseController::class, 'getProductsBySupplier'])->name('products-by-supplier'); 
     
     // <-- ADD THESE TWO LINES FOR EDIT FUNCTIONALITY -->
     Route::get('/{purchase}/edit', [PurchaseController::class, 'edit'])->name('edit');
@@ -113,8 +123,7 @@ Route::post('/payments/store', [App\Http\Controllers\SupplierPaymentController::
 
 
 Route::post('/customer/recovery/add', [CustomerController::class, 'addRecoveryDate']);
-Route::post('/customer/recovery/delete', [CustomerController::class, 'deleteRecoveryDate']);
-Route::post('/customer/recovery/reminder', [CustomerController::class, 'sendRecoveryReminder']);
+Route::put('/customers/{id}', [CustomerController::class, 'Customer_update']);
 Route::post('/customer/recovery/received', [CustomerController::class, 'markRecoveryReceived']);
 
 Route::post('/customer/send-reminder', [CustomerController::class, 'sendRecoveryReminder'])->name('customer.send_reminder');
