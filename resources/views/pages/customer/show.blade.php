@@ -26,11 +26,12 @@
         /* --- CHECKBOX SIZE FIX --- */
         input[type="checkbox"].customer-checkbox,
         input[type="checkbox"]#selectAllCustomers {
-            transform: scale(1.7); /* Slightly larger checkbox size */
+            transform: scale(1.7);
+            /* Slightly larger checkbox size */
             margin: 0;
             cursor: pointer;
         }
-        
+
         /* Filter Form Styles (Unchanged) */
         .filter-container-wrapper {
             display: flex;
@@ -438,7 +439,7 @@
             color: #dc3545;
             border-color: #dc3545;
         }
-        
+
         /* NEW STYLE: Bulk Actions Bar */
         .bulk-actions-bar {
             background-color: #f8f9fa;
@@ -448,7 +449,8 @@
             margin-bottom: 15px;
             display: flex;
             align-items: center;
-            justify-content: flex-start; /* Aligned left for better flow */
+            justify-content: flex-start;
+            /* Aligned left for better flow */
             gap: 10px;
         }
 
@@ -457,7 +459,7 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         /* --- Responsiveness --- */
         @media (max-width: 992px) {
             .filter-card form {
@@ -479,10 +481,12 @@
                 /* Buttons share width on mobile */
                 text-align: center;
             }
+
             .bulk-actions-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .bulk-actions-group {
                 width: 100%;
                 justify-content: space-between;
@@ -496,7 +500,7 @@
         </div>
     </div>
 
-    {{-- ADD/EDIT CUSTOMER MODAL (Remains Unchanged) --}}
+    {{-- ADD/EDIT CUSTOMER MODAL (Unchanged) --}}
     <div class="modal fade" id="addCutomerModal" tabindex="-1" role="dialog" aria-labelledby="addCutomerModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -542,9 +546,10 @@
             </div>
         </div>
     </div>
-    
-    {{-- NEW: BULK RECOVERY DATE MODAL --}}
-    <div class="modal fade" id="bulkRecoveryModal" tabindex="-1" role="dialog" aria-labelledby="bulkRecoveryModalLabel" aria-hidden="true">
+
+    {{-- NEW: BULK RECOVERY DATE MODAL (Unchanged) --}}
+    <div class="modal fade" id="bulkRecoveryModal" tabindex="-1" role="dialog" aria-labelledby="bulkRecoveryModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -571,7 +576,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                   <div class="card-header d-flex flex-column flex-md-row align-items-center bg-white py-3 border-bottom">
+                    <div class="card-header d-flex flex-column flex-md-row align-items-center bg-white py-3 border-bottom">
 
                         {{-- Title Section --}}
                         <div class="mb-2 mb-md-0">
@@ -592,7 +597,7 @@
                     <div class="card-body">
                         {{-- FILTERS WRAPPER (Unchanged) --}}
                         <div class="card-body">
-
+                            {{-- Stat boxes, filter forms, and nav pills omitted for brevity --}}
                             <div class="row mb-4">
                                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                                     <div class="stat-box debit">
@@ -682,11 +687,12 @@
                             </div>
 
                         </div>
-                        
+
                         {{-- NEW: BULK ACTIONS BAR ABOVE THE TABLE --}}
                         <div class="bulk-actions-bar">
                             <div class="bulk-actions-group">
-                                <select id="bulkActionSelector" class="form-control form-control-sm" style="width: 200px;" disabled>
+                                <select id="bulkActionSelector" class="form-control form-control-sm" style="width: 200px;"
+                                    disabled>
                                     <option value="">Bulk Actions (0 Selected)</option>
                                     <option value="set_recovery">Set Recovery Date</option>
                                     <option value="mark_received">Mark Received</option>
@@ -696,7 +702,7 @@
                                 </button>
                             </div>
                         </div>
-                            
+
                         {{-- DataTables Table --}}
                         <table class="table table-hover w-100" id="example1">
                             <thead class="bg-primary text-white">
@@ -723,14 +729,18 @@
                                         $activeRecovery = $customer->activeRecoveryDate;
                                         $isReceived = $activeRecovery ? ($activeRecovery->is_received == 1) : false;
                                     @endphp
-                                    <tr class="clickable-row" data-href="{{ route('customer.view', ['id' => $customer->id]) }}"
+                                    <tr class="clickable-row"
+                                        data-href="{{ route('customer.view', ['id' => $customer->id]) }}"
                                         style="cursor: pointer;">
-                                        
+
                                         {{-- NEW: Individual Checkbox --}}
                                         <td style="width: 50px; text-align: center;">
-                                            <input type="checkbox" class="customer-checkbox" data-id="{{ $customer->id }}" data-recovery-id="{{ $activeRecovery ? $activeRecovery->id : '' }}" onclick="event.stopPropagation()">
+                                            <input type="checkbox" class="customer-checkbox"
+                                                data-id="{{ $customer->id }}"
+                                                data-recovery-id="{{ $activeRecovery ? $activeRecovery->id : '' }}"
+                                                onclick="event.stopPropagation()">
                                         </td>
-                                        
+
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $customer->name ?? '' }}</td>
                                         <td>{{ $customer->mobile_number ?? ''}}</td>
@@ -758,33 +768,38 @@
                                         </td>
                                         <td>
                                             <div class="action-buttons">
-                                                {{-- WHATSAPP BUTTON --}}
-                                                @php
-                                                    $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
-                                                    $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
-                                                @endphp
-                                                <button class="btn btn-sm btn-success open-whatsapp-btn"
-                                                    data-name="{{ $customer->name }}"
-                                                    data-mobile="{{ $customer->mobile_number }}"
-                                                    data-balance="{{ number_format($balance) }} ({{ $balanceType }})" title="Open WhatsApp">
-                                                    <i class="fab fa-whatsapp"></i> Reminder
-                                                </button>
-                                                
+                                                {{-- WHATSAPP BUTTON (Show only if NOT Received) --}}
+                                                @if(!$isReceived)
+                                                    @php
+                                                        $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
+                                                        $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
+                                                    @endphp
+                                                    <button class="btn btn-sm btn-success open-whatsapp-btn"
+                                                        data-name="{{ $customer->name }}"
+                                                        data-mobile="{{ $customer->mobile_number }}"
+                                                        data-balance="{{ number_format($balance) }} ({{ $balanceType }})"
+                                                        title="Open WhatsApp">
+                                                        <i class="fab fa-whatsapp"></i> Reminder
+                                                    </button>
+                                                @endif
+
                                                 {{-- NEW: MARK RECEIVED BUTTON --}}
                                                 @if($activeRecovery && !$isReceived)
                                                     <button class="btn btn-sm btn-success mark-received-show"
-                                                        data-id="{{ $activeRecovery->id }}" title="Mark Payment Received">
+                                                        data-id="{{ $activeRecovery->id }}"
+                                                        title="Mark Payment Received">
                                                         <i class="fa fa-check"></i> Receive
                                                     </button>
                                                 @elseif($activeRecovery && $isReceived)
-                                                    <button class="btn btn-sm btn-secondary" disabled title="Payment Already Received">
+                                                    <button class="btn btn-sm btn-secondary" disabled
+                                                        title="Payment Already Received">
                                                         <i class="fa fa-check-double"></i> Received
                                                     </button>
                                                 @endif
 
                                                 {{-- NEW: EDIT Button --}}
-                                                <button class="btn btn-sm btn-info edit-customer" data-id="{{ $customer->id }}"
-                                                    title="Edit Customer Details">
+                                                <button class="btn btn-sm btn-info edit-customer"
+                                                    data-id="{{ $customer->id }}" title="Edit Customer Details">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </button>
                                             </div>
@@ -802,10 +817,22 @@
 
 @pushOnce('scripts')
     <script>
+        // **FIX**: The Add Customer button logic was correctly moved outside the document.ready block
+        // to ensure it loads immediately, but we will wrap everything in document.ready for encapsulation.
+
+        $(document).on('click', '#addCustomerBtn', function () {
+            $('#addCutomerModalLabel').text('Add New Customer');
+            $('#customerForm')[0].reset();
+            $('.text-danger').addClass('d-none');
+            $('#submitBtn').text('Save Customer').data('action', 'add').removeData('id'); // Ensure state is 'add'
+            $('#addCutomerModal').modal('show');
+        });
+
         $(document).ready(function () {
             initDataTable();
+
             // ============================================================
-            //  ROW CLICK LOGIC (Existing - Remains Unchanged)
+            //  ROW CLICK LOGIC (Existing - Remains Unchanged)
             // ============================================================
             $(document).on('click', '.clickable-row', function (e) {
                 if ($(e.target).closest('a, button, .btn, input').length) {
@@ -813,26 +840,26 @@
                 }
                 window.location = $(this).data('href');
             });
-            
+
             // ============================================================
             // 1. BULK ACTION LOGIC (Updated for Select/Apply Buttons)
             // ============================================================
-            
+
             // Function to update the bulk action dropdown text/state
             function updateBulkActionState() {
                 const selectedCount = $('.customer-checkbox:checked').length;
                 const selector = $('#bulkActionSelector');
                 const applyBtn = $('#applyBulkActionBtn');
-                
+
                 // Update selector display text
                 selector.find('option:first').text(`Bulk Actions (${selectedCount} Selected)`);
                 // Disable/Enable the selector and apply button
                 selector.prop('disabled', selectedCount === 0);
                 applyBtn.prop('disabled', selectedCount === 0 || selector.val() === '');
             }
-            
+
             // Apply button enablement based on selector change
-            $('#bulkActionSelector').on('change', function() {
+            $('#bulkActionSelector').on('change', function () {
                 updateBulkActionState();
             });
 
@@ -846,7 +873,7 @@
             $(document).on('change', '.customer-checkbox', function () {
                 const total = $('.customer-checkbox').length;
                 const checked = $('.customer-checkbox:checked').length;
-                
+
                 $('#selectAllCustomers').prop('checked', total === checked);
                 updateBulkActionState();
             });
@@ -881,7 +908,7 @@
                     confirmBulkMarkReceived(selectedRecoveryIds);
                 }
             });
-            
+
             // Confirm Bulk Recovery Date Setter
             $('#confirmBulkRecoveryBtn').on('click', function () {
                 const date = $('#bulkRecoveryDateInput').val();
@@ -889,7 +916,7 @@
                     Swal.fire('Error', 'Please select a recovery date.', 'warning');
                     return;
                 }
-                
+
                 const selectedIds = $('.customer-checkbox:checked').map(function () {
                     return $(this).data('id');
                 }).get();
@@ -911,7 +938,7 @@
                 // Use recursion for sequential AJAX calls
                 let successCount = 0;
                 let failureCount = 0;
-                
+
                 const nextAction = () => {
                     if (customerIds.length === 0) {
                         $('#bulkRecoveryModal').modal('hide');
@@ -924,12 +951,12 @@
                     const customerId = customerIds.shift();
 
                     $.ajax({
-                        url: '/customer/recovery/add', 
+                        url: '/customer/recovery/add',
                         type: 'POST',
-                        data: { 
-                            date: date, 
-                            customer_id: customerId, 
-                            _token: '{{ csrf_token() }}' 
+                        data: {
+                            date: date,
+                            customer_id: customerId,
+                            _token: '{{ csrf_token() }}'
                         },
                         success: function () {
                             successCount++;
@@ -941,12 +968,12 @@
                         }
                     });
                 };
-                
+
                 nextAction();
             }
-            
+
             function confirmBulkMarkReceived(recoveryIds) {
-                 Swal.fire({
+                Swal.fire({
                     title: "Confirm Received?",
                     text: `Are you sure you want to mark ${recoveryIds.length} active payments as Received?`,
                     icon: "warning",
@@ -958,12 +985,12 @@
                     }
                 });
             }
-            
+
             function executeBulkMarkReceived(recoveryIds) {
                 // Use recursion for sequential AJAX calls
                 let successCount = 0;
                 let failureCount = 0;
-                
+
                 const nextAction = () => {
                     if (recoveryIds.length === 0) {
                         Swal.fire('Complete', `${successCount} payments marked as received. ${failureCount} failed.`, 'success').then(() => {
@@ -973,7 +1000,7 @@
                     }
 
                     const recoveryId = recoveryIds.shift();
-                    
+
                     $.ajax({
                         url: '/customer/recovery/received',
                         type: 'POST',
@@ -992,7 +1019,7 @@
                         }
                     });
                 };
-                
+
                 nextAction();
             }
 
@@ -1002,17 +1029,17 @@
             $(document).on('click', '.mark-received-show', function () {
                 var id = $(this).data('id');
                 var btn = $(this);
-                
+
                 if (confirm('Are you sure you want to mark this payment as Received?')) {
                     btn.prop('disabled', true).text('Processing...');
                     $.ajax({
-                        url: '/customer/recovery/received', 
+                        url: '/customer/recovery/received',
                         type: 'POST',
                         data: { id: id, _token: '{{ csrf_token() }}' },
                         success: function (response) {
                             if (response.status === 'success') {
                                 Swal.fire('Received!', 'Payment successfully marked as received.', 'success').then(() => {
-                                    location.reload(); 
+                                    location.reload();
                                 });
                             }
                         },
@@ -1024,9 +1051,7 @@
                 }
             });
             // -----------------------------------------------------------
-            // (Rest of the existing JS logic remains unchanged: ADD/EDIT/DELETE customer, initDataTable)
-            // -----------------------------------------------------------
-            
+
             // Edit customer logic (Fetch data)
             $(document).on('click', '.edit-customer', function () {
                 const customerId = $(this).data('id');
@@ -1034,18 +1059,18 @@
                     url: '/customers/' + customerId, // GET route to CustomerController@Customer_edit
                     type: 'GET',
                     success: function (response) {
-                        const customerData = response.customer || response; 
+                        const customerData = response.customer || response;
 
                         $('#addCutomerModalLabel').text('Edit Customer');
                         $('#customerForm')[0].reset();
                         $('.text-danger').addClass('d-none');
-                        $('#submitBtn').text('Update Customer').data('action', 'edit').data('id', customerId); 
-                        
+                        $('#submitBtn').text('Update Customer').data('action', 'edit').data('id', customerId);
+
                         $('#name').val(customerData.name);
-                        $('#mobile_no').val(customerData.mobile_number); 
+                        $('#mobile_no').val(customerData.mobile_number);
                         $('#address').val(customerData.address);
-                        $('#cnic').val(customerData.cnic); 
-                        
+                        $('#cnic').val(customerData.cnic);
+
                         $('#addCutomerModal').modal('show');
                     },
                     error: function (xhr) {
@@ -1083,15 +1108,15 @@
                 });
             });
 
-            // Form submit handler for add/edit (Re-inserted for completeness)
+            // Form submit handler for add/edit (Update customer details)
             $('#customerForm').submit(function (e) {
                 e.preventDefault();
 
                 const actionType = $('#submitBtn').data('action');
                 const customerId = $('#submitBtn').data('id');
-                const url = actionType === 'add' ? '{{ route("add.customers") }}' : '/customers/' + customerId; 
-                
-                const httpMethod = actionType === 'add' ? 'POST' : 'PUT'; 
+                const url = actionType === 'add' ? '{{ route("add.customers") }}' : '/customers/' + customerId;
+
+                const httpMethod = actionType === 'add' ? 'POST' : 'PUT';
 
                 const formData = {
                     _token: '{{ csrf_token() }}',
@@ -1122,17 +1147,18 @@
 
                 $.ajax({
                     url: url,
-                    type: httpMethod, 
+                    type: httpMethod,
                     data: formData,
                     success: function (response) {
                         Swal.fire({
                             title: "Success!",
                             text: response.message || (actionType === 'add' ? 'Customer added successfully!' : 'Customer updated successfully!'),
                             icon: "success",
+                        }).then(() => {
+                            // *** FIX APPLIED HERE ***
+                            // Reload the entire page after successful customer details update or add
+                            location.reload();
                         });
-                        $('#addCutomerModal').modal('hide');
-                        $('#customerForm')[0].reset();
-                        refreshTable();
                     },
                     error: function (xhr) {
                         if (xhr.status === 422) {
@@ -1144,17 +1170,17 @@
                             Swal.fire({ icon: "error", title: "Validation Error", text: "Please correct the highlighted fields." });
                         } else {
                             Swal.fire({ icon: "error", title: "Oops...", text: "Something went wrong! Check console for details." });
-                            console.error("AJAX Error:", xhr.responseText); 
+                            console.error("AJAX Error:", xhr.responseText);
                         }
                     },
                 });
             });
 
-            // Function to refresh the table content
+            // Function to refresh the table content (Kept for delete action/partial reload)
             function refreshTable() {
-                const currentUrl = window.location.href; 
+                const currentUrl = window.location.href;
                 $('body').append('<div id="tempTableContent" style="display:none;"></div>');
-                $('#tempTableContent').load(currentUrl + " #tableHolder > *", function () { 
+                $('#tempTableContent').load(currentUrl + " #tableHolder > *", function () {
                     if ($.fn.DataTable.isDataTable('#example1')) {
                         $('#example1').DataTable().destroy();
                     }
@@ -1164,7 +1190,7 @@
                 });
             }
 
-            // Initialize DataTable
+            // Initialize DataTable (Unchanged)
             function initDataTable() {
                 if ($('#example1').length) {
                     if ($.fn.DataTable.isDataTable('#example1')) {
