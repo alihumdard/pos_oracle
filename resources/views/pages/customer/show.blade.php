@@ -2,7 +2,7 @@
 
 @section('content')
     <style>
-        /* Root Variables */
+        /* Root Variables (Unchanged) */
         :root {
             --primary-color: #007bff;
             --primary-hover: #0056b3;
@@ -14,7 +14,7 @@
             --transition: all 0.3s ease;
         }
 
-        /* General Body Styling */
+        /* General Body Styling (Unchanged) */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f4f7fc;
@@ -23,7 +23,15 @@
             overflow-x: auto;
         }
 
-        /* Filter Form Styles */
+        /* --- CHECKBOX SIZE FIX --- */
+        input[type="checkbox"].customer-checkbox,
+        input[type="checkbox"]#selectAllCustomers {
+            transform: scale(1.3); /* Slightly larger checkbox size */
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        /* Filter Form Styles (Unchanged) */
         .filter-container-wrapper {
             display: flex;
             justify-content: center;
@@ -100,7 +108,7 @@
             transform: translateY(-2px);
         }
 
-        /* Card and Table Styles */
+        /* Card and Table Styles (Unchanged) */
         .card {
             border: none;
             border-radius: var(--border-radius);
@@ -157,7 +165,7 @@
             font-size: 0.85rem;
         }
 
-        /* Responsive */
+        /* Responsive (Unchanged) */
         @media (max-width: 768px) {
             .card-header {
                 flex-direction: column;
@@ -959,7 +967,7 @@
                 const nextAction = () => {
                     if (recoveryIds.length === 0) {
                         Swal.fire('Complete', `${successCount} payments marked as received. ${failureCount} failed.`, 'success').then(() => {
-                            location.reload();
+                            location.reload(); // Reload after bulk operation finishes
                         });
                         return;
                     }
@@ -1010,7 +1018,7 @@
                         },
                         error: function () {
                             Swal.fire('Error', 'Error updating status. Please try again.', 'error');
-                            btn.prop('disabled', false).html('<i class="fa fa-check"></i> Received');
+                            btn.prop('disabled', false).html('<i class="fa fa-check"></i> Receive');
                         }
                     });
                 }
