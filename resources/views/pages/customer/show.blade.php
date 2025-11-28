@@ -26,7 +26,7 @@
         /* --- CHECKBOX SIZE FIX --- */
         input[type="checkbox"].customer-checkbox,
         input[type="checkbox"]#selectAllCustomers {
-            transform: scale(1.3); /* Slightly larger checkbox size */
+            transform: scale(1.7); /* Slightly larger checkbox size */
             margin: 0;
             cursor: pointer;
         }
