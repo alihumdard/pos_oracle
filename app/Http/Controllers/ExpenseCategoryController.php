@@ -13,7 +13,7 @@ class ExpenseCategoryController extends Controller
         $query = ExpenseCategory::orderBy('name', 'asc');
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+                ->orWhere('description', 'like', '%' . $request->search . '%');
         }
         $categories = $query->paginate(10);
         return view('pages.expenses.categories.index', compact('categories'));
@@ -33,15 +33,15 @@ class ExpenseCategoryController extends Controller
 
         if ($validator->fails()) {
             return redirect()->route('expense_categories.create')
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         ExpenseCategory::create($request->all());
         return redirect()->route('expense_categories.index')->with('success', 'Expense category created successfully.');
     }
 
-    public function edit(ExpenseCategory $expenseCategory) // Route model binding
+    public function edit(ExpenseCategory $expenseCategory)
     {
         return view('pages.expenses.categories.edit', compact('expenseCategory'));
     }
@@ -55,8 +55,8 @@ class ExpenseCategoryController extends Controller
 
         if ($validator->fails()) {
             return redirect()->route('expense_categories.edit', $expenseCategory->id)
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $expenseCategory->update($request->all());
@@ -66,7 +66,7 @@ class ExpenseCategoryController extends Controller
     public function destroy(ExpenseCategory $expenseCategory)
     {
         if ($expenseCategory->expenses()->count() > 0) {
-             return redirect()->route('expense_categories.index')->with('error', 'Category cannot be deleted because it is associated with expenses.');
+            return redirect()->route('expense_categories.index')->with('error', 'Category cannot be deleted because it is associated with expenses.');
         }
         $expenseCategory->delete();
         return redirect()->route('expense_categories.index')->with('success', 'Expense category deleted successfully.');
