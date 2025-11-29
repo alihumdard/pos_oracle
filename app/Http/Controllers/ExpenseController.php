@@ -24,10 +24,10 @@ class ExpenseController extends Controller
             $query->whereDate('expense_date', '<=', $request->end_date);
         }
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('description', 'like', '%' . $request->search . '%')
-                  ->orWhere('paid_to', 'like', '%' . $request->search . '%')
-                  ->orWhere('reference_number', 'like', '%' . $request->search . '%');
+                    ->orWhere('paid_to', 'like', '%' . $request->search . '%')
+                    ->orWhere('reference_number', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -56,12 +56,12 @@ class ExpenseController extends Controller
 
         if ($validator->fails()) {
             return redirect()->route('expenses.create')
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $data = $request->all();
-        $data['user_id'] = Auth::id(); // Assign current user
+        $data['user_id'] = Auth::id(); 
 
         Expense::create($data);
         return redirect()->route('expenses.index')->with('success', 'Expense recorded successfully.');
@@ -86,21 +86,18 @@ class ExpenseController extends Controller
 
         if ($validator->fails()) {
             return redirect()->route('expenses.edit', $expense->id)
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $data = $request->all();
-        // user_id typically doesn't change on edit, or can be updated if needed
-        // $data['user_id'] = Auth::id();
-
         $expense->update($data);
         return redirect()->route('expenses.index')->with('success', 'Expense updated successfully.');
     }
 
     public function destroy(Expense $expense)
     {
-        $expense->delete(); // Soft delete if enabled
+        $expense->delete(); 
         return redirect()->route('expenses.index')->with('success', 'Expense deleted successfully.');
     }
 }

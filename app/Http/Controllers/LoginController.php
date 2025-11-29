@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     public function showLoginForm()
-    {    
-            return view('login');     
+    {
+        return view('pages.auth.login');
     }
 
     public function login(Request $request)
@@ -23,25 +23,20 @@ class LoginController extends Controller
         $credentials = [
             'email' => $request->email,
             'password' => $request->password,
-            
+
         ];
 
-     if(Auth::attempt( $credentials))
-     {
-            return redirect()->route('dashboard'); 
-        }
-        else{
+        if (Auth::attempt($credentials)) {
+            return redirect()->route('dashboard');
+        } else {
             return redirect()->back()->withErrors([
                 'email' => 'Invalid credentials.',
             ])->withInput();
         }
-
-        
     }
-            public function logout()
-        {
-            session()->flush();
-            return redirect()->route('login');
-        }
-
+    public function logout()
+    {
+        session()->flush();
+        return redirect()->route('login');
+    }
 }

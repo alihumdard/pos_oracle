@@ -14,20 +14,15 @@ class CustomerController extends Controller
 {
     public function customer_show()
     {
-        // 1. Data Fetch:
         $customers = Customer::with(['sales', 'activeRecoveryDate'])
             ->where(function ($query) {
-                // FIX: Use whereRaw and ABS() to handle floating point issues strictly
                 $query->whereRaw('ABS(debit) > 0.00')
                     ->orWhereRaw('ABS(credit) > 0.00');
             })
             ->get();
 
-        // 2. Calculate Totals
         $data['totalDebit']  = $customers->sum('debit');
         $data['totalCredit'] = $customers->sum('credit');
-
-        // 3. Sorting (Rest of the code remains the same)
         $data['customers'] = $customers->sortBy(function ($customer) {
             return $customer->activeRecoveryDate
                 ? $customer->activeRecoveryDate->recovery_date
@@ -41,9 +36,6 @@ class CustomerController extends Controller
         $data['manual_customers'] = Customer::with(['manualPayments' => function ($query) {
             $query->orderBy('created_at', 'desc');
         }])->findOrFail($id);
-
-        // Fixed: Eager load recoveryDates ordered by latest created first
-        // This ensures the active date logic in the view works correctly
         $data['customer'] = Customer::with(['sales', 'recoveryDates' => function ($q) {
             $q->orderBy('id', 'desc');
         }])->findOrFail($id);

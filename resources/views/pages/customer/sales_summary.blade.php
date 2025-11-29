@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @include('pages.css')
+    @include('inc.css')
 
     <style>
         @media print {
@@ -77,7 +77,7 @@
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-        @include('pages.sidebar')
+        @include('inc.sidebar')
     </aside>
 
     <div class="content-wrapper">
@@ -158,6 +158,6 @@
     </div>
 </div>
 
-@include('pages.script')
+@include('inc.script')
 </body>
 </html>

@@ -1,4 +1,4 @@
-@include('pages.script')
+@include('inc.script')
 
 <nav class="fixed bottom-0 left-0 z-50 w-full bg-white border-t border-gray-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] lg:hidden">
     
