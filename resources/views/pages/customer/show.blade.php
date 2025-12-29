@@ -648,6 +648,13 @@
                                             <label class="filter-pill" for="check-zero">
                                                 <i class="fas fa-eye-slash me-1"></i> Hide Zero Bal
                                             </label>
+
+                                             <input type="checkbox" class="btn-check" id="zero"
+                                                name="view_zero" {{ request('view_zero') ? 'checked' : '' }}>
+                                            <label class="filter-pill" for="zero">
+                                                <i class="fas fa-eye-slash me-1"></i> Zero Bal
+                                            </label>
+                                            
                                         </div>
                                         <div class="action-group">
                                             <button type="submit" class="btn-custom-primary">
@@ -774,7 +781,7 @@
                                                         $balance = $customer->debit > 0 ? $customer->debit : $customer->credit;
                                                         $balanceType = $customer->debit > 0 ? 'Debit' : 'Credit';
                                                     @endphp
-                                                    <button class="btn btn-sm btn-success open-whatsapp-btn"
+                                                    <button class="btn btn-sm btn-success send-reminder"
                                                         data-name="{{ $customer->name }}"
                                                         data-mobile="{{ $customer->mobile_number }}"
                                                         data-balance="{{ number_format($balance) }} ({{ $balanceType }})"
@@ -817,8 +824,71 @@
 
 @pushOnce('scripts')
     <script>
-        // **FIX**: The Add Customer button logic was correctly moved outside the document.ready block
-        // to ensure it loads immediately, but we will wrap everything in document.ready for encapsulation.
+           $(document).on('click', '.send-reminder', function () {
+                var name = $(this).data('name');
+                var rawMobile = $(this).data('mobile');
+                var balance = $(this).data('balance');
+                var dueDate = $(this).data('due-date');
+
+                if (!rawMobile) {
+                    Swal.fire("Error", "No mobile number found for this customer.", "warning");
+                    return;
+                }
+
+                var phones = rawMobile.toString().split(',').map(function (num) {
+                    return num.trim();
+                });
+
+                var text = `"Dear ${name},
+This is a formal reminder from *RANA ELECTRONICS KM*. You have an outstanding balance of ${balance} on your account. Kindly clear these dues at your earliest convenience.
+Thank you."
+For further detail contact us.
+*RANA ELECTRONICS KM*
+03007667440
+
+السلام علیکم
+جناب ${name}
+یہ *رانا الیکٹرونکس کوٹمومن* کی جانب سے ادائیگی کی یاددہانی ہے۔ آپ کے کھاتے میں ${balance} کی بقایا رقم ہے۔ برائے مہربانی ان واجبات کو جلد از جلد ادا کریں۔ شکریہ۔
+مزید تفصیلات کے لیے ہم سے رابطہ کریں۔
+*رانا الیکٹرونکس کوٹمومن*
+03007667440`;
+                var encodedText = encodeURIComponent(text);
+
+                function getWaLink(number) {
+                    var clean = number.replace(/\D/g, '');
+                    if (clean.startsWith('03')) {
+                        clean = '92' + clean.substring(1);
+                    } else if (clean.length === 10 && clean.startsWith('3')) {
+                        clean = '92' + clean;
+                    }
+                    return `https://wa.me/${clean}?text=${encodedText}`;
+                }
+
+                if (phones.length === 1) {
+                    window.open(getWaLink(phones[0]), '_blank');
+                } else {
+                    var inputOptions = {};
+                    phones.forEach(function (phone) {
+                        inputOptions[phone] = phone;
+                    });
+
+                    Swal.fire({
+                        title: 'Select Number',
+                        text: `${name} has multiple numbers. Which one to message?`,
+                        input: 'radio',
+                        inputOptions: inputOptions,
+                        inputValue: phones[0],
+                        showCancelButton: true,
+                        confirmButtonText: 'Open WhatsApp <i class="fa fa-external-link"></i>',
+                        confirmButtonColor: '#25D366',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value) {
+                            window.open(getWaLink(result.value), '_blank');
+                        }
+                    });
+                }
+            });
 
         $(document).on('click', '#addCustomerBtn', function () {
             $('#addCutomerModalLabel').text('Add New Customer');

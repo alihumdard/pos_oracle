@@ -12,17 +12,28 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
-    public function customer_show()
+    public function customer_show(Request $request)
     {
-        $customers = Customer::with(['sales', 'activeRecoveryDate'])
-            ->where(function ($query) {
-                $query->whereRaw('ABS(debit) > 0.00')
+        $query = Customer::with(['sales', 'activeRecoveryDate']);
+
+        // Check if user wants to see Zero Balance customers
+        if ($request->has('view_zero') && $request->view_zero == 'on') {
+            // Sirf wo dikhao jinka debit aur credit dono 0 hain
+            $query->where('debit', 0)->where('credit', 0);
+        } else {
+            // Default logic: Sirf wo dikhao jin ka balance (Debit ya Credit) mojud hai
+            $query->where(function ($q) {
+                $q->whereRaw('ABS(debit) > 0.00')
                     ->orWhereRaw('ABS(credit) > 0.00');
-            })
-            ->get();
+            });
+        }
+
+        $customers = $query->get();
 
         $data['totalDebit']  = $customers->sum('debit');
         $data['totalCredit'] = $customers->sum('credit');
+
+        // Sort by Recovery Date
         $data['customers'] = $customers->sortBy(function ($customer) {
             return $customer->activeRecoveryDate
                 ? $customer->activeRecoveryDate->recovery_date
@@ -181,70 +192,57 @@ class CustomerController extends Controller
 
     public function customer_filter(Request $request)
     {
-        // Use eager loading to prevent N+1 issues
         $query = Customer::with(['sales', 'activeRecoveryDate']);
 
-        // Flag to track if a filter that alters the default view is applied
         $isFilteringActive = false;
 
-        // 1. Handle Recovery Status Filters (Pending, Today, Upcoming, No Date)
-        if ($request->has('recovery_status')) {
-            $status            = $request->recovery_status;
-            $today             = \Carbon\Carbon::today()->format('Y-m-d');
+       
+        if ($request->has('view_zero') && $request->view_zero == 'on') {
+            $query->where('debit', 0)->where('credit', 0);
             $isFilteringActive = true;
+        } else {
+            if ($request->has('recovery_status')) {
+                $status            = $request->recovery_status;
+                $today             = \Carbon\Carbon::today()->format('Y-m-d');
+                $isFilteringActive = true;
 
-            // CASE 1: "No Date"
-            if ($status == 'no_date') {
-                $query->whereDoesntHave('activeRecoveryDate')
-                    ->where(function ($q) {
-                        // Show only No Date customers who still have a positive balance
-                        $q->whereRaw('ABS(debit) > 0.00')
-                            ->orWhereRaw('ABS(credit) > 0.00');
+                if ($status == 'no_date') {
+                    $query->whereDoesntHave('activeRecoveryDate');
+                } else {
+                    $query->whereHas('activeRecoveryDate', function ($q) use ($status, $today) {
+                        $q->where('is_active', 1);
+
+                        if ($status == 'pending') {
+                            $q->where('recovery_date', '<', $today);
+                        } elseif ($status == 'today') {
+                            $q->where('recovery_date', '=', $today);
+                        } elseif ($status == 'upcoming') {
+                            $q->where('recovery_date', '>', $today);
+                        }
                     });
+                }
+
+                $query->where(function ($q) {
+                    $q->whereRaw('ABS(debit) > 0.00')->orWhereRaw('ABS(credit) > 0.00');
+                });
             }
 
-            // CASE 2: Pending, Today, Upcoming (The section with the critical fix)
-            else {
-                $query->whereHas('activeRecoveryDate', function ($q) use ($status, $today) {
-                    // Step 1: Filter by Recovery Date status
-                    $q->where('is_active', 1);
+            if ($request->has('hide_zero_balance')) {
+                $query->where(function ($q) {
+                    $q->whereRaw('ABS(debit) > 0.00')->orWhereRaw('ABS(credit) > 0.00');
+                });
+                $isFilteringActive = true;
+            }
 
-                    if ($status == 'pending') {
-                        $q->where('recovery_date', '<', $today);
-                    } elseif ($status == 'today') {
-                        $q->where('recovery_date', '=', $today);
-                    } elseif ($status == 'upcoming') {
-                        $q->where('recovery_date', '>', $today);
-                    }
-                })
-                // *** FIX: STRICT BALANCE CHECK ADDED ***
-                // Step 2: Ensure that customers found in Step 1 ALSO have an outstanding balance.
-                    ->where(function ($q) {
-                        $q->whereRaw('ABS(debit) > 0.00')
-                            ->orWhereRaw('ABS(credit) > 0.00');
-                    });
-                // *** END FIX ***
+          
+            if (! $isFilteringActive) {
+                $query->where(function ($q) {
+                    $q->whereRaw('ABS(debit) > 0.00')->orWhereRaw('ABS(credit) > 0.00');
+                });
             }
         }
 
-        // 2. Handle "Hide Zero Balance" Filter
-        if ($request->has('hide_zero_balance')) {
-            $query->where(function ($q) {
-                // Explicitly show only customers not equal to zero balance
-                $q->whereRaw('ABS(debit) > 0.00')->orWhereRaw('ABS(credit) > 0.00');
-            });
-            $isFilteringActive = true;
-        }
-
-        // 3. Default Filter (If no filter is applied, apply the Hide Zero Balance rule)
-        if (! $isFilteringActive) {
-            $query->where(function ($q) {
-                $q->whereRaw('ABS(debit) > 0.00')
-                    ->orWhereRaw('ABS(credit) > 0.00');
-            });
-        }
-
-        // 4. Handle Sorting Logic
+        // 5. Handle Sorting (Debit/Credit focus)
         $hasManualSort = false;
         $sortOrder     = $request->input('sort_order', 'asc');
 
@@ -258,18 +256,19 @@ class CustomerController extends Controller
             $hasManualSort = true;
         }
 
-        // Data fetch karein
+        // Execute Query
         $customers = $query->get();
 
+        // Summary calculation
         $data['totalDebit']  = $customers->sum('debit');
         $data['totalCredit'] = $customers->sum('credit');
 
-        // 5. CUSTOM DATE SORTING (Agar user ne Debit/Credit sort select nahi kiya)
+        // 6. Default Date Sorting (Agar manual debit/credit sort active nahi hai)
         if (! $hasManualSort) {
             $customers = $customers->sortBy(function ($customer) {
                 return $customer->activeRecoveryDate
                     ? $customer->activeRecoveryDate->recovery_date
-                    : '9999-12-31'; // No date walay end pe
+                    : '9999-12-31'; // No date wale end pe aayenge
             });
         }
 
