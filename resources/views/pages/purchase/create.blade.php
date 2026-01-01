@@ -123,7 +123,7 @@
     @foreach($suppliers as $supplier)
         <option value="{{ $supplier->id }}" 
                 data-balance="{{ $supplier->ledger_balance }}">
-            {{ $supplier->supplier }}
+            {{ $supplier->supplier }}  {{ $supplier->contact_person ? '(' . $supplier->contact_person . ')' : '' }}
         </option>
     @endforeach
 </select>
