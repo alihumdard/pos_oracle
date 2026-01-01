@@ -16,11 +16,16 @@ use Carbon\Carbon;
 class PurchaseController extends Controller
 {
     public function create()
-    {
-        $data['suppliers'] = Supplier::orderBy('supplier', 'asc')->get();
-        $data['categories'] = Category::orderBy('name', 'asc')->get();
-        return view('pages.purchase.create', $data);
-    }
+{
+    $data['suppliers'] = Supplier::orderBy('supplier', 'asc')->get()->map(function($supplier) {
+        // Har supplier ke object mein ledger_balance property add karein
+        $supplier->ledger_balance = $supplier->getRunningBalance();
+        return $supplier;
+    });
+    
+    $data['categories'] = Category::orderBy('name', 'asc')->get();
+    return view('pages.purchase.create', $data);
+}
     
     public function store(Request $request)
     {
@@ -151,7 +156,6 @@ class PurchaseController extends Controller
         ])
             ->orderBy('purchase_date', 'desc')
             ->orderBy('id', 'desc');
-
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('purchase_date', [$request->start_date, $request->end_date]);
         }

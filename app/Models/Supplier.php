@@ -9,14 +9,37 @@ class Supplier extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = []; // Or specify $fillable
+    protected $guarded = [];
 
     protected $casts = [
         'debit'  => 'decimal:2',
         'credit' => 'decimal:2',
     ];
 
-    // Accessor for net balance
+    // Reusable method for Ledger Balance calculation
+    public function getRunningBalance($untilDate = null)
+    {
+        $endDate = $untilDate ?: now()->format('Y-m-d');
+
+        // Total Purchases (Total Bill)
+        $totalPurchases = $this->purchases()
+            ->whereDate('purchase_date', '<=', $endDate)
+            ->sum('total_amount');
+
+        // Total Cash Paid at purchase time
+        $totalPaidAtPurchase = $this->purchases()
+            ->whereDate('purchase_date', '<=', $endDate)
+            ->sum('cash_paid_at_purchase');
+
+        // Total Separate Payments
+        $totalExtraPayments = $this->payments()
+            ->whereDate('payment_date', '<=', $endDate)
+            ->sum('amount');
+
+        // Logic: Total Bill - Total Payments (Positive = We owe, Negative = Supplier owes us)
+        return $totalPurchases - ($totalPaidAtPurchase + $totalExtraPayments);
+    }
+
     public function getBalanceAttribute()
     {
         return $this->debit - $this->credit;
