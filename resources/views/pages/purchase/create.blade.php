@@ -118,14 +118,15 @@
                     <div class="row">
                         <div class="form-group col-md-6 mb-3">
                             <label for="supplier_id">Supplier <span class="text-danger">*</span></label>
-                            <select name="supplier_id" id="supplier_id" class="form-control select2-single" style="width: 100%;">
-                                <option value="">Select Supplier</option>
-                                @foreach($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}" data-debit="{{ $supplier->debit }}" data-credit="{{ $supplier->credit }}">
-                                    {{ $supplier->supplier }} {{ $supplier->contact_person ? '(' . $supplier->contact_person . ')' : '' }}
-                                </option>
-                                @endforeach
-                            </select>
+                           <select name="supplier_id" id="supplier_id" class="form-control select2-single" style="width: 100%;">
+    <option value="">Select Supplier</option>
+    @foreach($suppliers as $supplier)
+        <option value="{{ $supplier->id }}" 
+                data-balance="{{ $supplier->ledger_balance }}">
+            {{ $supplier->supplier }}
+        </option>
+    @endforeach
+</select>
                             <div id="supplier_balance_info" class="balance-info"></div>
                             <small class="text-danger-small d-none" id="supplier_idError"></small>
                         </div>
@@ -341,20 +342,23 @@
             balanceInfoDiv.empty();
 
             if ($('#supplier_id').val() && selectedOption.length > 0 && selectedOption.val() !== "") {
-                const debit = parseFloat(selectedOption.data('debit')) || 0;
-                const credit = parseFloat(selectedOption.data('credit')) || 0;
-                let balance = debit - credit;
+                // Model se aaya hua accurate ledger balance
+                const balance = parseFloat(selectedOption.data('balance')) || 0;
+                
                 let balanceText = '';
                 let balanceClass = 'balance-zero';
 
                 if (balance > 0) {
-                    balanceText = `Current Balance: ${balance.toFixed(2)} (Supplier owes you)`;
-                    balanceClass = 'balance-positive';
-                } else if (balance < 0) {
+                    // Positive balance means we owe money (Red color)
                     balanceText = `Current Balance: ${Math.abs(balance).toFixed(2)} (You owe supplier)`;
-                    balanceClass = 'balance-negative';
+                    balanceClass = 'balance-negative'; 
+                } else if (balance < 0) {
+                    // Negative balance means we overpaid (Green color)
+                    balanceText = `Current Balance: ${Math.abs(balance).toFixed(2)} (Supplier owes you)`;
+                    balanceClass = 'balance-positive';
                 } else {
                     balanceText = 'Current Balance: 0.00 (Settled)';
+                    balanceClass = 'balance-zero';
                 }
                 balanceInfoDiv.html(`<span class="${balanceClass}">${balanceText}</span>`);
             }
