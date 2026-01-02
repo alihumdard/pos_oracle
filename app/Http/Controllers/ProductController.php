@@ -6,8 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
-use Barryvdh\DomPDF\Facade\PDF;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 // use App\Models\Supplier;
 
 class ProductController extends Controller
@@ -31,7 +30,7 @@ class ProductController extends Controller
   {
     $data['products'] = Product::all();
 
-    $pdf = PDF::loadView('pages.product.product_pdf', $data);
+    $pdf = Pdf::loadView('pages.product.product_pdf', $data);
     return $pdf->download('product.pdf');
   }
 
@@ -105,11 +104,15 @@ class ProductController extends Controller
 
     return response()->json(['message' => 'Product updated successfully!'], 200);
   }
+ 
   public function supplier_category_filter(Request $request)
   {
     $data['suppliers'] = Supplier::all();
     $data['categories'] = Category::all();
+    
     $query = Product::query();
+
+    // Filter by supplier
     if ($request->filled('supplier_id')) {
       $query->where('supplier_id', $request->supplier_id);
     }
@@ -117,6 +120,11 @@ class ProductController extends Controller
     // Filter by category
     if ($request->filled('category_id')) {
       $query->where('category_id', $request->category_id);
+    }
+
+    // NEW: Filter for Out of Stock (Quantity 0)
+    if ($request->filled('out_of_stock') && $request->out_of_stock == '1') {
+      $query->where('qty', '<=', 0);
     }
 
     $data['products'] = $query->orderBy('id', 'DESC')->get();

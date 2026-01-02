@@ -327,40 +327,54 @@
 <div class="container-fluid mt-3">
     <div class="row">
         <div class="col-12">
-            <form action="{{ route('supplier_category.filter') }}" method="GET" class="filter-form p-3 bg-white rounded shadow-sm">
-                <div class="row g-3 align-items-end"> {{-- Use g-3 for consistent guttering --}}
-                    <div class="col-12 col-md-6 col-lg-4">
+            <form action="{{ route('supplier_category.filter') }}" method="GET" id="filterForm" class="filter-form p-3 bg-white rounded shadow-sm">
+                <input type="hidden" name="out_of_stock" id="out_of_stock_val" value="{{ request('out_of_stock', '0') }}">
+
+                <div class="row g-3 align-items-end">
+                    <div class="col-12 col-md-6 col-lg-3">
                         <div class="form-group">
                             <label for="filter_supplier_id" class="form-label fw-medium text-secondary mb-1">Supplier</label>
-                            <select name="supplier_id"
-                                id="filter_supplier_id"
-                                class="form-control select2"
-                                style="width: 100%;">
+                            <select name="supplier_id" id="filter_supplier_id" class="form-control select2" style="width: 100%;">
                                 <option value="">Select Supplier</option>
                                 @foreach($suppliers ?? [] as $supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->supplier }}</option>
+                                    <option value="{{ $supplier->id }}" {{ request('supplier_id') == $supplier->id ? 'selected' : '' }}>
+                                        {{ $supplier->supplier }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-6 col-lg-4">
+                    <div class="col-12 col-md-6 col-lg-3">
                         <div class="form-group">
                             <label for="filter_category_id" class="form-label fw-medium text-secondary mb-1">Category</label>
                             <select name="category_id" class="form-control select2" id="filter_category_id" style="width: 100%;">
                                 <option value="">Select Category</option>
                                 @foreach($categories ?? [] as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
 
-                    <div class="col-12 col-md-12 col-lg-4">
-                        <div class="d-grid" style="margin-bottom: 10px;">
-                            <button type="submit" class="btn btn-primary py-2">
+                    <div class="col-12 col-md-12 col-lg-6">
+                        <div class="d-flex gap-2" style="margin-bottom: 10px;">
+                            <button type="submit" class="btn btn-primary flex-fill py-2" onclick="$('#out_of_stock_val').val('0')">
                                 <i class="fas fa-filter me-2"></i>Apply Filter
                             </button>
+
+                            <button type="button" class="btn btn-warning flex-fill py-2 {{ request('out_of_stock') == '1' ? 'active shadow-inset' : '' }}" 
+                                    onclick="$('#out_of_stock_val').val('1'); $('#filterForm').submit();">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Out of Stock
+                            </button>
+
+                            @if(request()->has('supplier_id') || request()->has('category_id') || request('out_of_stock') == '1')
+                                <a href="{{ route('show.products') }}" class="btn btn-secondary py-2">
+                                    <i class="fas fa-redo me-1"></i>Clear
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -373,7 +387,13 @@
             <div class="card">
                 <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                     <div class="mb-2 mb-md-0">
-                        <h3 class="card-title">All Products</h3>
+                        <h3 class="card-title">
+                            @if(request('out_of_stock') == '1')
+                                <span class="text-danger">Out of Stock Products</span>
+                            @else
+                                All Products
+                            @endif
+                        </h3>
                     </div>
                     <div class="d-flex gap-2 flex-wrap">
                         <a href="{{route('product_all')}}" class="btn btn-success">
@@ -386,43 +406,47 @@
                 </div>
 
                 <div class="card-body">
-                        <table class="table table-hover" id="example1">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Item Name</th>
-                                    <th>Item Code</th>
-                                    <th>Original Price</th>
-                                    <th>Selling Price</th>
-                                    <th>Quantity</th>
-                                    <th class="text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableHolder">
-                                @foreach($products as $product)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $product->item_name ?? '' }}</td>
-                                    <td>{{ $product->item_code ?? ''}}</td>
-                                    <td>{{ $product->original_price ?? ''}}</td>
-                                    <td>{{ $product->selling_price ?? ''}}</td>
-                                    <td>{{ $product->qty ?? ''}}</td>
-                                    <td class="text-center">
-                                        <div class="action-buttons">
-                                            <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-product"
-                                                data-id="{{ $product->id }}">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                            <a href="javascript:void(0)" class="btn btn-sm btn-danger delete-product"
-                                                data-id="{{ $product->id }}">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <table class="table table-hover" id="example1">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item Name</th>
+                                <th>Item Code</th>
+                                <th>Original Price</th>
+                                <th>Selling Price</th>
+                                <th>Quantity</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableHolder">
+                            @foreach($products as $product)
+                            <tr @if($product->qty <= 0) style="background-color: #fff5f5;" @endif>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $product->item_name ?? '' }}</td>
+                                <td>{{ $product->item_code ?? ''}}</td>
+                                <td>{{ $product->original_price ?? ''}}</td>
+                                <td>{{ $product->selling_price ?? ''}}</td>
+                                <td>
+                                    @if($product->qty <= 0)
+                                        <span class="badge badge-danger">Out of Stock</span>
+                                    @else
+                                        {{ $product->qty }}
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <div class="action-buttons">
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-primary edit-product" data-id="{{ $product->id }}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-danger delete-product" data-id="{{ $product->id }}">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
